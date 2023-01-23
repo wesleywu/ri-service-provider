@@ -1,0 +1,13 @@
+dubbo:
+  registries:
+    nacos:
+      protocol: nacos
+      address: 127.0.0.1:8848
+  consumer:
+    references:
+      VideoCollectionClientImpl:
+        protocol: tri
+  metrics:
+    enable: false
+    path: /custom-metrics-path
+    port: 9092
