@@ -3,7 +3,7 @@ package main
 import (
 	"context"
 	_ "dubbo.apache.org/dubbo-go/v3/imports"
-	"github.com/WesleyWu/ri-service-provider/app/service"
+	"github.com/WesleyWu/ri-service-provider/app/video_collection/service"
 	_ "github.com/WesleyWu/ri-service-provider/boot"
 	"github.com/WesleyWu/ri-service-provider/gowing/dubbogo"
 	"github.com/gogf/gf/v2/errors/gerror"

@@ -12,7 +12,7 @@ table:
     sortType: asc
     showDetail: false         # 是否支持显示详情(本开关仅当生成前端页面时生效)
     isRpc: true             # 是否生成rpc服务方式的代码
-    separatePackage: false   # 是否将每个表的代码生成到单独目录下
+    separatePackage: true   # 是否将每个表的代码生成到单独目录下
     createTime: 2022-12-23 18:36:40
     updateTime: 2022-12-23 18:36:40
 columns:

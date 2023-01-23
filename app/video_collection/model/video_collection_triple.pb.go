@@ -2,7 +2,7 @@
 // versions:
 // - protoc-gen-go-triple v1.0.8
 // - protoc             v3.19.4
-// source: ri-service-provider.proto
+// source: video_collection.proto
 
 package model
 
@@ -233,7 +233,7 @@ var VideoCollection_ServiceDesc = grpc_go.ServiceDesc{
 		},
 	},
 	Streams:  []grpc_go.StreamDesc{},
-	Metadata: "ri-service-provider.proto",
+	Metadata: "video_collection.proto",
 }
 
 // VideoCollectionRepoClient is the client API for VideoCollectionRepo service.
@@ -490,5 +490,5 @@ var VideoCollectionRepo_ServiceDesc = grpc_go.ServiceDesc{
 		},
 	},
 	Streams:  []grpc_go.StreamDesc{},
-	Metadata: "ri-service-provider.proto",
+	Metadata: "video_collection.proto",
 }

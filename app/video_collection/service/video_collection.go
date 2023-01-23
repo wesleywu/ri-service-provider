@@ -4,10 +4,10 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
-	"github.com/WesleyWu/ri-service-provider/app/service/internal/dao"
+	"github.com/WesleyWu/ri-service-provider/app/video_collection/model"
+	"github.com/WesleyWu/ri-service-provider/app/video_collection/service/internal/dao"
 	"github.com/WesleyWu/ri-service-provider/gowing/util/errors"
 	"github.com/WesleyWu/ri-service-provider/gowing/util/orm"
-	"github.com/WesleyWu/ri-service-provider/rpc/model"
 	"github.com/gogf/gf/v2/frame/g"
 	"github.com/gogf/gf/v2/util/gconv"
 )

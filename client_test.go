@@ -3,9 +3,9 @@ package main
 import (
 	"context"
 	_ "dubbo.apache.org/dubbo-go/v3/imports"
+	"github.com/WesleyWu/ri-service-provider/app/video_collection/model"
 	"github.com/WesleyWu/ri-service-provider/gowing/dubbogo"
 	"github.com/WesleyWu/ri-service-provider/gowing/gwtypes"
-	"github.com/WesleyWu/ri-service-provider/rpc/model"
 	"github.com/gogf/gf/v2/encoding/gjson"
 	"github.com/gogf/gf/v2/frame/g"
 	"github.com/gogf/gf/v2/os/gctx"
