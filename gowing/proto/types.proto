@@ -10,27 +10,6 @@ option java_multiple_files = true;
 option objc_class_prefix = "GPB";
 
 import "google/protobuf/any.proto";
-import "tagger/tagger.proto";
-
-message Example {
-  string with_new_tags = 1 [(tagger.tags) = "json:\"with_new_tags\" graphql:\"withNewTags,optional\"" ];
-  string with_new_multiple = 2 [(tagger.tags) = "graphql:\"withNewTags,optional\" xml:\"multi,omitempty\"" ];
-
-  string replace_default = 3 [(tagger.tags) = "json:\"replacePrevious\""] ;
-
-  oneof one_of {
-    option (tagger.oneof_tags) = "graphql:\"withNewTags,optional\"";
-    string a = 5 [(tagger.tags) = "json:\"A\""];
-    int32 b_jk = 6 [(tagger.tags) = "json:\"b_Jk\""];
-  }
-}
-
-message SecondMessage {
-  string with_new_tags = 1 [(tagger.tags) = "graphql:\"withNewTags,optional\"" ];
-  string with_new_multiple = 2 [(tagger.tags) = "graphql:\"withNewTags,optional\" xml:\"multi,omitempty\"" ];
-
-  string replace_default = 3 [(tagger.tags) = "json:\"replacePrevious\""] ;
-}
 
 // Wrapper message for array of `double`.
 //
