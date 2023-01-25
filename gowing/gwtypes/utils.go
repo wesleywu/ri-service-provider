@@ -5,6 +5,38 @@ import (
 	"google.golang.org/protobuf/types/known/wrapperspb"
 )
 
+func WrapDouble(v float64) *float64 {
+	return &v
+}
+
+func WrapFloat(v float32) *float32 {
+	return &v
+}
+
+func WrapInt64(v int64) *int64 {
+	return &v
+}
+
+func WrapUInt64(v uint64) *uint64 {
+	return &v
+}
+
+func WrapInt32(v int32) *int32 {
+	return &v
+}
+
+func WrapUInt32(v uint32) *uint32 {
+	return &v
+}
+
+func WrapBool(v bool) *bool {
+	return &v
+}
+
+func WrapString(v string) *string {
+	return &v
+}
+
 func AnyDouble(v float64) *anypb.Any {
 	valueAny := &wrapperspb.DoubleValue{Value: v}
 	result, _ := anypb.New(valueAny)

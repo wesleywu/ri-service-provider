@@ -67,6 +67,7 @@ func StartProvider(_ context.Context, registry *Registry, provider *ProviderInfo
 	}
 
 	rootConfig := config.NewRootConfigBuilder().
+		SetApplication(config.NewApplicationConfigBuilder().SetName("GowingService").Build()).
 		SetProvider(providerConfigBuilder.Build()).
 		AddRegistry(registry.Id, registryConfigBuilder.Build()).
 		SetMetadataReport(config.NewMetadataReportConfigBuilder().

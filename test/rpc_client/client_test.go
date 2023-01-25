@@ -1,4 +1,4 @@
-package main
+package rpc_client
 
 import (
 	"context"
@@ -64,12 +64,12 @@ func TestList(t *testing.T) {
 
 func TestCreate(t *testing.T) {
 	res, err := videoCollectionRepoClient.Create(ctx, &model.VideoCollectionCreateReq{
-		Id:          "87104859-5592",
-		Name:        "特别长的名称特别长的名称特别长的名称特别长的",
-		ContentType: 2,
-		FilterType:  2,
-		Count:       357,
-		IsOnline:    true,
+		Id:          gwtypes.WrapString("87104859-5597"),
+		Name:        gwtypes.WrapString("特别长的名称特别长的名称特别长的名称特别长的"),
+		ContentType: gwtypes.WrapInt32(2),
+		FilterType:  gwtypes.WrapInt32(2),
+		Count:       gwtypes.WrapUInt32(357),
+		IsOnline:    gwtypes.WrapBool(true),
 	})
 	if err != nil {
 		panic(err)

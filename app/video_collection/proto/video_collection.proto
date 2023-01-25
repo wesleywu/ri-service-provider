@@ -7,6 +7,7 @@ option go_package = "app/video_collection/model";
 import "google/protobuf/timestamp.proto";
 import "google/protobuf/any.proto";
 import "tagger/tagger.proto";
+import "goframe.proto";
 
 service VideoCollection {
   rpc Count (VideoCollectionCountReq) returns (VideoCollectionCountRes){}
@@ -91,14 +92,15 @@ message VideoCollectionListRes {
 }
 
 message VideoCollectionCreateReq {
-  string id = 1 [(tagger.tags) = "p:\"id\" v:\"required#视频集ID，字符串格式不能为空\" json:\"id\""];
-  string name = 2 [(tagger.tags) = "p:\"name\" v:\"required|max-length:50#视频集名称不能为空|视频集名称不能超过50个字\" json:\"name\""];
-  int32 contentType = 3 [(tagger.tags) = "p:\"contentType\" v:\"required#内容类型不能为空\" json:\"contentType\""];
-  int32 filterType = 4 [(tagger.tags) = "p:\"filterType\" json:\"filterType\""];
-  uint32 count = 5 [(tagger.tags) = "p:\"count\" json:\"count\""];
-  bool isOnline = 6 [(tagger.tags) = "p:\"isOnline\" json:\"isOnline\""];
-  google.protobuf.Timestamp createdAt = 7 [(tagger.tags) = "p:\"createdAt\" json:\"createdAt\""];
-  google.protobuf.Timestamp updatedAt = 8 [(tagger.tags) = "p:\"updatedAt\" json:\"updatedAt\""];
+  gowing.protobuf.Meta meta = 1 [(tagger.tags) = "orm:\"do:true\" json:\"-\""];
+  optional string id = 2 [(tagger.tags) = "p:\"id\" v:\"required#视频集ID，字符串格式不能为空\" json:\"id\""];
+  optional string name = 3 [(tagger.tags) = "p:\"name\" v:\"required|max-length:50#视频集名称不能为空|视频集名称不能超过50个字\" json:\"name\""];
+  optional int32 contentType = 4 [(tagger.tags) = "p:\"contentType\" v:\"required#内容类型不能为空\" json:\"contentType\""];
+  optional int32 filterType = 5 [(tagger.tags) = "p:\"filterType\" json:\"filterType\""];
+  optional uint32 count = 6 [(tagger.tags) = "p:\"count\" json:\"count\""];
+  optional bool isOnline = 7 [(tagger.tags) = "p:\"isOnline\" json:\"isOnline\""];
+  optional google.protobuf.Timestamp createdAt = 8 [(tagger.tags) = "p:\"createdAt\" json:\"createdAt\""];
+  optional google.protobuf.Timestamp updatedAt = 9 [(tagger.tags) = "p:\"updatedAt\" json:\"updatedAt\""];
 }
 
 message VideoCollectionCreateRes {
@@ -108,14 +110,15 @@ message VideoCollectionCreateRes {
 }
 
 message VideoCollectionUpdateReq {
-  string id = 1 [(tagger.tags) = "p:\"id\" v:\"required#视频集ID，字符串格式不能为空\" json:\"id\""];
-  string name = 2 [(tagger.tags) = "p:\"name\" v:\"required#视频集名称不能为空\" json:\"name\""];
-  int32 contentType = 3 [(tagger.tags) = "p:\"contentType\" v:\"required#内容类型不能为空\" json:\"contentType\""];
-  int32 filterType = 4 [(tagger.tags) = "p:\"filterType\" json:\"filterType\""];
-  uint32 count = 5 [(tagger.tags) = "p:\"count\" json:\"count\""];
-  bool isOnline = 6 [(tagger.tags) = "p:\"isOnline\" json:\"isOnline\""];
-  google.protobuf.Timestamp createdAt = 7 [(tagger.tags) = "p:\"createdAt\" json:\"createdAt\""];
-  google.protobuf.Timestamp updatedAt = 8 [(tagger.tags) = "p:\"updatedAt\" json:\"updatedAt\""];
+  gowing.protobuf.Meta meta = 1 [(tagger.tags) = "orm:\"do:true\" json:\"-\""];
+  optional string id = 2 [(tagger.tags) = "p:\"id\" v:\"required#视频集ID，字符串格式不能为空\" json:\"id\""];
+  optional string name = 3 [(tagger.tags) = "p:\"name\" json:\"name\""];
+  optional int32 contentType = 4 [(tagger.tags) = "p:\"contentType\" json:\"contentType\""];
+  optional int32 filterType = 5 [(tagger.tags) = "p:\"filterType\" json:\"filterType\""];
+  optional uint32 count = 6 [(tagger.tags) = "p:\"count\" json:\"count\""];
+  optional bool isOnline = 7 [(tagger.tags) = "p:\"isOnline\" json:\"isOnline\""];
+  optional google.protobuf.Timestamp createdAt = 8 [(tagger.tags) = "p:\"createdAt\" json:\"createdAt\""];
+  optional google.protobuf.Timestamp updatedAt = 9 [(tagger.tags) = "p:\"updatedAt\" json:\"updatedAt\""];
 }
 
 message VideoCollectionUpdateRes {
@@ -124,14 +127,15 @@ message VideoCollectionUpdateRes {
 }
 
 message VideoCollectionUpsertReq {
-  string id = 1 [(tagger.tags) = "p:\"id\" v:\"required#视频集ID，字符串格式不能为空\" json:\"id\""];
-  string name = 2 [(tagger.tags) = "p:\"name\" v:\"required#视频集名称不能为空\" json:\"name\""];
-  int32 contentType = 3 [(tagger.tags) = "p:\"contentType\" v:\"required#内容类型不能为空\" json:\"contentType\""];
-  int32 filterType = 4 [(tagger.tags) = "p:\"filterType\" json:\"filterType\""];
-  uint32 count = 5 [(tagger.tags) = "p:\"count\" json:\"count\""];
-  bool isOnline = 6 [(tagger.tags) = "p:\"isOnline\" json:\"isOnline\""];
-  google.protobuf.Timestamp createdAt = 7 [(tagger.tags) = "p:\"createdAt\" json:\"createdAt\""];
-  google.protobuf.Timestamp updatedAt = 8 [(tagger.tags) = "p:\"updatedAt\" json:\"updatedAt\""];
+  gowing.protobuf.Meta meta = 1 [(tagger.tags) = "orm:\"do:true\" json:\"-\""];
+  optional string id = 2 [(tagger.tags) = "p:\"id\" v:\"required#视频集ID，字符串格式不能为空\" json:\"id\""];
+  optional string name = 3 [(tagger.tags) = "p:\"name\" json:\"name\""];
+  optional int32 contentType = 4 [(tagger.tags) = "p:\"contentType\" json:\"contentType\""];
+  optional int32 filterType = 5 [(tagger.tags) = "p:\"filterType\" json:\"filterType\""];
+  optional uint32 count = 6 [(tagger.tags) = "p:\"count\" json:\"count\""];
+  optional bool isOnline = 7 [(tagger.tags) = "p:\"isOnline\" json:\"isOnline\""];
+  optional google.protobuf.Timestamp createdAt = 8 [(tagger.tags) = "p:\"createdAt\" json:\"createdAt\""];
+  optional google.protobuf.Timestamp updatedAt = 9 [(tagger.tags) = "p:\"updatedAt\" json:\"updatedAt\""];
 }
 
 message VideoCollectionUpsertRes {
@@ -141,14 +145,14 @@ message VideoCollectionUpsertRes {
 }
 
 message VideoCollectionDeleteReq {
-  string id = 1 [(tagger.tags) = "p:\"id\" v:\"required#视频集ID，字符串格式不能为空\" json:\"id\""];
-  string name = 2 [(tagger.tags) = "p:\"name\" v:\"required#视频集名称不能为空\" json:\"name\""];
-  int32 contentType = 3 [(tagger.tags) = "p:\"contentType\" v:\"required#内容类型不能为空\" json:\"contentType\""];
-  int32 filterType = 4 [(tagger.tags) = "p:\"filterType\" json:\"filterType\""];
-  uint32 count = 5 [(tagger.tags) = "p:\"count\" json:\"count\""];
-  bool isOnline = 6 [(tagger.tags) = "p:\"isOnline\" json:\"isOnline\""];
-  google.protobuf.Timestamp createdAt = 7 [(tagger.tags) = "p:\"createdAt\" json:\"createdAt\""];
-  google.protobuf.Timestamp updatedAt = 8 [(tagger.tags) = "p:\"updatedAt\" json:\"updatedAt\""];
+  google.protobuf.Any  id = 1;
+  google.protobuf.Any  name = 2;
+  google.protobuf.Any  contentType = 3;
+  google.protobuf.Any  filterType = 4;
+  google.protobuf.Any  count = 5;
+  google.protobuf.Any  isOnline = 6;
+  google.protobuf.Any  createdAt = 7;
+  google.protobuf.Any  updatedAt = 8;
 }
 
 message VideoCollectionDeleteRes {

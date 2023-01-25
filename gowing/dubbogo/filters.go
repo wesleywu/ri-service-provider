@@ -37,6 +37,6 @@ func (f *MyInputValidationFilter) Invoke(ctx context.Context, invoker protocol.I
 	return invoker.Invoke(ctx, invocation)
 }
 func (f *MyInputValidationFilter) OnResponse(ctx context.Context, result protocol.Result, invoker protocol.Invoker, protocol protocol.Invocation) protocol.Result {
-	fmt.Println("MyInputValidationFilter OnResponse is called")
+	fmt.Printf("MyInputValidationFilter OnResponse is called: %v\n", result.Error())
 	return result
 }
