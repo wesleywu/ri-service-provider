@@ -94,6 +94,14 @@ func TestListByCondition(t *testing.T) {
 						"@type":"type.googleapis.com/google.protobuf.StringValue",
 						"value":"每日"
 					}
+				},
+				"count": {
+					"@type":"type.googleapis.com/gowing.protobuf.Condition",
+					"operator": "GT",
+					"value": {
+						"@type":"type.googleapis.com/google.protobuf.UInt32Value",
+						"value":1
+					}
 				}
 			}`
 	resp, err := client.DoPostWithHeaders(ctx, url, commonHeaders, data, 0)

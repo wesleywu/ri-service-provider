@@ -33,7 +33,7 @@ message VideoCollectionCountReq {
 }
 
 message VideoCollectionCountRes {
-  int32 total = 1 [(tagger.tags) = "json:\"total\""];
+  optional int32 total = 1 [(tagger.tags) = "json:\"total\""];
 }
 
 message VideoCollectionOneReq {
@@ -49,14 +49,14 @@ message VideoCollectionOneReq {
 }
 
 message VideoCollectionOneRes {
-  string id = 1 [(tagger.tags) = "json:\"id\""];
-  string name = 2 [(tagger.tags) = "json:\"name\""];
-  int32 contentType = 3 [(tagger.tags) = "json:\"contentType\""];
-  int32 filterType = 4 [(tagger.tags) = "json:\"filterType\""];
-  uint32 count = 5 [(tagger.tags) = "json:\"count\""];
-  bool isOnline = 6 [(tagger.tags) = "json:\"isOnline\""];
-  google.protobuf.Timestamp createdAt = 7 [(tagger.tags) = "json:\"createdAt\""];
-  google.protobuf.Timestamp updatedAt = 8 [(tagger.tags) = "json:\"updatedAt\""];
+  optional string id = 1 [(tagger.tags) = "json:\"id\""];
+  optional string name = 2 [(tagger.tags) = "json:\"name\""];
+  optional int32 contentType = 3 [(tagger.tags) = "json:\"contentType\""];
+  optional int32 filterType = 4 [(tagger.tags) = "json:\"filterType\""];
+  optional uint32 count = 5 [(tagger.tags) = "json:\"count\""];
+  optional bool isOnline = 6 [(tagger.tags) = "json:\"isOnline\""];
+  optional google.protobuf.Timestamp createdAt = 7 [(tagger.tags) = "json:\"createdAt\""];
+  optional google.protobuf.Timestamp updatedAt = 8 [(tagger.tags) = "json:\"updatedAt\""];
 }
 
 message VideoCollectionListReq {
@@ -74,20 +74,20 @@ message VideoCollectionListReq {
 }
 
 message VideoCollectionListRes {
-  int32 total = 1 [(tagger.tags) = "json:\"total\""];
-  int32 current = 2 [(tagger.tags) = "json:\"current\""];
+  optional int32 total = 1 [(tagger.tags) = "json:\"total\""];
+  optional int32 current = 2 [(tagger.tags) = "json:\"current\""];
   repeated VideoCollectionItem items = 3 [(tagger.tags) = "json:\"items\""];
 }
 
 message VideoCollectionItem {
-  string id = 1 [(tagger.tags) = "json:\"id\""];
-  string name = 2 [(tagger.tags) = "json:\"name\""];
-  int32 contentType = 3 [(tagger.tags) = "json:\"contentType\""];
-  int32 filterType = 4 [(tagger.tags) = "json:\"filterType\""];
-  uint32 count = 5 [(tagger.tags) = "json:\"count\""];
-  bool isOnline = 6 [(tagger.tags) = "json:\"isOnline\""];
-  google.protobuf.Timestamp createdAt = 7 [(tagger.tags) = "json:\"createdAt\""];
-  google.protobuf.Timestamp updatedAt = 8 [(tagger.tags) = "json:\"updatedAt\""];
+  optional string id = 1 [(tagger.tags) = "json:\"id\""];
+  optional string name = 2 [(tagger.tags) = "json:\"name\""];
+  optional int32 contentType = 3 [(tagger.tags) = "json:\"contentType\""];
+  optional int32 filterType = 4 [(tagger.tags) = "json:\"filterType\""];
+  optional uint32 count = 5 [(tagger.tags) = "json:\"count\""];
+  optional bool isOnline = 6 [(tagger.tags) = "json:\"isOnline\""];
+  optional google.protobuf.Timestamp createdAt = 7 [(tagger.tags) = "json:\"createdAt\""];
+  optional google.protobuf.Timestamp updatedAt = 8 [(tagger.tags) = "json:\"updatedAt\""];
 }
 
 message VideoCollectionCreateReq {
@@ -103,9 +103,9 @@ message VideoCollectionCreateReq {
 }
 
 message VideoCollectionCreateRes {
-  string message = 1 [(tagger.tags) = "json:\"message\""];
-  int64 lastInsertId = 2 [(tagger.tags) = "json:\"lastInsertId\""];
-  int64 rowsAffected = 3 [(tagger.tags) = "json:\"rowsAffected\""];
+  optional string message = 1 [(tagger.tags) = "json:\"message\""];
+  optional int64 lastInsertId = 2 [(tagger.tags) = "json:\"lastInsertId\""];
+  optional int64 rowsAffected = 3 [(tagger.tags) = "json:\"rowsAffected\""];
 }
 
 message VideoCollectionUpdateReq {
@@ -121,8 +121,8 @@ message VideoCollectionUpdateReq {
 }
 
 message VideoCollectionUpdateRes {
-  string message = 1 [(tagger.tags) = "json:\"message\""];
-  int64 rowsAffected = 2 [(tagger.tags) = "json:\"rowsAffected\""];
+  optional string message = 1 [(tagger.tags) = "json:\"message\""];
+  optional int64 rowsAffected = 2 [(tagger.tags) = "json:\"rowsAffected\""];
 }
 
 message VideoCollectionUpsertReq {
@@ -138,9 +138,9 @@ message VideoCollectionUpsertReq {
 }
 
 message VideoCollectionUpsertRes {
-  string message = 1 [(tagger.tags) = "json:\"message\""];
-  int64 lastInsertId = 2 [(tagger.tags) = "json:\"lastInsertId\""];
-  int64 rowsAffected = 3 [(tagger.tags) = "json:\"rowsAffected\""];
+  optional string message = 1 [(tagger.tags) = "json:\"message\""];
+  optional int64 lastInsertId = 2 [(tagger.tags) = "json:\"lastInsertId\""];
+  optional int64 rowsAffected = 3 [(tagger.tags) = "json:\"rowsAffected\""];
 }
 
 message VideoCollectionDeleteReq {
@@ -155,7 +155,7 @@ message VideoCollectionDeleteReq {
 }
 
 message VideoCollectionDeleteRes {
-  string message = 1 [(tagger.tags) = "json:\"message\""];
-  int64 lastInsertId = 2 [(tagger.tags) = "json:\"lastInsertId\""];
-  int64 rowsAffected = 3 [(tagger.tags) = "json:\"rowsAffected\""];
+  optional string message = 1 [(tagger.tags) = "json:\"message\""];
+  optional int64 lastInsertId = 2 [(tagger.tags) = "json:\"lastInsertId\""];
+  optional int64 rowsAffected = 3 [(tagger.tags) = "json:\"rowsAffected\""];
 }

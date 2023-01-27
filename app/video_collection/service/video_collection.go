@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"github.com/WesleyWu/ri-service-provider/app/video_collection/model"
 	"github.com/WesleyWu/ri-service-provider/app/video_collection/service/internal/dao"
+	"github.com/WesleyWu/ri-service-provider/gowing/gwtypes"
 	"github.com/WesleyWu/ri-service-provider/gowing/util/errors"
 	"github.com/WesleyWu/ri-service-provider/gowing/util/orm"
 	"github.com/gogf/gf/v2/frame/g"
@@ -44,7 +45,7 @@ func (s *VideoCollectionImpl) Count(ctx context.Context, req *model.VideoCollect
 	if err != nil {
 		return nil, err
 	}
-	return &model.VideoCollectionCountRes{Total: gconv.Int32(count)}, err
+	return &model.VideoCollectionCountRes{Total: gwtypes.WrapInt32(gconv.Int32(count))}, err
 }
 
 // List 根据req指定的查询条件获取记录列表
@@ -87,8 +88,8 @@ func (s *VideoCollectionImpl) List(ctx context.Context, req *model.VideoCollecti
 		return nil, err
 	}
 	return &model.VideoCollectionListRes{
-		Total:   int32(total),
-		Current: int32(page),
+		Total:   gwtypes.WrapInt32(int32(total)),
+		Current: gwtypes.WrapInt32(int32(page)),
 		Items:   list,
 	}, nil
 }
@@ -168,9 +169,9 @@ func (s *VideoCollectionImpl) Create(ctx context.Context, req *model.VideoCollec
 		message = "未插入任何记录" // should not happen
 	}
 	return &model.VideoCollectionCreateRes{
-		Message:      message,
-		LastInsertId: lastInsertId,
-		RowsAffected: rowsAffected,
+		Message:      gwtypes.WrapString(message),
+		LastInsertId: gwtypes.WrapInt64(lastInsertId),
+		RowsAffected: gwtypes.WrapInt64(rowsAffected),
 	}, nil
 }
 
@@ -206,8 +207,8 @@ func (s *VideoCollectionImpl) Update(ctx context.Context, req *model.VideoCollec
 		return nil, errors.NewNotFoundErrorf(req, "不存在要更新的记录")
 	}
 	return &model.VideoCollectionUpdateRes{
-		Message:      message,
-		RowsAffected: rowsAffected,
+		Message:      gwtypes.WrapString(message),
+		RowsAffected: gwtypes.WrapInt64(rowsAffected),
 	}, nil
 }
 
@@ -249,9 +250,9 @@ func (s *VideoCollectionImpl) Upsert(ctx context.Context, req *model.VideoCollec
 		message = "插入成功"
 	}
 	return &model.VideoCollectionUpsertRes{
-		Message:      message,
-		LastInsertId: lastInsertId,
-		RowsAffected: rowsAffected,
+		Message:      gwtypes.WrapString(message),
+		LastInsertId: gwtypes.WrapInt64(lastInsertId),
+		RowsAffected: gwtypes.WrapInt64(rowsAffected),
 	}, nil
 }
 
@@ -288,7 +289,7 @@ func (s *VideoCollectionImpl) Delete(ctx context.Context, req *model.VideoCollec
 	}
 
 	return &model.VideoCollectionDeleteRes{
-		Message:      message,
-		RowsAffected: rowsAffected,
+		Message:      gwtypes.WrapString(message),
+		RowsAffected: gwtypes.WrapInt64(rowsAffected),
 	}, nil
 }
