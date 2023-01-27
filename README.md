@@ -66,15 +66,23 @@ curl --location --request POST 'http://localhost:8888/repo_service/VideoCollecti
         "wildcard": "StartsWith",
         "value": {
             "@type":"type.googleapis.com/google.protobuf.StringValue",
-            "value":"每日"
+            "value":"推荐"
+        }
+    },
+    "contentType": {
+        "@type":"type.googleapis.com/gowing.protobuf.Condition",
+        "multi": "In",
+        "value": {
+            "@type":"type.googleapis.com/gowing.protobuf.Int32Slice",
+            "value":[-1, 0, 1]
         }
     },
     "count": {
         "@type":"type.googleapis.com/gowing.protobuf.Condition",
         "operator": "GT",
         "value": {
-            "@type":"type.googleapis.com/google.protobuf.UInt32Value",
-            "value":1300
+            "@type":"type.googleapis.com/google.protobuf.Int32Value",
+            "value":-1
         }
     }
 }'
