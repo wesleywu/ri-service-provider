@@ -1,8 +1,9 @@
 syntax = "proto3";
 
-package com.github.wesleywu.ri_service_provider;
+//package repo;
 // necessary
 option go_package = "app/video_collection/model";
+option java_package = "app.video_collection";
 
 import "google/protobuf/timestamp.proto";
 import "google/protobuf/any.proto";
@@ -13,9 +14,6 @@ service VideoCollection {
   rpc Count (VideoCollectionCountReq) returns (VideoCollectionCountRes){}
   rpc One (VideoCollectionOneReq) returns (VideoCollectionOneRes){}
   rpc List (VideoCollectionListReq) returns (VideoCollectionListRes){}
-}
-
-service VideoCollectionRepo {
   rpc Create (VideoCollectionCreateReq) returns (VideoCollectionCreateRes){}
   rpc Update (VideoCollectionUpdateReq) returns (VideoCollectionUpdateRes){}
   rpc Upsert (VideoCollectionUpsertReq) returns (VideoCollectionUpsertRes){}
@@ -34,7 +32,7 @@ message VideoCollectionCountReq {
 }
 
 message VideoCollectionCountRes {
-  int32 total = 1;
+  int32 total = 1 [(tagger.tags) = "json:\"total\""];
 }
 
 message VideoCollectionOneReq {
@@ -49,26 +47,15 @@ message VideoCollectionOneReq {
   string orderBy = 9;
 }
 
-message VideoCollectionItem {
-  string id = 1 [(tagger.tags) = "json:\"id\""];
-  string name = 2;
-  int32 contentType = 3;
-  int32 filterType = 4;
-  uint32 count = 5;
-  bool isOnline = 6;
-  google.protobuf.Timestamp createdAt = 7;
-  google.protobuf.Timestamp updatedAt = 8;
-}
-
 message VideoCollectionOneRes {
-  string id = 1;
-  string name = 2;
-  int32 contentType = 3;
-  int32 filterType = 4;
-  uint32 count = 5;
-  bool isOnline = 6;
-  google.protobuf.Timestamp createdAt = 7;
-  google.protobuf.Timestamp updatedAt = 8;
+  string id = 1 [(tagger.tags) = "json:\"id\""];
+  string name = 2 [(tagger.tags) = "json:\"name\""];
+  int32 contentType = 3 [(tagger.tags) = "json:\"contentType\""];
+  int32 filterType = 4 [(tagger.tags) = "json:\"filterType\""];
+  uint32 count = 5 [(tagger.tags) = "json:\"count\""];
+  bool isOnline = 6 [(tagger.tags) = "json:\"isOnline\""];
+  google.protobuf.Timestamp createdAt = 7 [(tagger.tags) = "json:\"createdAt\""];
+  google.protobuf.Timestamp updatedAt = 8 [(tagger.tags) = "json:\"updatedAt\""];
 }
 
 message VideoCollectionListReq {
@@ -86,9 +73,20 @@ message VideoCollectionListReq {
 }
 
 message VideoCollectionListRes {
-  int32 total = 1;
-  int32 current = 2;
+  int32 total = 1 [(tagger.tags) = "json:\"total\""];
+  int32 current = 2 [(tagger.tags) = "json:\"current\""];
   repeated VideoCollectionItem items = 3;
+}
+
+message VideoCollectionItem {
+  string id = 1 [(tagger.tags) = "json:\"id\""];
+  string name = 2 [(tagger.tags) = "json:\"name\""];
+  int32 contentType = 3 [(tagger.tags) = "json:\"contentType\""];
+  int32 filterType = 4 [(tagger.tags) = "json:\"filterType\""];
+  uint32 count = 5 [(tagger.tags) = "json:\"count\""];
+  bool isOnline = 6 [(tagger.tags) = "json:\"isOnline\""];
+  google.protobuf.Timestamp createdAt = 7 [(tagger.tags) = "json:\"createdAt\""];
+  google.protobuf.Timestamp updatedAt = 8 [(tagger.tags) = "json:\"updatedAt\""];
 }
 
 message VideoCollectionCreateReq {

@@ -41,12 +41,12 @@ static_resources:
                 - name: dgp.filter.http.dubboproxy
                   config:
                     dubboProxyConfig:
-                      auto_resolve: false
+#                      auto_resolve: false
                       registries:
                         "nacos":
                           protocol: "nacos"
                           timeout: "3s"
-                          address: "127.0.0.1:8848"
+                          address: "172.33.0.109:8848"
                           username: ""
                           password: ""
       config:
@@ -64,4 +64,4 @@ static_resources:
         registries:
           nacos:
             protocol: nacos
-            address:  "127.0.0.1:8848"
+            address:  "172.33.0.109:8848"

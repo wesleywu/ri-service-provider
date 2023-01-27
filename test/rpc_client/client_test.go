@@ -14,9 +14,8 @@ import (
 )
 
 var (
-	ctx                       = gctx.New()
-	videoCollectionClient     = new(model.VideoCollectionClientImpl)
-	videoCollectionRepoClient = new(model.VideoCollectionRepoClientImpl)
+	ctx                   = gctx.New()
+	videoCollectionClient = new(model.VideoCollectionClientImpl)
 )
 
 func init() {
@@ -63,12 +62,12 @@ func TestList(t *testing.T) {
 }
 
 func TestCreate(t *testing.T) {
-	res, err := videoCollectionRepoClient.Create(ctx, &model.VideoCollectionCreateReq{
-		Id:          gwtypes.WrapString("87104859-5597"),
+	res, err := videoCollectionClient.Create(ctx, &model.VideoCollectionCreateReq{
+		Id:          gwtypes.WrapString("87104859-5598"),
 		Name:        gwtypes.WrapString("特别长的名称特别长的名称特别长的名称特别长的"),
-		ContentType: gwtypes.WrapInt32(2),
-		FilterType:  gwtypes.WrapInt32(2),
-		Count:       gwtypes.WrapUInt32(357),
+		ContentType: gwtypes.WrapInt32(3),
+		FilterType:  gwtypes.WrapInt32(4),
+		Count:       gwtypes.WrapUInt32(401),
 		IsOnline:    gwtypes.WrapBool(true),
 	})
 	if err != nil {
@@ -95,12 +94,6 @@ func startDubboConsumer(ctx context.Context) error {
 		&dubbogo.ConsumerReference{
 			ClientImplStructName: "VideoCollectionClientImpl",
 			Service:              videoCollectionClient,
-			Protocol:             "tri",
-		})
-	dubbogo.AddConsumerReference(
-		&dubbogo.ConsumerReference{
-			ClientImplStructName: "VideoCollectionRepoClientImpl",
-			Service:              videoCollectionRepoClient,
 			Protocol:             "tri",
 		})
 	return dubbogo.StartConsumers(ctx,

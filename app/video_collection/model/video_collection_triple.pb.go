@@ -31,6 +31,10 @@ type VideoCollectionClient interface {
 	Count(ctx context.Context, in *VideoCollectionCountReq, opts ...grpc_go.CallOption) (*VideoCollectionCountRes, common.ErrorWithAttachment)
 	One(ctx context.Context, in *VideoCollectionOneReq, opts ...grpc_go.CallOption) (*VideoCollectionOneRes, common.ErrorWithAttachment)
 	List(ctx context.Context, in *VideoCollectionListReq, opts ...grpc_go.CallOption) (*VideoCollectionListRes, common.ErrorWithAttachment)
+	Create(ctx context.Context, in *VideoCollectionCreateReq, opts ...grpc_go.CallOption) (*VideoCollectionCreateRes, common.ErrorWithAttachment)
+	Update(ctx context.Context, in *VideoCollectionUpdateReq, opts ...grpc_go.CallOption) (*VideoCollectionUpdateRes, common.ErrorWithAttachment)
+	Upsert(ctx context.Context, in *VideoCollectionUpsertReq, opts ...grpc_go.CallOption) (*VideoCollectionUpsertRes, common.ErrorWithAttachment)
+	Delete(ctx context.Context, in *VideoCollectionDeleteReq, opts ...grpc_go.CallOption) (*VideoCollectionDeleteRes, common.ErrorWithAttachment)
 }
 
 type videoCollectionClient struct {
@@ -38,9 +42,13 @@ type videoCollectionClient struct {
 }
 
 type VideoCollectionClientImpl struct {
-	Count func(ctx context.Context, in *VideoCollectionCountReq) (*VideoCollectionCountRes, error)
-	One   func(ctx context.Context, in *VideoCollectionOneReq) (*VideoCollectionOneRes, error)
-	List  func(ctx context.Context, in *VideoCollectionListReq) (*VideoCollectionListRes, error)
+	Count  func(ctx context.Context, in *VideoCollectionCountReq) (*VideoCollectionCountRes, error)
+	One    func(ctx context.Context, in *VideoCollectionOneReq) (*VideoCollectionOneRes, error)
+	List   func(ctx context.Context, in *VideoCollectionListReq) (*VideoCollectionListRes, error)
+	Create func(ctx context.Context, in *VideoCollectionCreateReq) (*VideoCollectionCreateRes, error)
+	Update func(ctx context.Context, in *VideoCollectionUpdateReq) (*VideoCollectionUpdateRes, error)
+	Upsert func(ctx context.Context, in *VideoCollectionUpsertReq) (*VideoCollectionUpsertRes, error)
+	Delete func(ctx context.Context, in *VideoCollectionDeleteReq) (*VideoCollectionDeleteRes, error)
 }
 
 func (c *VideoCollectionClientImpl) GetDubboStub(cc *triple.TripleConn) VideoCollectionClient {
@@ -48,7 +56,7 @@ func (c *VideoCollectionClientImpl) GetDubboStub(cc *triple.TripleConn) VideoCol
 }
 
 func (c *VideoCollectionClientImpl) XXX_InterfaceName() string {
-	return "com.github.wesleywu.ri_service_provider.VideoCollection"
+	return "VideoCollection"
 }
 
 func NewVideoCollectionClient(cc *triple.TripleConn) VideoCollectionClient {
@@ -73,6 +81,30 @@ func (c *videoCollectionClient) List(ctx context.Context, in *VideoCollectionLis
 	return out, c.cc.Invoke(ctx, "/"+interfaceKey+"/List", in, out)
 }
 
+func (c *videoCollectionClient) Create(ctx context.Context, in *VideoCollectionCreateReq, opts ...grpc_go.CallOption) (*VideoCollectionCreateRes, common.ErrorWithAttachment) {
+	out := new(VideoCollectionCreateRes)
+	interfaceKey := ctx.Value(constant.InterfaceKey).(string)
+	return out, c.cc.Invoke(ctx, "/"+interfaceKey+"/Create", in, out)
+}
+
+func (c *videoCollectionClient) Update(ctx context.Context, in *VideoCollectionUpdateReq, opts ...grpc_go.CallOption) (*VideoCollectionUpdateRes, common.ErrorWithAttachment) {
+	out := new(VideoCollectionUpdateRes)
+	interfaceKey := ctx.Value(constant.InterfaceKey).(string)
+	return out, c.cc.Invoke(ctx, "/"+interfaceKey+"/Update", in, out)
+}
+
+func (c *videoCollectionClient) Upsert(ctx context.Context, in *VideoCollectionUpsertReq, opts ...grpc_go.CallOption) (*VideoCollectionUpsertRes, common.ErrorWithAttachment) {
+	out := new(VideoCollectionUpsertRes)
+	interfaceKey := ctx.Value(constant.InterfaceKey).(string)
+	return out, c.cc.Invoke(ctx, "/"+interfaceKey+"/Upsert", in, out)
+}
+
+func (c *videoCollectionClient) Delete(ctx context.Context, in *VideoCollectionDeleteReq, opts ...grpc_go.CallOption) (*VideoCollectionDeleteRes, common.ErrorWithAttachment) {
+	out := new(VideoCollectionDeleteRes)
+	interfaceKey := ctx.Value(constant.InterfaceKey).(string)
+	return out, c.cc.Invoke(ctx, "/"+interfaceKey+"/Delete", in, out)
+}
+
 // VideoCollectionServer is the server API for VideoCollection service.
 // All implementations must embed UnimplementedVideoCollectionServer
 // for forward compatibility
@@ -80,6 +112,10 @@ type VideoCollectionServer interface {
 	Count(context.Context, *VideoCollectionCountReq) (*VideoCollectionCountRes, error)
 	One(context.Context, *VideoCollectionOneReq) (*VideoCollectionOneRes, error)
 	List(context.Context, *VideoCollectionListReq) (*VideoCollectionListRes, error)
+	Create(context.Context, *VideoCollectionCreateReq) (*VideoCollectionCreateRes, error)
+	Update(context.Context, *VideoCollectionUpdateReq) (*VideoCollectionUpdateRes, error)
+	Upsert(context.Context, *VideoCollectionUpsertReq) (*VideoCollectionUpsertRes, error)
+	Delete(context.Context, *VideoCollectionDeleteReq) (*VideoCollectionDeleteRes, error)
 	mustEmbedUnimplementedVideoCollectionServer()
 }
 
@@ -97,6 +133,18 @@ func (UnimplementedVideoCollectionServer) One(context.Context, *VideoCollectionO
 func (UnimplementedVideoCollectionServer) List(context.Context, *VideoCollectionListReq) (*VideoCollectionListRes, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method List not implemented")
 }
+func (UnimplementedVideoCollectionServer) Create(context.Context, *VideoCollectionCreateReq) (*VideoCollectionCreateRes, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Create not implemented")
+}
+func (UnimplementedVideoCollectionServer) Update(context.Context, *VideoCollectionUpdateReq) (*VideoCollectionUpdateRes, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Update not implemented")
+}
+func (UnimplementedVideoCollectionServer) Upsert(context.Context, *VideoCollectionUpsertReq) (*VideoCollectionUpsertRes, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Upsert not implemented")
+}
+func (UnimplementedVideoCollectionServer) Delete(context.Context, *VideoCollectionDeleteReq) (*VideoCollectionDeleteRes, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Delete not implemented")
+}
 func (s *UnimplementedVideoCollectionServer) XXX_SetProxyImpl(impl protocol.Invoker) {
 	s.proxyImpl = impl
 }
@@ -109,7 +157,7 @@ func (s *UnimplementedVideoCollectionServer) XXX_ServiceDesc() *grpc_go.ServiceD
 	return &VideoCollection_ServiceDesc
 }
 func (s *UnimplementedVideoCollectionServer) XXX_InterfaceName() string {
-	return "com.github.wesleywu.ri_service_provider.VideoCollection"
+	return "VideoCollection"
 }
 
 func (UnimplementedVideoCollectionServer) mustEmbedUnimplementedVideoCollectionServer() {}
@@ -212,144 +260,7 @@ func _VideoCollection_List_Handler(srv interface{}, ctx context.Context, dec fun
 	return interceptor(ctx, in, info, handler)
 }
 
-// VideoCollection_ServiceDesc is the grpc_go.ServiceDesc for VideoCollection service.
-// It's only intended for direct use with grpc_go.RegisterService,
-// and not to be introspected or modified (even as a copy)
-var VideoCollection_ServiceDesc = grpc_go.ServiceDesc{
-	ServiceName: "com.github.wesleywu.ri_service_provider.VideoCollection",
-	HandlerType: (*VideoCollectionServer)(nil),
-	Methods: []grpc_go.MethodDesc{
-		{
-			MethodName: "Count",
-			Handler:    _VideoCollection_Count_Handler,
-		},
-		{
-			MethodName: "One",
-			Handler:    _VideoCollection_One_Handler,
-		},
-		{
-			MethodName: "List",
-			Handler:    _VideoCollection_List_Handler,
-		},
-	},
-	Streams:  []grpc_go.StreamDesc{},
-	Metadata: "video_collection.proto",
-}
-
-// VideoCollectionRepoClient is the client API for VideoCollectionRepo service.
-//
-// For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
-type VideoCollectionRepoClient interface {
-	Create(ctx context.Context, in *VideoCollectionCreateReq, opts ...grpc_go.CallOption) (*VideoCollectionCreateRes, common.ErrorWithAttachment)
-	Update(ctx context.Context, in *VideoCollectionUpdateReq, opts ...grpc_go.CallOption) (*VideoCollectionUpdateRes, common.ErrorWithAttachment)
-	Upsert(ctx context.Context, in *VideoCollectionUpsertReq, opts ...grpc_go.CallOption) (*VideoCollectionUpsertRes, common.ErrorWithAttachment)
-	Delete(ctx context.Context, in *VideoCollectionDeleteReq, opts ...grpc_go.CallOption) (*VideoCollectionDeleteRes, common.ErrorWithAttachment)
-}
-
-type videoCollectionRepoClient struct {
-	cc *triple.TripleConn
-}
-
-type VideoCollectionRepoClientImpl struct {
-	Create func(ctx context.Context, in *VideoCollectionCreateReq) (*VideoCollectionCreateRes, error)
-	Update func(ctx context.Context, in *VideoCollectionUpdateReq) (*VideoCollectionUpdateRes, error)
-	Upsert func(ctx context.Context, in *VideoCollectionUpsertReq) (*VideoCollectionUpsertRes, error)
-	Delete func(ctx context.Context, in *VideoCollectionDeleteReq) (*VideoCollectionDeleteRes, error)
-}
-
-func (c *VideoCollectionRepoClientImpl) GetDubboStub(cc *triple.TripleConn) VideoCollectionRepoClient {
-	return NewVideoCollectionRepoClient(cc)
-}
-
-func (c *VideoCollectionRepoClientImpl) XXX_InterfaceName() string {
-	return "com.github.wesleywu.ri_service_provider.VideoCollectionRepo"
-}
-
-func NewVideoCollectionRepoClient(cc *triple.TripleConn) VideoCollectionRepoClient {
-	return &videoCollectionRepoClient{cc}
-}
-
-func (c *videoCollectionRepoClient) Create(ctx context.Context, in *VideoCollectionCreateReq, opts ...grpc_go.CallOption) (*VideoCollectionCreateRes, common.ErrorWithAttachment) {
-	out := new(VideoCollectionCreateRes)
-	interfaceKey := ctx.Value(constant.InterfaceKey).(string)
-	return out, c.cc.Invoke(ctx, "/"+interfaceKey+"/Create", in, out)
-}
-
-func (c *videoCollectionRepoClient) Update(ctx context.Context, in *VideoCollectionUpdateReq, opts ...grpc_go.CallOption) (*VideoCollectionUpdateRes, common.ErrorWithAttachment) {
-	out := new(VideoCollectionUpdateRes)
-	interfaceKey := ctx.Value(constant.InterfaceKey).(string)
-	return out, c.cc.Invoke(ctx, "/"+interfaceKey+"/Update", in, out)
-}
-
-func (c *videoCollectionRepoClient) Upsert(ctx context.Context, in *VideoCollectionUpsertReq, opts ...grpc_go.CallOption) (*VideoCollectionUpsertRes, common.ErrorWithAttachment) {
-	out := new(VideoCollectionUpsertRes)
-	interfaceKey := ctx.Value(constant.InterfaceKey).(string)
-	return out, c.cc.Invoke(ctx, "/"+interfaceKey+"/Upsert", in, out)
-}
-
-func (c *videoCollectionRepoClient) Delete(ctx context.Context, in *VideoCollectionDeleteReq, opts ...grpc_go.CallOption) (*VideoCollectionDeleteRes, common.ErrorWithAttachment) {
-	out := new(VideoCollectionDeleteRes)
-	interfaceKey := ctx.Value(constant.InterfaceKey).(string)
-	return out, c.cc.Invoke(ctx, "/"+interfaceKey+"/Delete", in, out)
-}
-
-// VideoCollectionRepoServer is the server API for VideoCollectionRepo service.
-// All implementations must embed UnimplementedVideoCollectionRepoServer
-// for forward compatibility
-type VideoCollectionRepoServer interface {
-	Create(context.Context, *VideoCollectionCreateReq) (*VideoCollectionCreateRes, error)
-	Update(context.Context, *VideoCollectionUpdateReq) (*VideoCollectionUpdateRes, error)
-	Upsert(context.Context, *VideoCollectionUpsertReq) (*VideoCollectionUpsertRes, error)
-	Delete(context.Context, *VideoCollectionDeleteReq) (*VideoCollectionDeleteRes, error)
-	mustEmbedUnimplementedVideoCollectionRepoServer()
-}
-
-// UnimplementedVideoCollectionRepoServer must be embedded to have forward compatible implementations.
-type UnimplementedVideoCollectionRepoServer struct {
-	proxyImpl protocol.Invoker
-}
-
-func (UnimplementedVideoCollectionRepoServer) Create(context.Context, *VideoCollectionCreateReq) (*VideoCollectionCreateRes, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method Create not implemented")
-}
-func (UnimplementedVideoCollectionRepoServer) Update(context.Context, *VideoCollectionUpdateReq) (*VideoCollectionUpdateRes, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method Update not implemented")
-}
-func (UnimplementedVideoCollectionRepoServer) Upsert(context.Context, *VideoCollectionUpsertReq) (*VideoCollectionUpsertRes, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method Upsert not implemented")
-}
-func (UnimplementedVideoCollectionRepoServer) Delete(context.Context, *VideoCollectionDeleteReq) (*VideoCollectionDeleteRes, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method Delete not implemented")
-}
-func (s *UnimplementedVideoCollectionRepoServer) XXX_SetProxyImpl(impl protocol.Invoker) {
-	s.proxyImpl = impl
-}
-
-func (s *UnimplementedVideoCollectionRepoServer) XXX_GetProxyImpl() protocol.Invoker {
-	return s.proxyImpl
-}
-
-func (s *UnimplementedVideoCollectionRepoServer) XXX_ServiceDesc() *grpc_go.ServiceDesc {
-	return &VideoCollectionRepo_ServiceDesc
-}
-func (s *UnimplementedVideoCollectionRepoServer) XXX_InterfaceName() string {
-	return "com.github.wesleywu.ri_service_provider.VideoCollectionRepo"
-}
-
-func (UnimplementedVideoCollectionRepoServer) mustEmbedUnimplementedVideoCollectionRepoServer() {}
-
-// UnsafeVideoCollectionRepoServer may be embedded to opt out of forward compatibility for this service.
-// Use of this interface is not recommended, as added methods to VideoCollectionRepoServer will
-// result in compilation errors.
-type UnsafeVideoCollectionRepoServer interface {
-	mustEmbedUnimplementedVideoCollectionRepoServer()
-}
-
-func RegisterVideoCollectionRepoServer(s grpc_go.ServiceRegistrar, srv VideoCollectionRepoServer) {
-	s.RegisterService(&VideoCollectionRepo_ServiceDesc, srv)
-}
-
-func _VideoCollectionRepo_Create_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc_go.UnaryServerInterceptor) (interface{}, error) {
+func _VideoCollection_Create_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc_go.UnaryServerInterceptor) (interface{}, error) {
 	in := new(VideoCollectionCreateReq)
 	if err := dec(in); err != nil {
 		return nil, err
@@ -378,7 +289,7 @@ func _VideoCollectionRepo_Create_Handler(srv interface{}, ctx context.Context, d
 	return interceptor(ctx, in, info, handler)
 }
 
-func _VideoCollectionRepo_Update_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc_go.UnaryServerInterceptor) (interface{}, error) {
+func _VideoCollection_Update_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc_go.UnaryServerInterceptor) (interface{}, error) {
 	in := new(VideoCollectionUpdateReq)
 	if err := dec(in); err != nil {
 		return nil, err
@@ -407,7 +318,7 @@ func _VideoCollectionRepo_Update_Handler(srv interface{}, ctx context.Context, d
 	return interceptor(ctx, in, info, handler)
 }
 
-func _VideoCollectionRepo_Upsert_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc_go.UnaryServerInterceptor) (interface{}, error) {
+func _VideoCollection_Upsert_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc_go.UnaryServerInterceptor) (interface{}, error) {
 	in := new(VideoCollectionUpsertReq)
 	if err := dec(in); err != nil {
 		return nil, err
@@ -436,7 +347,7 @@ func _VideoCollectionRepo_Upsert_Handler(srv interface{}, ctx context.Context, d
 	return interceptor(ctx, in, info, handler)
 }
 
-func _VideoCollectionRepo_Delete_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc_go.UnaryServerInterceptor) (interface{}, error) {
+func _VideoCollection_Delete_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc_go.UnaryServerInterceptor) (interface{}, error) {
 	in := new(VideoCollectionDeleteReq)
 	if err := dec(in); err != nil {
 		return nil, err
@@ -465,28 +376,40 @@ func _VideoCollectionRepo_Delete_Handler(srv interface{}, ctx context.Context, d
 	return interceptor(ctx, in, info, handler)
 }
 
-// VideoCollectionRepo_ServiceDesc is the grpc_go.ServiceDesc for VideoCollectionRepo service.
+// VideoCollection_ServiceDesc is the grpc_go.ServiceDesc for VideoCollection service.
 // It's only intended for direct use with grpc_go.RegisterService,
 // and not to be introspected or modified (even as a copy)
-var VideoCollectionRepo_ServiceDesc = grpc_go.ServiceDesc{
-	ServiceName: "com.github.wesleywu.ri_service_provider.VideoCollectionRepo",
-	HandlerType: (*VideoCollectionRepoServer)(nil),
+var VideoCollection_ServiceDesc = grpc_go.ServiceDesc{
+	ServiceName: "VideoCollection",
+	HandlerType: (*VideoCollectionServer)(nil),
 	Methods: []grpc_go.MethodDesc{
 		{
+			MethodName: "Count",
+			Handler:    _VideoCollection_Count_Handler,
+		},
+		{
+			MethodName: "One",
+			Handler:    _VideoCollection_One_Handler,
+		},
+		{
+			MethodName: "List",
+			Handler:    _VideoCollection_List_Handler,
+		},
+		{
 			MethodName: "Create",
-			Handler:    _VideoCollectionRepo_Create_Handler,
+			Handler:    _VideoCollection_Create_Handler,
 		},
 		{
 			MethodName: "Update",
-			Handler:    _VideoCollectionRepo_Update_Handler,
+			Handler:    _VideoCollection_Update_Handler,
 		},
 		{
 			MethodName: "Upsert",
-			Handler:    _VideoCollectionRepo_Upsert_Handler,
+			Handler:    _VideoCollection_Upsert_Handler,
 		},
 		{
 			MethodName: "Delete",
-			Handler:    _VideoCollectionRepo_Delete_Handler,
+			Handler:    _VideoCollection_Delete_Handler,
 		},
 	},
 	Streams:  []grpc_go.StreamDesc{},

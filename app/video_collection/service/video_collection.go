@@ -16,9 +16,6 @@ type IVideoCollection interface {
 	Count(ctx context.Context, req *model.VideoCollectionCountReq) (*model.VideoCollectionCountRes, error)
 	One(ctx context.Context, req *model.VideoCollectionOneReq) (*model.VideoCollectionOneRes, error)
 	List(ctx context.Context, req *model.VideoCollectionListReq) (*model.VideoCollectionListRes, error)
-}
-
-type IVideoCollectionRepo interface {
 	Create(ctx context.Context, req *model.VideoCollectionCreateReq) (*model.VideoCollectionCreateRes, error)
 	Update(ctx context.Context, req *model.VideoCollectionUpdateReq) (*model.VideoCollectionUpdateRes, error)
 	Upsert(ctx context.Context, req *model.VideoCollectionUpsertReq) (*model.VideoCollectionUpsertRes, error)
@@ -29,13 +26,8 @@ type VideoCollectionImpl struct {
 	model.UnimplementedVideoCollectionServer
 }
 
-type VideoCollectionRepoImpl struct {
-	model.UnimplementedVideoCollectionRepoServer
-}
-
 var (
-	VideoCollection     IVideoCollection     = new(VideoCollectionImpl)
-	VideoCollectionRepo IVideoCollectionRepo = new(VideoCollectionRepoImpl)
+	VideoCollection IVideoCollection = new(VideoCollectionImpl)
 )
 
 // Count 根据req指定的查询条件获取记录列表
@@ -143,7 +135,7 @@ func (s *VideoCollectionImpl) One(ctx context.Context, req *model.VideoCollectio
 // Create 插入记录
 // 包括表中所有字段，支持字段类型自动转换，支持对非主键且可为空字段不赋值
 // 未赋值或赋值为nil的字段将被更新为 NULL 或数据库表指定的DEFAULT
-func (s *VideoCollectionRepoImpl) Create(ctx context.Context, req *model.VideoCollectionCreateReq) (*model.VideoCollectionCreateRes, error) {
+func (s *VideoCollectionImpl) Create(ctx context.Context, req *model.VideoCollectionCreateReq) (*model.VideoCollectionCreateRes, error) {
 	var (
 		result       sql.Result
 		lastInsertId int64
@@ -185,7 +177,7 @@ func (s *VideoCollectionRepoImpl) Create(ctx context.Context, req *model.VideoCo
 // Update 根据主键更新对应记录
 // 支持字段类型自动转换，支持对非主键字段赋值/不赋值
 // 未赋值或赋值为nil的字段不参与更新（即不会修改原记录的字段值）
-func (s *VideoCollectionRepoImpl) Update(ctx context.Context, req *model.VideoCollectionUpdateReq) (*model.VideoCollectionUpdateRes, error) {
+func (s *VideoCollectionImpl) Update(ctx context.Context, req *model.VideoCollectionUpdateReq) (*model.VideoCollectionUpdateRes, error) {
 	var (
 		result       sql.Result
 		rowsAffected int64
@@ -222,7 +214,7 @@ func (s *VideoCollectionRepoImpl) Update(ctx context.Context, req *model.VideoCo
 // Upsert 根据主键（或唯一索引）是否存在且已在req中赋值，更新或插入对应记录。
 // 支持字段类型自动转换，支持对非主键字段赋值/不赋值
 // 未赋值或赋值为nil的字段不参与更新/插入（即更新时不会修改原记录的字段值）
-func (s *VideoCollectionRepoImpl) Upsert(ctx context.Context, req *model.VideoCollectionUpsertReq) (*model.VideoCollectionUpsertRes, error) {
+func (s *VideoCollectionImpl) Upsert(ctx context.Context, req *model.VideoCollectionUpsertReq) (*model.VideoCollectionUpsertRes, error) {
 	var (
 		result       sql.Result
 		lastInsertId int64
@@ -265,7 +257,7 @@ func (s *VideoCollectionRepoImpl) Upsert(ctx context.Context, req *model.VideoCo
 
 // Delete 根据req指定的条件删除表中记录
 // 未赋值或或赋值为nil的字段不参与条件查询
-func (s *VideoCollectionRepoImpl) Delete(ctx context.Context, req *model.VideoCollectionDeleteReq) (*model.VideoCollectionDeleteRes, error) {
+func (s *VideoCollectionImpl) Delete(ctx context.Context, req *model.VideoCollectionDeleteReq) (*model.VideoCollectionDeleteRes, error) {
 	var (
 		result       sql.Result
 		rowsAffected int64

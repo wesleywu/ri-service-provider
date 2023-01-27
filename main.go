@@ -42,16 +42,13 @@ func main() {
 				Address:   registryAddress,
 				Namespace: registryNamespace,
 			}, &dubbogo.ProviderInfo{
-				Protocol: "tri",
-				Port:     port,
+				ApplicationName: "repo_service",
+				Protocol:        "tri",
+				Port:            port,
 				Services: []dubbogo.ServiceInfo{
 					{
 						ServerImplStructName: "VideoCollectionImpl",
 						Service:              service.VideoCollection,
-					},
-					{
-						ServerImplStructName: "VideoCollectionRepoImpl",
-						Service:              service.VideoCollectionRepo,
 					},
 				},
 			}, &dubbogo.LoggerOption{

@@ -3,7 +3,7 @@ package dubbogo
 import "dubbo.apache.org/dubbo-go/v3/common"
 
 type Registry struct {
-	Id        string // 注册中心的ID，随便去，
+	Id        string // 注册中心的ID，随便取，
 	Type      string // 注册中心类型，例如 nacos
 	Address   string // 注册中心地址，例如 ip:port
 	Namespace string // 仅当注册中心协议为 nacos 时有效
@@ -23,6 +23,7 @@ type ConsumerOption struct {
 }
 
 type ProviderInfo struct {
+	ApplicationName   string        // 应用名称（不支持中文）
 	Protocol          string        // 协议，当前只支持 "tri"
 	Port              int           // 侦听的端口号
 	IP                string        // 不建议指定，如果要绑定运行的IP，可指定

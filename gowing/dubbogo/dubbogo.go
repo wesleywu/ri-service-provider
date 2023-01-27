@@ -17,29 +17,6 @@ func StartProvider(_ context.Context, registry *Registry, provider *ProviderInfo
 		return gerror.New("需要指定大于100的 port 参数，建议20000以上，不能和其他服务重复")
 	}
 
-	providerConfigBuilder := config.NewProviderConfigBuilder()
-	for _, service := range provider.Services {
-		config.SetProviderService(service.Service)
-		providerConfigBuilder.AddService(service.ServerImplStructName,
-			config.NewServiceConfigBuilder().SetInterface("").Build())
-	}
-	providerConfigBuilder.SetFilter("InputValidationFilter")
-
-	if provider.ShutdownCallbacks != nil {
-		extension.AddCustomShutdownCallback(func() {
-			for _, callback := range provider.ShutdownCallbacks {
-				callback()
-			}
-		})
-	}
-
-	registryConfigBuilder := config.NewRegistryConfigBuilder().
-		SetProtocol(registry.Type).
-		SetAddress(registry.Address)
-	if registry.Type == "nacos" && !g.IsEmpty(registry.Namespace) {
-		registryConfigBuilder = registryConfigBuilder.SetNamespace(registry.Namespace)
-	}
-
 	var (
 		loggerOutputPaths      []string
 		loggerErrorOutputPaths []string
@@ -53,12 +30,29 @@ func StartProvider(_ context.Context, registry *Registry, provider *ProviderInfo
 		loggerErrorOutputPaths = []string{logger.LogDir}
 	}
 
+	// application config
+	applicationBuilder := config.NewApplicationConfigBuilder()
+	applicationBuilder.SetName(provider.ApplicationName)
+
+	// registry config
+	registryConfigBuilder := config.NewRegistryConfigBuilder().
+		SetProtocol(registry.Type).
+		SetAddress(registry.Address)
+	if registry.Type == "nacos" && !g.IsEmpty(registry.Namespace) {
+		registryConfigBuilder = registryConfigBuilder.SetNamespace(registry.Namespace)
+	}
 	registryConfigBuilder.SetParams(map[string]string{
 		constant.NacosLogDirKey:   logger.LogDir,
 		constant.NacosCacheDirKey: logger.LogDir,
 		constant.NacosLogLevelKey: logger.Level,
 	})
 
+	// metadata report config
+	metadataReportConfigBuilder := config.NewMetadataReportConfigBuilder().
+		SetProtocol(registry.Type).
+		SetAddress(registry.Address)
+
+	// protocol config
 	protocolConfigBuilder := config.NewProtocolConfigBuilder().
 		SetName(provider.Protocol).
 		SetPort(gconv.String(provider.Port))
@@ -66,24 +60,43 @@ func StartProvider(_ context.Context, registry *Registry, provider *ProviderInfo
 		protocolConfigBuilder = protocolConfigBuilder.SetIp(provider.IP)
 	}
 
+	// provider config
+	providerConfigBuilder := config.NewProviderConfigBuilder()
+	for _, service := range provider.Services {
+		config.SetProviderService(service.Service)
+		providerConfigBuilder.AddService(service.ServerImplStructName,
+			config.NewServiceConfigBuilder().SetInterface("").Build())
+	}
+	providerConfigBuilder.SetFilter("InputValidationFilter")
+
+	// shutdown callbacks
+	if provider.ShutdownCallbacks != nil {
+		extension.AddCustomShutdownCallback(func() {
+			for _, callback := range provider.ShutdownCallbacks {
+				callback()
+			}
+		})
+	}
+
+	// logger config
+	loggerConfigBuilder := config.NewLoggerConfigBuilder()
+	loggerConfigBuilder.SetZapConfig(config.ZapConfig{
+		Level:            logger.Level,
+		Development:      logger.Development,
+		OutputPaths:      loggerOutputPaths,
+		ErrorOutputPaths: loggerErrorOutputPaths,
+	})
+	loggerConfigBuilder.SetLumberjackConfig(&lumberjack.Logger{
+		Filename: path.Join(logger.LogDir, logger.LogFileName),
+	})
+
 	rootConfig := config.NewRootConfigBuilder().
-		SetApplication(config.NewApplicationConfigBuilder().SetName("GowingService").Build()).
-		SetProvider(providerConfigBuilder.Build()).
+		SetApplication(applicationBuilder.Build()).
 		AddRegistry(registry.Id, registryConfigBuilder.Build()).
-		SetMetadataReport(config.NewMetadataReportConfigBuilder().
-			SetProtocol(registry.Type).
-			SetAddress(registry.Address).Build()).
-		SetLogger(config.NewLoggerConfigBuilder().
-			SetZapConfig(config.ZapConfig{
-				Level:            logger.Level,
-				Development:      logger.Development,
-				OutputPaths:      loggerOutputPaths,
-				ErrorOutputPaths: loggerErrorOutputPaths,
-			}).
-			SetLumberjackConfig(&lumberjack.Logger{
-				Filename: path.Join(logger.LogDir, logger.LogFileName),
-			}).Build()).
+		SetMetadataReport(metadataReportConfigBuilder.Build()).
 		AddProtocol("tripleKey", protocolConfigBuilder.Build()).
+		SetProvider(providerConfigBuilder.Build()).
+		SetLogger(loggerConfigBuilder.Build()).
 		Build()
 	if err := config.Load(config.WithRootConfig(rootConfig)); err != nil {
 		return err

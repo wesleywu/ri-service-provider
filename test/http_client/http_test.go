@@ -26,9 +26,9 @@ import (
 )
 
 func TestCreate(t *testing.T) {
-	url := "http://localhost:8888/GowingService/com.github.wesleywu.ri_service_provider.VideoCollectionRepo/Create"
+	url := "http://localhost:8888/repo_service/VideoCollection/Create"
 	data := `{
-			"id": "01186883-7698",
+			"id": "01186883-7700",
 			"name": "44444",
 			"contentType": 9,
 			"filterType": 9,
@@ -50,11 +50,11 @@ func TestCreate(t *testing.T) {
 }
 
 func TestUpdate(t *testing.T) {
-	url := "http://localhost:8888/GowingService/com.github.wesleywu.ri_service_provider.VideoCollectionRepo/Update"
+	url := "http://localhost:8888/repo_service/VideoCollection/Update"
 	data := `{
 				"id": "01186883-7698",
-				"name": "你好啊",
-				"isOnline": "true"
+				"name": "每日推荐视频集合",
+				"isOnline": "false"
 			}`
 	client := &http.Client{Timeout: 500 * time.Second}
 	req, err := http.NewRequest("POST", url, strings.NewReader(data))
