@@ -18,12 +18,94 @@
 package test
 
 import (
+	"fmt"
+	"github.com/WesleyWu/ri-service-provider/gowing/util/httpclient"
+	"github.com/gogf/gf/v2/encoding/gjson"
+	"github.com/gogf/gf/v2/os/gctx"
 	"github.com/stretchr/testify/assert"
 	"net/http"
-	"strings"
 	"testing"
-	"time"
 )
+
+var (
+	ctx           = gctx.New()
+	client        = httpclient.New(100)
+	commonHeaders = &http.Header{
+		"Content-Type":                  []string{"application/json"},
+		"x-dubbo-http1.1-dubbo-version": []string{"1.0.0"},
+		"x-dubbo-service-protocol":      []string{"triple"},
+	}
+)
+
+func TestListBySingleValue(t *testing.T) {
+	url := "http://localhost:8888/repo_service/VideoCollection/List"
+	data := `{
+				"name": {
+					"@type":"type.googleapis.com/google.protobuf.StringValue",
+					"value":"视频推荐"
+				},
+				"isOnline": {
+					"@type":"type.googleapis.com/google.protobuf.BoolValue",
+					"value":false
+				}
+			}`
+
+	resp, err := client.DoPostWithHeaders(ctx, url, commonHeaders, data, 0)
+	assert.NoError(t, err)
+	assert.NotNil(t, resp)
+	assert.Equal(t, 200, resp.StatusCode)
+	respJson, err := gjson.DecodeToJson(resp.Body)
+	assert.NoError(t, err)
+	fmt.Println(resp.Body)
+	assert.Equal(t, 1, respJson.Get("total").Int())
+}
+
+func TestListBySliceValue(t *testing.T) {
+	url := "http://localhost:8888/repo_service/VideoCollection/List"
+	data := `{
+				"name": {
+					"@type":"type.googleapis.com/gowing.protobuf.StringSlice",
+					"value":["视频推荐","腾讯视频推荐"]
+				},
+				"isOnline": {
+					"@type":"type.googleapis.com/gowing.protobuf.BoolSlice",
+					"value":[true, false]
+				}
+			}`
+	resp, err := client.DoPostWithHeaders(ctx, url, commonHeaders, data, 0)
+	assert.NoError(t, err)
+	assert.NotNil(t, resp)
+	assert.Equal(t, 200, resp.StatusCode)
+	assert.NoError(t, err)
+	respJson, err := gjson.DecodeToJson(resp.Body)
+	assert.NoError(t, err)
+	fmt.Println(resp.Body)
+	assert.Equal(t, 2, respJson.Get("total").Int())
+}
+
+func TestListByCondition(t *testing.T) {
+	url := "http://localhost:8888/repo_service/VideoCollection/List"
+	data := `{
+				"name": {
+					"@type":"type.googleapis.com/gowing.protobuf.Condition",
+					"operator": "Like",
+					"wildcard": "StartsWith",
+					"value": {
+						"@type":"type.googleapis.com/google.protobuf.StringValue",
+						"value":"每日"
+					}
+				}
+			}`
+	resp, err := client.DoPostWithHeaders(ctx, url, commonHeaders, data, 0)
+	assert.NoError(t, err)
+	assert.NotNil(t, resp)
+	assert.Equal(t, 200, resp.StatusCode)
+	assert.NoError(t, err)
+	respJson, err := gjson.DecodeToJson(resp.Body)
+	assert.NoError(t, err)
+	fmt.Println(resp.Body)
+	assert.Equal(t, 4, respJson.Get("total").Int())
+}
 
 func TestCreate(t *testing.T) {
 	url := "http://localhost:8888/repo_service/VideoCollection/Create"
@@ -35,15 +117,7 @@ func TestCreate(t *testing.T) {
 			"count": 1234,
 			"isOnline": "false"
 		}`
-	client := &http.Client{Timeout: 500 * time.Second}
-	req, err := http.NewRequest("POST", url, strings.NewReader(data))
-	assert.NoError(t, err)
-	req.Header.Add("Content-Type", "application/json")
-	req.Header.Set("x-dubbo-http1.1-dubbo-version", "1.0.0")
-	req.Header.Set("x-dubbo-service-protocol", "triple")
-	req.Header.Set("x-dubbo-service-version", "1.0.0")
-	req.Header.Set("x-dubbo-service-group", "test")
-	resp, err := client.Do(req)
+	resp, err := client.DoPostWithHeaders(ctx, url, commonHeaders, data, 0)
 	assert.NoError(t, err)
 	assert.NotNil(t, resp)
 	assert.Equal(t, 200, resp.StatusCode)
@@ -56,15 +130,7 @@ func TestUpdate(t *testing.T) {
 				"name": "每日推荐视频集合",
 				"isOnline": "false"
 			}`
-	client := &http.Client{Timeout: 500 * time.Second}
-	req, err := http.NewRequest("POST", url, strings.NewReader(data))
-	assert.NoError(t, err)
-	req.Header.Add("Content-Type", "application/json")
-	req.Header.Set("x-dubbo-http1.1-dubbo-version", "1.0.0")
-	req.Header.Set("x-dubbo-service-protocol", "triple")
-	req.Header.Set("x-dubbo-service-version", "1.0.0")
-	req.Header.Set("x-dubbo-service-group", "test")
-	resp, err := client.Do(req)
+	resp, err := client.DoPostWithHeaders(ctx, url, commonHeaders, data, 0)
 	assert.NoError(t, err)
 	assert.NotNil(t, resp)
 	assert.Equal(t, 200, resp.StatusCode)

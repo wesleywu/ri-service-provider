@@ -9,6 +9,7 @@ import "google/protobuf/timestamp.proto";
 import "google/protobuf/any.proto";
 import "tagger/tagger.proto";
 import "goframe.proto";
+import "types.proto";
 
 service VideoCollection {
   rpc Count (VideoCollectionCountReq) returns (VideoCollectionCountRes){}
@@ -75,7 +76,7 @@ message VideoCollectionListReq {
 message VideoCollectionListRes {
   int32 total = 1 [(tagger.tags) = "json:\"total\""];
   int32 current = 2 [(tagger.tags) = "json:\"current\""];
-  repeated VideoCollectionItem items = 3;
+  repeated VideoCollectionItem items = 3 [(tagger.tags) = "json:\"items\""];
 }
 
 message VideoCollectionItem {

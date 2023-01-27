@@ -46,9 +46,12 @@ func New(timeSeconds int) *Client {
 }
 
 func init() {
-	timeSeconds := g.Cfg().MustGet(gctx.New(), "httpclient.timeoutSeconds").Int()
-	if timeSeconds <= 0 {
-		timeSeconds = 10
+	var timeSeconds = 10
+	if timeSecondsVar, err := g.Cfg().Get(gctx.New(), "httpclient.timeoutSeconds"); err == nil {
+		timeSeconds = timeSecondsVar.Int()
+		if timeSeconds <= 0 {
+			timeSeconds = 10
+		}
 	}
 	DefaultClient = New(timeSeconds)
 }
@@ -80,7 +83,7 @@ func (c *Client) Exec(ctx context.Context, request *HttpRequest) (result *HttpRe
 		retryCount = 1000
 	}
 
-	for i := 0; i < retryCount; i++ {
+	for i := 0; i <= retryCount; i++ {
 		result, err = execRequest(ctx, c.HttpClient, req)
 		if err == nil {
 			return

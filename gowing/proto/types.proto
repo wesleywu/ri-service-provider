@@ -3,7 +3,7 @@ syntax = "proto3";
 package gowing.protobuf;
 
 option csharp_namespace = "Gowing.Protobuf.WellKnownTypes";
-option go_package = "gowing/gwtypes";
+option go_package = "github.com/WesleyWu/ri-service-provider/gowing/gwtypes";
 option java_package = "gowing.protobuf";
 option java_outer_classname = "WrappersProto";
 option java_multiple_files = true;

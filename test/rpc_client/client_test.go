@@ -3,6 +3,7 @@ package rpc_client
 import (
 	"context"
 	_ "dubbo.apache.org/dubbo-go/v3/imports"
+	"fmt"
 	"github.com/WesleyWu/ri-service-provider/app/video_collection/model"
 	"github.com/WesleyWu/ri-service-provider/gowing/dubbogo"
 	"github.com/WesleyWu/ri-service-provider/gowing/gwtypes"
@@ -26,7 +27,7 @@ func init() {
 }
 
 func TestCount(t *testing.T) {
-	res, err := videoCollectionClient.Count(ctx, &model.VideoCollectionCountReq{
+	req := &model.VideoCollectionCountReq{
 		Id:          nil,
 		Name:        gwtypes.AnyString("推荐视频集"),
 		ContentType: gwtypes.AnyUInt32Slice([]uint32{1, 2}),
@@ -35,16 +36,18 @@ func TestCount(t *testing.T) {
 		IsOnline:    nil,
 		CreatedAt:   nil,
 		UpdatedAt:   nil,
-	})
+	}
+	fmt.Println(gjson.MustEncodeString(req))
+	res, err := videoCollectionClient.Count(ctx, req)
 	if err != nil {
 		panic(err)
 	}
-	g.Log().Infof(ctx, gjson.MustEncodeString(res))
+	fmt.Println(gjson.MustEncodeString(res))
 	assert.Equal(t, int32(2), res.Total)
 }
 
 func TestList(t *testing.T) {
-	res, err := videoCollectionClient.List(ctx, &model.VideoCollectionListReq{
+	req := &model.VideoCollectionListReq{
 		Id:          nil,
 		Name:        gwtypes.AnyCondition(gwtypes.OperatorType_Like, gwtypes.MultiType_Exact, gwtypes.WildcardType_Contains, gwtypes.AnyString("每日")),
 		ContentType: gwtypes.AnyUInt32Slice([]uint32{1, 2}),
@@ -53,12 +56,14 @@ func TestList(t *testing.T) {
 		IsOnline:    nil,
 		CreatedAt:   nil,
 		UpdatedAt:   nil,
-	})
+	}
+	fmt.Println(gjson.MustEncodeString(req))
+	res, err := videoCollectionClient.List(ctx, req)
 	if err != nil {
 		panic(err)
 	}
 	assert.Equal(t, int32(1), res.Total)
-	g.Log().Infof(ctx, gjson.MustEncodeString(res))
+	fmt.Println(gjson.MustEncodeString(res))
 }
 
 func TestCreate(t *testing.T) {
