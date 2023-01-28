@@ -62,7 +62,7 @@ func TestList(t *testing.T) {
 	if err != nil {
 		panic(err)
 	}
-	assert.Equal(t, int32(1), res.Total)
+	assert.Equal(t, int32(1), *res.Total)
 	fmt.Println(gjson.MustEncodeString(res))
 }
 

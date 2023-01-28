@@ -68,6 +68,7 @@ func StartProvider(_ context.Context, registry *Registry, provider *ProviderInfo
 			config.NewServiceConfigBuilder().SetInterface("").Build())
 	}
 	providerConfigBuilder.SetFilter("InputValidationFilter")
+	providerConfigBuilder.SetFilter("CacheFilter")
 
 	// shutdown callbacks
 	if provider.ShutdownCallbacks != nil {

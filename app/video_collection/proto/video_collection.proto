@@ -68,8 +68,8 @@ message VideoCollectionListReq {
   google.protobuf.Any  isOnline = 6;
   google.protobuf.Any  createdAt = 7;
   google.protobuf.Any  updatedAt = 8;
-  uint32 page = 9;
-  uint32 pageSize = 10;
+  uint32 page = 9 [(tagger.tags) = "d:\"1\""];
+  uint32 pageSize = 10 [(tagger.tags) = "d:\"10\""];
   string orderBy = 11;
 }
 

@@ -42,7 +42,7 @@ func ParseConditions(ctx context.Context, req interface{}, columnMap map[string]
 		return m, errors.NewBadRequestErrorf(req, "服务函数的输入参数必须是结构体指针")
 	}
 	t := p.Elem()
-	g.Log().Debugf(ctx, "kind of input parameter is %s", t.Name())
+	//g.Log().Debugf(ctx, "kind of input parameter is %s", t.Name())
 
 	queryValue := reflect.ValueOf(req).Elem()
 
@@ -58,7 +58,7 @@ func ParseConditions(ctx context.Context, req interface{}, columnMap map[string]
 			continue
 		}
 		fieldType := field.Type
-		g.Log().Debugf(ctx, "kind of field \"%s\" is %s", fieldName, field.Type.Kind().String())
+		//g.Log().Debugf(ctx, "kind of field \"%s\" is %s", fieldName, field.Type.Kind().String())
 		switch fieldType.Kind() {
 		case reflect.Ptr:
 			columnName, exists := columnMap[fieldName]
@@ -66,7 +66,7 @@ func ParseConditions(ctx context.Context, req interface{}, columnMap map[string]
 				continue
 			}
 			fieldElemType := fieldType.Elem()
-			g.Log().Debugf(ctx, "kind of element of field %s is %s", fieldName, fieldElemType.Kind().String())
+			//g.Log().Debugf(ctx, "kind of element of field %s is %s", fieldName, fieldElemType.Kind().String())
 			if fieldElemType == reflect.TypeOf(anypb.Any{}) {
 				anyValue := queryValue.Field(i).Interface().(*anypb.Any)
 				if anyValue != nil {
