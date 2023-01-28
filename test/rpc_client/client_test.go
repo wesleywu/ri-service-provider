@@ -10,6 +10,7 @@ import (
 	"github.com/gogf/gf/v2/encoding/gjson"
 	"github.com/gogf/gf/v2/frame/g"
 	"github.com/gogf/gf/v2/os/gctx"
+	"github.com/gogf/gf/v2/os/gtime"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )
@@ -64,6 +65,36 @@ func TestList(t *testing.T) {
 	}
 	assert.Equal(t, int32(1), *res.Total)
 	fmt.Println(gjson.MustEncodeString(res))
+}
+
+func TestListBenchmark(t *testing.T) {
+	req := &model.VideoCollectionListReq{
+		Id:          nil,
+		Name:        gwtypes.AnyCondition(gwtypes.OperatorType_Like, gwtypes.MultiType_Exact, gwtypes.WildcardType_Contains, gwtypes.AnyString("每日")),
+		ContentType: gwtypes.AnyUInt32Slice([]uint32{1, 2}),
+		FilterType:  nil,
+		Count:       gwtypes.AnyCondition(gwtypes.OperatorType_GT, gwtypes.MultiType_Exact, gwtypes.WildcardType_None, gwtypes.AnyUInt32(1)),
+		IsOnline:    nil,
+		CreatedAt:   nil,
+		UpdatedAt:   nil,
+	}
+	fmt.Println(gjson.MustEncodeString(req))
+	timeStart := gtime.Now()
+	benchCount := 10000
+	for i := 0; i < benchCount; i++ {
+		res, err := videoCollectionClient.List(ctx, req)
+		if err != nil {
+			panic(err)
+		}
+		assert.Equal(t, int32(1), *res.Total)
+		if (i+1)%1000 == 0 {
+			g.Log().Infof(ctx, "called %d times", i+1)
+		}
+	}
+	timeEnd := gtime.Now()
+	millisElapsed := timeEnd.UnixMilli() - timeStart.UnixMilli()
+	cps := float64(benchCount) * 1000 / float64(millisElapsed)
+	g.Log().Infof(ctx, "RPC Calls per seconds for VideoCollection.List: %.2f", cps)
 }
 
 func TestCreate(t *testing.T) {
