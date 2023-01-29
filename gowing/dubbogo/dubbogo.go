@@ -67,8 +67,7 @@ func StartProvider(_ context.Context, registry *Registry, provider *ProviderInfo
 		providerConfigBuilder.AddService(service.ServerImplStructName,
 			config.NewServiceConfigBuilder().SetInterface("").Build())
 	}
-	providerConfigBuilder.SetFilter("InputValidationFilter")
-	providerConfigBuilder.SetFilter("CacheFilter")
+	providerConfigBuilder.SetFilter("echo, metrics, token, accesslog, tps, pshutdown, tracing, otelServerTrace, validation, cache")
 
 	// shutdown callbacks
 	if provider.ShutdownCallbacks != nil {

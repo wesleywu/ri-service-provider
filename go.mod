@@ -4,10 +4,13 @@ go 1.19
 
 require (
 	dubbo.apache.org/dubbo-go/v3 v3.0.4-rc1
+	github.com/bsm/redislock v0.7.2
 	github.com/dubbogo/grpc-go v1.42.10
 	github.com/dubbogo/triple v1.2.2-rc2
+	github.com/go-redis/redis/v8 v8.11.5
 	github.com/go-sql-driver/mysql v1.6.0
 	github.com/gogf/gf/contrib/drivers/mysql/v2 v2.3.0
+	github.com/gogf/gf/contrib/trace/jaeger/v2 v2.3.1
 	github.com/gogf/gf/v2 v2.3.0
 	github.com/natefinch/lumberjack v2.0.0+incompatible
 	github.com/srikrsna/protoc-gen-gotag v0.6.2
@@ -20,7 +23,6 @@ require (
 	contrib.go.opencensus.io/exporter/prometheus v0.4.1 // indirect
 	github.com/BurntSushi/toml v1.1.0 // indirect
 	github.com/RoaringBitmap/roaring v1.2.0 // indirect
-	github.com/WesleyWu/gf-cache v0.0.6 // indirect
 	github.com/Workiva/go-datastructures v1.0.52 // indirect
 	github.com/afex/hystrix-go v0.0.0-20180502004556-fa1af6a1f4f5 // indirect
 	github.com/alibaba/sentinel-golang v1.0.4 // indirect
@@ -29,7 +31,6 @@ require (
 	github.com/apache/dubbo-go-hessian2 v1.11.4 // indirect
 	github.com/beorn7/perks v1.0.1 // indirect
 	github.com/bits-and-blooms/bitset v1.2.0 // indirect
-	github.com/bsm/redislock v0.7.2 // indirect
 	github.com/buger/jsonparser v1.1.1 // indirect
 	github.com/census-instrumentation/opencensus-proto v0.2.1 // indirect
 	github.com/cespare/xxhash/v2 v2.1.2 // indirect
@@ -59,7 +60,6 @@ require (
 	github.com/go-playground/locales v0.14.0 // indirect
 	github.com/go-playground/universal-translator v0.18.0 // indirect
 	github.com/go-playground/validator/v10 v10.11.0 // indirect
-	github.com/go-redis/redis/v8 v8.11.5 // indirect
 	github.com/go-resty/resty/v2 v2.7.0 // indirect
 	github.com/gogo/protobuf v1.3.2 // indirect
 	github.com/golang/groupcache v0.0.0-20210331224755-41bb18bfe9da // indirect
@@ -122,6 +122,7 @@ require (
 	go.etcd.io/etcd/client/v3 v3.5.6 // indirect
 	go.opencensus.io v0.23.0 // indirect
 	go.opentelemetry.io/otel v1.11.0 // indirect
+	go.opentelemetry.io/otel/exporters/jaeger v1.7.0 // indirect
 	go.opentelemetry.io/otel/sdk v1.7.0 // indirect
 	go.opentelemetry.io/otel/trace v1.11.0 // indirect
 	go.uber.org/atomic v1.9.0 // indirect

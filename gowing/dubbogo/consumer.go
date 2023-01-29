@@ -25,7 +25,7 @@ func buildConsumerConfig(builder *config.ConsumerConfigBuilder, consumerOption *
 	if consumerOption.TimeoutSeconds > 0 {
 		builder.SetRequestTimeout(gconv.String(consumerOption.TimeoutSeconds) + "s")
 	}
-	return builder.SetCheck(consumerOption.CheckProviderExists).Build()
+	return builder.SetFilter("cshutdown, otelClientTrace").SetCheck(consumerOption.CheckProviderExists).Build()
 }
 
 // StartConsumers 启动通过 AddConsumerReference 添加的所有的 Consumer

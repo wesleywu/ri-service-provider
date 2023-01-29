@@ -7,10 +7,13 @@ import (
 	"github.com/WesleyWu/ri-service-provider/app/video_collection/model"
 	"github.com/WesleyWu/ri-service-provider/gowing/dubbogo"
 	"github.com/WesleyWu/ri-service-provider/gowing/gwtypes"
+	"github.com/gogf/gf/contrib/trace/jaeger/v2"
 	"github.com/gogf/gf/v2/encoding/gjson"
 	"github.com/gogf/gf/v2/frame/g"
+	"github.com/gogf/gf/v2/net/gtrace"
 	"github.com/gogf/gf/v2/os/gctx"
 	"github.com/gogf/gf/v2/os/gtime"
+	"github.com/gogf/gf/v2/util/gconv"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )
@@ -18,6 +21,8 @@ import (
 var (
 	ctx                   = gctx.New()
 	videoCollectionClient = new(model.VideoCollectionClientImpl)
+	ServiceName           = "VideoCollectionTest"
+	JaegerUdpEndpoint     = "172.33.0.109:6831"
 )
 
 func init() {
@@ -48,6 +53,13 @@ func TestCount(t *testing.T) {
 }
 
 func TestList(t *testing.T) {
+	tp, err := jaeger.Init(ServiceName, JaegerUdpEndpoint)
+	if err != nil {
+		g.Log().Fatal(ctx, err)
+	}
+	defer tp.Shutdown(ctx)
+	ctx, span := gtrace.NewSpan(ctx, "ClientList")
+	defer span.End()
 	req := &model.VideoCollectionListReq{
 		Id:          nil,
 		Name:        gwtypes.AnyCondition(gwtypes.OperatorType_Like, gwtypes.MultiType_Exact, gwtypes.WildcardType_Contains, gwtypes.AnyString("每日")),
@@ -65,9 +77,19 @@ func TestList(t *testing.T) {
 	}
 	assert.Equal(t, int32(1), *res.Total)
 	fmt.Println(gjson.MustEncodeString(res))
+	res, err = videoCollectionClient.List(ctx, req)
+	if err != nil {
+		panic(err)
+	}
+	assert.Equal(t, int32(1), *res.Total)
 }
 
 func TestListBenchmark(t *testing.T) {
+	tp, err := jaeger.Init(ServiceName, JaegerUdpEndpoint)
+	if err != nil {
+		g.Log().Fatal(ctx, err)
+	}
+	defer tp.Shutdown(ctx)
 	req := &model.VideoCollectionListReq{
 		Id:          nil,
 		Name:        gwtypes.AnyCondition(gwtypes.OperatorType_Like, gwtypes.MultiType_Exact, gwtypes.WildcardType_Contains, gwtypes.AnyString("每日")),
@@ -82,6 +104,7 @@ func TestListBenchmark(t *testing.T) {
 	timeStart := gtime.Now()
 	benchCount := 10000
 	for i := 0; i < benchCount; i++ {
+		ctx, span := gtrace.NewSpan(ctx, "ClientBenchmark"+gconv.String(i))
 		res, err := videoCollectionClient.List(ctx, req)
 		if err != nil {
 			panic(err)
@@ -90,6 +113,7 @@ func TestListBenchmark(t *testing.T) {
 		if (i+1)%1000 == 0 {
 			g.Log().Infof(ctx, "called %d times", i+1)
 		}
+		span.End()
 	}
 	timeEnd := gtime.Now()
 	millisElapsed := timeEnd.UnixMilli() - timeStart.UnixMilli()
