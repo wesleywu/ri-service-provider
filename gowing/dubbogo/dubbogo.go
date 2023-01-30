@@ -12,6 +12,8 @@ import (
 	"path"
 )
 
+const serverFilters = "echo, metrics, token, accesslog, tps, pshutdown, tracing, otelServerTrace, validation, cache"
+
 func StartProvider(_ context.Context, registry *Registry, provider *ProviderInfo, logger *LoggerOption) error {
 	if provider.Port <= 100 {
 		return gerror.New("需要指定大于100的 port 参数，建议20000以上，不能和其他服务重复")
@@ -67,7 +69,7 @@ func StartProvider(_ context.Context, registry *Registry, provider *ProviderInfo
 		providerConfigBuilder.AddService(service.ServerImplStructName,
 			config.NewServiceConfigBuilder().SetInterface("").Build())
 	}
-	providerConfigBuilder.SetFilter("echo, metrics, token, accesslog, tps, pshutdown, tracing, otelServerTrace, validation, cache")
+	providerConfigBuilder.SetFilter(serverFilters)
 
 	// shutdown callbacks
 	if provider.ShutdownCallbacks != nil {

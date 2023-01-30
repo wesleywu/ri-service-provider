@@ -5,6 +5,7 @@ go 1.19
 require (
 	dubbo.apache.org/dubbo-go/v3 v3.0.4-rc1
 	github.com/bsm/redislock v0.7.2
+	github.com/cespare/xxhash/v2 v2.1.2
 	github.com/dubbogo/grpc-go v1.42.10
 	github.com/dubbogo/triple v1.2.2-rc2
 	github.com/go-redis/redis/v8 v8.11.5
@@ -33,7 +34,6 @@ require (
 	github.com/bits-and-blooms/bitset v1.2.0 // indirect
 	github.com/buger/jsonparser v1.1.1 // indirect
 	github.com/census-instrumentation/opencensus-proto v0.2.1 // indirect
-	github.com/cespare/xxhash/v2 v2.1.2 // indirect
 	github.com/clbanning/mxj/v2 v2.5.5 // indirect
 	github.com/cncf/udpa/go v0.0.0-20210930031921-04548b0d99d4 // indirect
 	github.com/cncf/xds/go v0.0.0-20211011173535-cb28da3451f1 // indirect

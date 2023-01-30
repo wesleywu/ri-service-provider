@@ -22,14 +22,15 @@ service VideoCollection {
 }
 
 message VideoCollectionCountReq {
-  google.protobuf.Any  id = 1;
-  google.protobuf.Any  name = 2;
-  google.protobuf.Any  contentType = 3;
-  google.protobuf.Any  filterType = 4;
-  google.protobuf.Any  count = 5;
-  google.protobuf.Any  isOnline = 6;
-  google.protobuf.Any  createdAt = 7;
-  google.protobuf.Any  updatedAt = 8;
+  gowing.protobuf.Meta meta = 1 [(tagger.tags) = "validation:\"false\" cache:\"true,adapter=memory,ttl=3600\" json:\"-\""];
+  google.protobuf.Any  id = 2;
+  google.protobuf.Any  name = 3;
+  google.protobuf.Any  contentType = 4;
+  google.protobuf.Any  filterType = 5;
+  google.protobuf.Any  count = 6;
+  google.protobuf.Any  isOnline = 7;
+  google.protobuf.Any  createdAt = 8;
+  google.protobuf.Any  updatedAt = 9;
 }
 
 message VideoCollectionCountRes {
@@ -37,15 +38,16 @@ message VideoCollectionCountRes {
 }
 
 message VideoCollectionOneReq {
-  google.protobuf.Any  id = 1;
-  google.protobuf.Any  name = 2;
-  google.protobuf.Any  contentType = 3;
-  google.protobuf.Any  filterType = 4;
-  google.protobuf.Any  count = 5;
-  google.protobuf.Any  isOnline = 6;
-  google.protobuf.Any  createdAt = 7;
-  google.protobuf.Any  updatedAt = 8;
-  string orderBy = 9;
+  gowing.protobuf.Meta meta = 1 [(tagger.tags) = "validation:\"false\" cache:\"true,adapter=memory,ttl=3600\" json:\"-\""];
+  google.protobuf.Any  id = 2;
+  google.protobuf.Any  name = 3;
+  google.protobuf.Any  contentType = 4;
+  google.protobuf.Any  filterType = 5;
+  google.protobuf.Any  count = 6;
+  google.protobuf.Any  isOnline = 7;
+  google.protobuf.Any  createdAt = 8;
+  google.protobuf.Any  updatedAt = 9;
+  string orderBy = 10;
 }
 
 message VideoCollectionOneRes {
@@ -60,17 +62,18 @@ message VideoCollectionOneRes {
 }
 
 message VideoCollectionListReq {
-  google.protobuf.Any  id = 1;
-  google.protobuf.Any  name = 2;
-  google.protobuf.Any  contentType = 3;
-  google.protobuf.Any  filterType = 4;
-  google.protobuf.Any  count = 5;
-  google.protobuf.Any  isOnline = 6;
-  google.protobuf.Any  createdAt = 7;
-  google.protobuf.Any  updatedAt = 8;
-  uint32 page = 9 [(tagger.tags) = "d:\"1\""];
-  uint32 pageSize = 10 [(tagger.tags) = "d:\"10\""];
-  string orderBy = 11;
+  gowing.protobuf.Meta meta = 1 [(tagger.tags) = "validation:\"false\" cache:\"true,adapter=memory,ttl=3600\" json:\"-\""];
+  google.protobuf.Any  id = 2;
+  google.protobuf.Any  name = 3;
+  google.protobuf.Any  contentType = 4;
+  google.protobuf.Any  filterType = 5;
+  google.protobuf.Any  count = 6;
+  google.protobuf.Any  isOnline = 7;
+  google.protobuf.Any  createdAt = 8;
+  google.protobuf.Any  updatedAt = 9;
+  uint32 page = 10 [(tagger.tags) = "d:\"1\""];
+  uint32 pageSize = 11 [(tagger.tags) = "d:\"10\""];
+  string orderBy = 12;
 }
 
 message VideoCollectionListRes {
@@ -91,7 +94,7 @@ message VideoCollectionItem {
 }
 
 message VideoCollectionCreateReq {
-  gowing.protobuf.Meta meta = 1 [(tagger.tags) = "orm:\"do:true\" json:\"-\""];
+  gowing.protobuf.Meta meta = 1 [(tagger.tags) = "orm:\"do:true\" validation:\"false\" json:\"-\""];
   optional string id = 2 [(tagger.tags) = "p:\"id\" v:\"required#视频集ID，字符串格式不能为空\" json:\"id\""];
   optional string name = 3 [(tagger.tags) = "p:\"name\" v:\"required|max-length:50#视频集名称不能为空|视频集名称不能超过50个字\" json:\"name\""];
   optional int32 contentType = 4 [(tagger.tags) = "p:\"contentType\" v:\"required#内容类型不能为空\" json:\"contentType\""];
@@ -109,7 +112,7 @@ message VideoCollectionCreateRes {
 }
 
 message VideoCollectionUpdateReq {
-  gowing.protobuf.Meta meta = 1 [(tagger.tags) = "orm:\"do:true\" json:\"-\""];
+  gowing.protobuf.Meta meta = 1 [(tagger.tags) = "orm:\"do:true\" validation:\"false\" json:\"-\""];
   optional string id = 2 [(tagger.tags) = "p:\"id\" v:\"required#视频集ID，字符串格式不能为空\" json:\"id\""];
   optional string name = 3 [(tagger.tags) = "p:\"name\" json:\"name\""];
   optional int32 contentType = 4 [(tagger.tags) = "p:\"contentType\" json:\"contentType\""];
@@ -126,7 +129,7 @@ message VideoCollectionUpdateRes {
 }
 
 message VideoCollectionUpsertReq {
-  gowing.protobuf.Meta meta = 1 [(tagger.tags) = "orm:\"do:true\" json:\"-\""];
+  gowing.protobuf.Meta meta = 1 [(tagger.tags) = "orm:\"do:true\" validation:\"false\" json:\"-\""];
   optional string id = 2 [(tagger.tags) = "p:\"id\" v:\"required#视频集ID，字符串格式不能为空\" json:\"id\""];
   optional string name = 3 [(tagger.tags) = "p:\"name\" json:\"name\""];
   optional int32 contentType = 4 [(tagger.tags) = "p:\"contentType\" json:\"contentType\""];
@@ -144,14 +147,15 @@ message VideoCollectionUpsertRes {
 }
 
 message VideoCollectionDeleteReq {
-  google.protobuf.Any  id = 1;
-  google.protobuf.Any  name = 2;
-  google.protobuf.Any  contentType = 3;
-  google.protobuf.Any  filterType = 4;
-  google.protobuf.Any  count = 5;
-  google.protobuf.Any  isOnline = 6;
-  google.protobuf.Any  createdAt = 7;
-  google.protobuf.Any  updatedAt = 8;
+  gowing.protobuf.Meta meta = 1 [(tagger.tags) = "validation:\"false\" json:\"-\""];
+  google.protobuf.Any  id = 2;
+  google.protobuf.Any  name = 3;
+  google.protobuf.Any  contentType = 4;
+  google.protobuf.Any  filterType = 5;
+  google.protobuf.Any  count = 6;
+  google.protobuf.Any  isOnline = 7;
+  google.protobuf.Any  createdAt = 8;
+  google.protobuf.Any  updatedAt = 9;
 }
 
 message VideoCollectionDeleteRes {

@@ -5,9 +5,12 @@ import (
 	"dubbo.apache.org/dubbo-go/v3/common/extension"
 	"dubbo.apache.org/dubbo-go/v3/filter"
 	"dubbo.apache.org/dubbo-go/v3/protocol"
+	"github.com/WesleyWu/ri-service-provider/gowing/gwreflect"
 	"github.com/gogf/gf/v2/frame/g"
 	"github.com/gogf/gf/v2/net/gtrace"
 )
+
+const validationTag = "validation"
 
 func init() {
 	extension.SetFilter("validation", newFilter)
@@ -26,11 +29,25 @@ func validateRequest(ctx context.Context, req interface{}) error {
 	return g.Validator().Data(req).Run(ctx)
 }
 
+func shouldValidate(ctx context.Context, param interface{}) bool {
+	metaField, err := gwreflect.GetMetaField(ctx, param)
+	if err != nil {
+		return false
+	}
+	if metaField == nil {
+		return false
+	}
+	return metaField.Tag.Get(validationTag) == "true"
+}
+
 func (f *validationFilter) Invoke(ctx context.Context, invoker protocol.Invoker, invocation protocol.Invocation) protocol.Result {
 	ctx, span := gtrace.NewSpan(ctx, "validationFilter.Invoke")
 	defer span.End()
 	params := invocation.Arguments()
 	for _, param := range params {
+		if !shouldValidate(ctx, param) {
+			continue
+		}
 		err := validateRequest(ctx, param)
 		if err != nil {
 			return &protocol.RPCResult{
@@ -43,9 +60,7 @@ func (f *validationFilter) Invoke(ctx context.Context, invoker protocol.Invoker,
 	}
 	return invoker.Invoke(ctx, invocation)
 }
-func (f *validationFilter) OnResponse(ctx context.Context, result protocol.Result, invoker protocol.Invoker, protocol protocol.Invocation) protocol.Result {
-	ctx, span := gtrace.NewSpan(ctx, "validationFilter.OnResponse")
-	defer span.End()
+func (f *validationFilter) OnResponse(ctx context.Context, result protocol.Result, _ protocol.Invoker, _ protocol.Invocation) protocol.Result {
 	err := result.Error()
 	if err != nil {
 		g.Log().Infof(ctx, "validationFilter OnResponse error: %v", result.Error())
