@@ -108,8 +108,6 @@ func SaveCache(ctx context.Context, serviceName string, cacheKey *string, value 
 		return ErrCacheNotInitialized
 	}
 	valueBytes, err := proto.Marshal(value.(proto.Message))
-	g.Log().Infof(ctx, "%v", valueBytes)
-	//valueBytes, err := gjson.Encode(value)
 	if err != nil {
 		g.Log().Warningf(ctx, "error encoding cache value for key \"%s\" %s", *cacheKey, err.Error())
 		return err

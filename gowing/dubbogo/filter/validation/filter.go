@@ -5,6 +5,7 @@ import (
 	"dubbo.apache.org/dubbo-go/v3/common/extension"
 	"dubbo.apache.org/dubbo-go/v3/filter"
 	"dubbo.apache.org/dubbo-go/v3/protocol"
+	"github.com/WesleyWu/ri-service-provider/gowing/common/gwconstant"
 	"github.com/WesleyWu/ri-service-provider/gowing/gwreflect"
 	"github.com/gogf/gf/v2/frame/g"
 	"github.com/gogf/gf/v2/net/gtrace"
@@ -13,7 +14,7 @@ import (
 const validationTag = "validation"
 
 func init() {
-	extension.SetFilter("validation", newFilter)
+	extension.SetFilter(gwconstant.ValidationFilterKey, newFilter)
 }
 
 type validationFilter struct {

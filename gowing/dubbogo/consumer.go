@@ -4,6 +4,7 @@ import (
 	"context"
 	"dubbo.apache.org/dubbo-go/v3/common/constant"
 	"dubbo.apache.org/dubbo-go/v3/config"
+	"github.com/WesleyWu/ri-service-provider/gowing/common/gwconstant"
 	"github.com/gogf/gf/v2/frame/g"
 	"github.com/gogf/gf/v2/util/gconv"
 	"github.com/natefinch/lumberjack"
@@ -25,7 +26,7 @@ func buildConsumerConfig(builder *config.ConsumerConfigBuilder, consumerOption *
 	if consumerOption.TimeoutSeconds > 0 {
 		builder.SetRequestTimeout(gconv.String(consumerOption.TimeoutSeconds) + "s")
 	}
-	return builder.SetFilter("cshutdown, otelClientTrace").SetCheck(consumerOption.CheckProviderExists).Build()
+	return builder.SetFilter(gwconstant.ClientFilters).SetCheck(consumerOption.CheckProviderExists).Build()
 }
 
 // StartConsumers 启动通过 AddConsumerReference 添加的所有的 Consumer

@@ -22,7 +22,7 @@ var (
 	ctx                   = gctx.New()
 	videoCollectionClient = new(model.VideoCollectionClientImpl)
 	ServiceName           = "VideoCollectionTest"
-	JaegerUdpEndpoint     = "172.33.0.109:6831"
+	JaegerUdpEndpoint     = "localhost:6831"
 )
 
 func init() {

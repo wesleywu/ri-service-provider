@@ -5,14 +5,13 @@ import (
 	"dubbo.apache.org/dubbo-go/v3/common/constant"
 	"dubbo.apache.org/dubbo-go/v3/common/extension"
 	"dubbo.apache.org/dubbo-go/v3/config"
+	"github.com/WesleyWu/ri-service-provider/gowing/common/gwconstant"
 	"github.com/gogf/gf/v2/errors/gerror"
 	"github.com/gogf/gf/v2/frame/g"
 	"github.com/gogf/gf/v2/util/gconv"
 	"github.com/natefinch/lumberjack"
 	"path"
 )
-
-const serverFilters = "echo, metrics, token, accesslog, tps, pshutdown, tracing, otelServerTrace, validation, cache"
 
 func StartProvider(_ context.Context, registry *Registry, provider *ProviderInfo, logger *LoggerOption) error {
 	if provider.Port <= 100 {
@@ -69,7 +68,7 @@ func StartProvider(_ context.Context, registry *Registry, provider *ProviderInfo
 		providerConfigBuilder.AddService(service.ServerImplStructName,
 			config.NewServiceConfigBuilder().SetInterface("").Build())
 	}
-	providerConfigBuilder.SetFilter(serverFilters)
+	providerConfigBuilder.SetFilter(gwconstant.ServerFilters)
 
 	// shutdown callbacks
 	if provider.ShutdownCallbacks != nil {

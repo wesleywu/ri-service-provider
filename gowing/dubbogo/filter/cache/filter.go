@@ -7,10 +7,13 @@ import (
 	"dubbo.apache.org/dubbo-go/v3/filter"
 	"dubbo.apache.org/dubbo-go/v3/protocol"
 	"github.com/WesleyWu/ri-service-provider/gowing/cache"
+	"github.com/WesleyWu/ri-service-provider/gowing/common/gwconstant"
 	"github.com/WesleyWu/ri-service-provider/gowing/gwreflect"
+	"github.com/gogf/gf/v2/encoding/gjson"
 	"github.com/gogf/gf/v2/errors/gerror"
 	"github.com/gogf/gf/v2/frame/g"
 	"github.com/gogf/gf/v2/net/gtrace"
+	"github.com/gogf/gf/v2/os/glog"
 	"github.com/gogf/gf/v2/util/gconv"
 	"google.golang.org/protobuf/proto"
 	"reflect"
@@ -27,7 +30,7 @@ const (
 )
 
 func init() {
-	extension.SetFilter("cache", newFilter)
+	extension.SetFilter(gwconstant.CacheFilterKey, newFilter)
 }
 
 func newFilter() filter.Filter {
@@ -57,6 +60,12 @@ func (f *cacheFilter) Invoke(ctx context.Context, invoker protocol.Invoker, invo
 		}
 	}
 	if result != nil { // cached result exists
+		if g.Log().GetLevel()&glog.LEVEL_DEBU == glog.LEVEL_DEBU {
+			params := invocation.Arguments()
+			service := invoker.GetURL().ServiceKey()
+			methodName := invocation.ActualMethodName()
+			g.Log().Debugf(ctx, "rpc call %s.%s with argument '%s' has cached result: '%s'", service, methodName, gjson.MustEncode(params[0]), gjson.MustEncodeString(result))
+		}
 		invocation.SetAttachment(cachedResult, true)
 		return &protocol.RPCResult{
 			Attrs: invocation.Attachments(),

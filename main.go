@@ -9,14 +9,13 @@ import (
 	"github.com/gogf/gf/contrib/trace/jaeger/v2"
 	"github.com/gogf/gf/v2/errors/gerror"
 	"github.com/gogf/gf/v2/frame/g"
-	"github.com/gogf/gf/v2/net/gtrace"
 	"github.com/gogf/gf/v2/os/gcmd"
 	"github.com/gogf/gf/v2/os/gctx"
 )
 
 var (
 	ServiceName       = "VideoCollection"
-	JaegerUdpEndpoint = "172.33.0.109:6831"
+	JaegerUdpEndpoint = "localhost:6831"
 )
 
 func main() {
@@ -29,8 +28,6 @@ func main() {
 				g.Log().Fatal(ctx, err)
 			}
 			defer tp.Shutdown(ctx)
-			ctx, span := gtrace.NewSpan(ctx, "VideoCollection Provider")
-			defer span.End()
 			port := parser.GetOpt("port").Int()
 			if port <= 0 {
 				port = g.Cfg().MustGet(ctx, "rpc.provider.port").Int()
