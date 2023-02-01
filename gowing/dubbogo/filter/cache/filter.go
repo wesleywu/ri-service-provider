@@ -6,14 +6,14 @@ import (
 	"dubbo.apache.org/dubbo-go/v3/common/extension"
 	"dubbo.apache.org/dubbo-go/v3/filter"
 	"dubbo.apache.org/dubbo-go/v3/protocol"
-	"github.com/WesleyWu/ri-service-provider/gowing/cache"
 	"github.com/WesleyWu/ri-service-provider/gowing/common/gwconstant"
+	"github.com/WesleyWu/ri-service-provider/gowing/gwcache"
 	"github.com/WesleyWu/ri-service-provider/gowing/gwreflect"
 	"github.com/gogf/gf/v2/encoding/gjson"
 	"github.com/gogf/gf/v2/errors/gerror"
 	"github.com/gogf/gf/v2/frame/g"
 	"github.com/gogf/gf/v2/net/gtrace"
-	"github.com/gogf/gf/v2/os/glog"
+	"github.com/gogf/gf/v2/os/gctx"
 	"github.com/gogf/gf/v2/util/gconv"
 	"google.golang.org/protobuf/proto"
 	"reflect"
@@ -34,10 +34,24 @@ func init() {
 }
 
 func newFilter() filter.Filter {
-	return &cacheFilter{}
+	if !gwcache.CacheEnabled {
+		return &cacheFilter{cacheEnabled: false}
+	}
+	ctx := gctx.New()
+	cache, err := gwcache.GetCacheProvider()
+	if err != nil {
+		g.Log().Errorf(ctx, "%+v", err)
+		return &cacheFilter{cacheEnabled: false}
+	}
+	return &cacheFilter{
+		cacheEnabled: true,
+		cache:        cache,
+	}
 }
 
 type cacheFilter struct {
+	cacheEnabled bool
+	cache        gwcache.CacheProvider
 }
 
 type Setting struct {
@@ -51,26 +65,28 @@ type Setting struct {
 func (f *cacheFilter) Invoke(ctx context.Context, invoker protocol.Invoker, invocation protocol.Invocation) protocol.Result {
 	ctx, span := gtrace.NewSpan(ctx, "cacheFilter.Invoke")
 	defer span.End()
-	result, err := getCachedResult(ctx, invoker, invocation)
-	if err != nil { // error occurred when getting cached result
-		return &protocol.RPCResult{
-			Attrs: invocation.Attachments(),
-			Err:   err,
-			Rest:  nil,
+	if f.cacheEnabled {
+		result, err := f.getCachedResult(ctx, invoker, invocation)
+		if err != nil { // error occurred when getting cached result
+			return &protocol.RPCResult{
+				Attrs: invocation.Attachments(),
+				Err:   err,
+				Rest:  nil,
+			}
 		}
-	}
-	if result != nil { // cached result exists
-		if g.Log().GetLevel()&glog.LEVEL_DEBU == glog.LEVEL_DEBU {
-			params := invocation.Arguments()
-			service := invoker.GetURL().ServiceKey()
-			methodName := invocation.ActualMethodName()
-			g.Log().Debugf(ctx, "rpc call %s.%s with argument '%s' has cached result: '%s'", service, methodName, gjson.MustEncode(params[0]), gjson.MustEncodeString(result))
-		}
-		invocation.SetAttachment(cachedResult, true)
-		return &protocol.RPCResult{
-			Attrs: invocation.Attachments(),
-			Err:   nil,
-			Rest:  result,
+		if result != nil { // cached result exists
+			if gwcache.DebugEnabled {
+				params := invocation.Arguments()
+				service := invoker.GetURL().ServiceKey()
+				methodName := invocation.ActualMethodName()
+				g.Log().Debugf(ctx, "rpc method\n\t%s.%s('%s') returned %s cached result\n\t%s", service, methodName, gjson.MustEncode(params[0]), gwcache.CacheProviderName, gjson.MustEncodeString(result))
+			}
+			invocation.SetAttachment(cachedResult, true)
+			return &protocol.RPCResult{
+				Attrs: invocation.Attachments(),
+				Err:   nil,
+				Rest:  result,
+			}
 		}
 	}
 	// no error or cached result, proceed to RPC call
@@ -80,13 +96,22 @@ func (f *cacheFilter) Invoke(ctx context.Context, invoker protocol.Invoker, invo
 func (f *cacheFilter) OnResponse(ctx context.Context, result protocol.Result, invoker protocol.Invoker, invocation protocol.Invocation) protocol.Result {
 	ctx, span := gtrace.NewSpan(ctx, "cacheFilter.OnResponse")
 	defer span.End()
-	if gconv.Bool(result.Attachment(cachedResult, false)) { // is a cached result
-		return result
-	}
-	if result != nil && result.Error() == nil { // normal result without error, may need to save it back to cache
-		err := saveCachedResult(ctx, invoker, invocation, result.Result())
-		if err != nil {
-			g.Log().Error(ctx, "Error saving response back to cache: ", err)
+	if f.cacheEnabled {
+		if gconv.Bool(result.Attachment(cachedResult, false)) { // is a cached result
+			return result
+		}
+		if result != nil && result.Error() == nil { // normal result without error, may need to save it back to cache
+			err := f.saveCachedResult(ctx, invoker, invocation, result.Result())
+			if err != nil {
+				g.Log().Error(ctx, "Error saving response back to cache: ", err)
+			} else {
+				if gwcache.DebugEnabled {
+					params := invocation.Arguments()
+					service := invoker.GetURL().ServiceKey()
+					methodName := invocation.ActualMethodName()
+					g.Log().Debugf(ctx, "saved result of rpc method\n\t%s.%s('%s') to %s cache\n\t%s", service, methodName, gjson.MustEncode(params[0]), gwcache.CacheProviderName, gjson.MustEncodeString(result.Result()))
+				}
+			}
 		}
 	}
 	return result
@@ -167,7 +192,7 @@ func getMethodResultType(_ context.Context, invoker protocol.Invoker, invocation
 	return method.ReplyType(), nil
 }
 
-func getCachedResult(ctx context.Context, invoker protocol.Invoker, invocation protocol.Invocation) (interface{}, error) {
+func (f *cacheFilter) getCachedResult(ctx context.Context, invoker protocol.Invoker, invocation protocol.Invocation) (interface{}, error) {
 	ctx, span := gtrace.NewSpan(ctx, "getCachedResult")
 	defer span.End()
 	params := invocation.Arguments()
@@ -205,7 +230,7 @@ func getCachedResult(ctx context.Context, invoker protocol.Invoker, invocation p
 	if err != nil {
 		return nil, err
 	}
-	if !cache.Initialized() {
+	if f.cache == nil || !f.cache.Initialized() {
 		g.Log().Warning(ctx, "cacheFilter invoke error: cache not initialized")
 		return nil, nil
 	}
@@ -221,34 +246,34 @@ func getCachedResult(ctx context.Context, invoker protocol.Invoker, invocation p
 	if !ok {
 		return nil, gerror.Newf("The return type of RPC method %s.%s should be a protobuf message", service, methodName)
 	}
-	cacheKey := cache.GetCacheKey(ctx, service, methodName, req)
+	cacheKey := gwcache.GetCacheKey(ctx, service, methodName, req)
 	if cacheKey == nil {
 		return nil, err
 	}
-	err = cache.RetrieveCacheTo(ctx, cacheKey, result)
+	err = f.cache.RetrieveCacheTo(ctx, cacheKey, result)
 	if err != nil {
-		if err == cache.ErrLockTimeout { // 获取锁超时，返回降级的结果
+		if err == gwcache.ErrLockTimeout { // 获取锁超时，返回降级的结果
 			invocation.SetAttachment(downgradedResult, true)
 			return &protocol.RPCResult{
 				Attrs: invocation.Attachments(),
 				Err:   nil,
 				Rest:  result,
 			}, nil
-		} else if err == cache.ErrNotFound { // cache 未找到，执行底层操作
+		} else if err == gwcache.ErrNotFound { // cache 未找到，执行底层操作
 			return nil, nil
 		}
 		// 其他底层错误
-		g.Log().Error(ctx, err)
-		return nil, err
+		g.Log().Errorf(ctx, "%+v", err)
+		return nil, nil
 	}
 	// 返回缓存的结果
 	return result, nil
 }
 
-func saveCachedResult(ctx context.Context, invoker protocol.Invoker, invocation protocol.Invocation, result interface{}) error {
+func (f *cacheFilter) saveCachedResult(ctx context.Context, invoker protocol.Invoker, invocation protocol.Invocation, result interface{}) error {
 	ctx, span := gtrace.NewSpan(ctx, "saveCachedResult")
 	defer span.End()
-	if result == nil || !cache.Initialized() {
+	if result == nil || f.cache == nil || !f.cache.Initialized() {
 		return nil
 	}
 	params := invocation.Arguments()
@@ -277,9 +302,9 @@ func saveCachedResult(ctx context.Context, invoker protocol.Invoker, invocation 
 
 	service := invoker.GetURL().ServiceKey()
 	methodName := invocation.ActualMethodName()
-	cacheKey := cache.GetCacheKey(ctx, service, methodName, req)
+	cacheKey := gwcache.GetCacheKey(ctx, service, methodName, req)
 	if cacheKey != nil {
-		return cache.SaveCache(ctx, service, cacheKey, result, ttlSeconds)
+		return f.cache.SaveCache(ctx, service, cacheKey, result, ttlSeconds)
 	}
 	return nil
 }

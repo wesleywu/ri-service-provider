@@ -47,6 +47,11 @@
 
 # Redis数据库配置
 [redis]
-    open = true #是否开启 redis 缓存 若不开启使用gchache缓存方式
     [redis.default]
-    host = "127.0.0.1:6379"
+        address = "127.0.0.1:6379"
+
+[cache]
+    enabled = true
+    debug = false
+    provider = "redis"
+    syncTimeoutMillis = 300

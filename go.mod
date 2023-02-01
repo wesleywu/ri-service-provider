@@ -4,16 +4,16 @@ go 1.19
 
 require (
 	dubbo.apache.org/dubbo-go/v3 v3.0.4-rc1
-	github.com/bsm/redislock v0.7.2
-	github.com/cespare/xxhash/v2 v2.1.2
+	github.com/bsm/redislock v0.9.0
+	github.com/cespare/xxhash/v2 v2.2.0
 	github.com/dubbogo/grpc-go v1.42.10
 	github.com/dubbogo/triple v1.2.2-rc2
-	github.com/go-redis/redis/v8 v8.11.5
 	github.com/go-sql-driver/mysql v1.6.0
-	github.com/gogf/gf/contrib/drivers/mysql/v2 v2.3.0
+	github.com/gogf/gf/contrib/drivers/mysql/v2 v2.3.1
 	github.com/gogf/gf/contrib/trace/jaeger/v2 v2.3.1
-	github.com/gogf/gf/v2 v2.3.0
+	github.com/gogf/gf/v2 v2.3.1
 	github.com/natefinch/lumberjack v2.0.0+incompatible
+	github.com/redis/go-redis/v9 v9.0.1
 	github.com/srikrsna/protoc-gen-gotag v0.6.2
 	github.com/stretchr/testify v1.8.1
 	go.opentelemetry.io/otel v1.12.0
@@ -143,4 +143,4 @@ require (
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
 
-replace github.com/gogf/gf/v2 v2.3.0 => ../gf
+//replace github.com/gogf/gf/v2 v2.3.1 => ../gf

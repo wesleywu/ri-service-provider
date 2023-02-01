@@ -46,6 +46,7 @@ sql 脚本待提供
 首先运行 pixiu API 网关
 
 **需修改 conf.yaml 中的 address 为 nacos 的容器IP:Port （需要能够从docker容器中访问到）**
+**pixiu API http(s) -> dubbo-go 协议转换无法支持otel链路跟踪，因为 pixiu 底层使用的开源框架 grpc-http-proxy 不支持 **
 
 ```
 cd test/pixiu
