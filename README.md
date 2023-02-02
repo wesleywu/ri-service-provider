@@ -9,7 +9,7 @@
 - Upsert: 在数据库表中创建或更新特定记录
 - Delete: 从数据库表中删除符合条件的记录（可能为多条）
 
-本项目的目标是，为 gowing（待发布） 代码生成工具提供一个 Domain Repository 微服务的具体参考实现
+本项目的目标是，为 [gowing](https://github.com/wesleywu/gowing) 代码生成工具提供一个 Domain Repository 微服务的具体参考实现
 
 # 功能说明
 - 【完成】支持多个Service注册到同一个Provider服务
