@@ -51,8 +51,8 @@
         address = "127.0.0.1:6379"
 
 [cache]
-    enabled = true
-    provider = "redis"
-    debug = false
-    tracing = true # 为缓存操作增加otel tracing
+    enabled  = true     # 是否开启 service rpc call 的缓存
+    provider = "memory" # 可选项 memory|redis ， redis 依赖 GoFrame 的Redis配置
+    debug    = true     # 打印缓存 Get/Set 的调试信息
+    tracing  = true     # 为缓存操作增加otel tracing
     syncTimeoutMillis = 300
