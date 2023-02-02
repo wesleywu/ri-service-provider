@@ -10,12 +10,15 @@ import (
 	"github.com/gogf/gf/v2/frame/g"
 	"github.com/gogf/gf/v2/net/gtrace"
 	"github.com/gogf/gf/v2/text/gstr"
+	"github.com/redis/go-redis/extra/redisotel/v9"
 	"github.com/redis/go-redis/v9"
 	"google.golang.org/protobuf/proto"
 	"time"
 )
 
 const (
+	defaultPoolSize        = 40
+	defaultPoolMinIdle     = 5
 	defaultPoolMaxIdle     = 10
 	defaultPoolMaxActive   = 100
 	defaultPoolIdleTimeout = 10 * time.Second
@@ -53,7 +56,9 @@ func NewRedisCacheProvider(ctx context.Context) (CacheProvider, error) {
 		Password:        config.Pass,
 		DB:              config.Db,
 		MaxRetries:      defaultMaxRetries,
+		PoolSize:        defaultPoolSize,
 		MinIdleConns:    config.MinIdle,
+		MaxIdleConns:    config.MaxIdle,
 		ConnMaxLifetime: config.MaxConnLifetime,
 		ConnMaxIdleTime: config.IdleTimeout,
 		PoolTimeout:     config.WaitTimeout,
@@ -73,6 +78,12 @@ func NewRedisCacheProvider(ctx context.Context) (CacheProvider, error) {
 	} else {
 		redisClient = redis.NewClient(opts.Simple())
 	}
+	if TracingEnabled {
+		if err := redisotel.InstrumentTracing(redisClient); err != nil {
+			g.Log().Errorf(ctx, "failed to trace redis via otel: %+v", err)
+		}
+	}
+
 	info := redisClient.Info(ctx)
 	if info.Err() != nil {
 		return nil, info.Err()
@@ -248,6 +259,9 @@ func (s *redisCacheProvider) ClearCache(ctx context.Context, serviceName string)
 }
 
 func fillWithDefaultConfiguration(config *gredis.Config) {
+	if config.MinIdle == 0 {
+		config.MinIdle = defaultPoolMinIdle
+	}
 	// The MaxIdle is the most important attribute of the connection pool.
 	// Only if this attribute is set, the created connections from client
 	// can not exceed the limit of the server.

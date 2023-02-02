@@ -52,6 +52,7 @@
 
 [cache]
     enabled = true
-    debug = false
     provider = "redis"
+    debug = false
+    tracing = true # 为缓存操作增加otel tracing
     syncTimeoutMillis = 300

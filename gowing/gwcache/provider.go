@@ -22,6 +22,7 @@ var (
 	ctx                    = gctx.New()
 	CacheEnabled           = false
 	DebugEnabled           = false
+	TracingEnabled         = false
 	CacheProviderName      = "unknown"
 	cacheProviderMap       = gmap.StrAnyMap{}
 	ErrCacheNotInitialized = errors.New("cache: not initialized")
@@ -55,8 +56,14 @@ func init() {
 		g.Log().Errorf(ctx, "%+v", err)
 		return
 	}
+	tracingEnabledVar, err := g.Cfg().Get(ctx, "cache.tracing", false)
+	if err != nil {
+		g.Log().Errorf(ctx, "%+v", err)
+		return
+	}
 	CacheEnabled = cacheEnabledVar.Bool()
 	DebugEnabled = debugEnabledVar.Bool()
+	TracingEnabled = tracingEnabledVar.Bool()
 	CacheProviderName = cacheProviderVar.String()
 	if CacheEnabled {
 		g.Log().Infof(ctx, "service cache enabled with provider '%s'", CacheProviderName)

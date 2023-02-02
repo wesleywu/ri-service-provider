@@ -35,15 +35,17 @@ func (s *memoryCacheProvider) Initialized() bool {
 }
 
 func (s *memoryCacheProvider) RetrieveCacheTo(ctx context.Context, cacheKey *string, value proto.Message) error {
-	ctx, span := gtrace.NewSpan(ctx, "RetrieveCacheTo"+*cacheKey)
-	defer span.End()
 	if cacheKey == nil {
 		return ErrEmptyCacheKey
 	}
 	if !s.Initialized() {
 		return ErrCacheNotInitialized
 	}
-
+	if TracingEnabled {
+		var span *gtrace.Span
+		ctx, span = gtrace.NewSpan(ctx, "RetrieveCacheTo "+*cacheKey)
+		defer span.End()
+	}
 	cachedValue, err := s.cache.GetOrSetFuncLock(ctx, *cacheKey, func(ctx context.Context) (value interface{}, err error) {
 		return nil, memoryNilResultError
 	}, 0)
@@ -64,13 +66,16 @@ func (s *memoryCacheProvider) RetrieveCacheTo(ctx context.Context, cacheKey *str
 }
 
 func (s *memoryCacheProvider) SaveCache(ctx context.Context, serviceName string, cacheKey *string, value any, ttlSeconds uint32) error {
-	ctx, span := gtrace.NewSpan(ctx, "SaveCache"+*cacheKey)
-	defer span.End()
 	if cacheKey == nil {
 		return ErrEmptyCacheKey
 	}
 	if !s.Initialized() {
 		return ErrCacheNotInitialized
+	}
+	if TracingEnabled {
+		var span *gtrace.Span
+		ctx, span = gtrace.NewSpan(ctx, "SaveCache "+*cacheKey)
+		defer span.End()
 	}
 	valueBytes, err := serialize(value.(proto.Message))
 	if err != nil {
@@ -102,6 +107,11 @@ func (s *memoryCacheProvider) RemoveCache(ctx context.Context, cacheKey *string)
 	if !s.Initialized() {
 		return ErrCacheNotInitialized
 	}
+	if TracingEnabled {
+		var span *gtrace.Span
+		ctx, span = gtrace.NewSpan(ctx, "RemoveCache "+*cacheKey)
+		defer span.End()
+	}
 	_, err := s.cache.Remove(ctx, *cacheKey)
 	if err != nil {
 		g.Log().Warningf(ctx, "error delete cache key \"%s\" %s", cacheKey, err.Error())
@@ -113,6 +123,11 @@ func (s *memoryCacheProvider) RemoveCache(ctx context.Context, cacheKey *string)
 func (s *memoryCacheProvider) ClearCache(ctx context.Context, serviceName string) error {
 	if !s.Initialized() {
 		return ErrCacheNotInitialized
+	}
+	if TracingEnabled {
+		var span *gtrace.Span
+		ctx, span = gtrace.NewSpan(ctx, "ClearCache "+serviceName)
+		defer span.End()
 	}
 	cacheKeysetName := ServiceCacheKeySetPrefix + serviceName
 	setVal, err := s.cache.Get(ctx, cacheKeysetName)
