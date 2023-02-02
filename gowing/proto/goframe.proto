@@ -1,9 +1,0 @@
-syntax = "proto3";
-
-package gowing.protobuf;
-
-option go_package = "github.com/WesleyWu/ri-service-provider/gowing/gmeta";
-
-enum Meta {
-  _ = 0;
-}

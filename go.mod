@@ -22,10 +22,13 @@ require (
 )
 
 require (
+	buf.build/gen/go/srikrsna/protoc-gen-gotag/protocolbuffers/go v1.28.1-20220926115512-7a85d3ad2e76.4 // indirect
+	buf.build/gen/go/wesleywu/gowing/protocolbuffers/go v1.28.1-20230202131348-218d7ed98b94.4 // indirect
 	cloud.google.com/go v0.65.0 // indirect
 	contrib.go.opencensus.io/exporter/prometheus v0.4.1 // indirect
 	github.com/BurntSushi/toml v1.1.0 // indirect
 	github.com/RoaringBitmap/roaring v1.2.0 // indirect
+	github.com/WesleyWu/gowing v0.1.0 // indirect
 	github.com/Workiva/go-datastructures v1.0.52 // indirect
 	github.com/afex/hystrix-go v0.0.0-20180502004556-fa1af6a1f4f5 // indirect
 	github.com/alibaba/sentinel-golang v1.0.4 // indirect
@@ -147,3 +150,4 @@ require (
 )
 
 //replace github.com/gogf/gf/v2 v2.3.1 => ../gf
+replace github.com/WesleyWu/gowing v0.1.0 => ../gowing

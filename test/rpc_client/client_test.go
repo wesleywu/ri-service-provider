@@ -4,9 +4,10 @@ import (
 	"context"
 	_ "dubbo.apache.org/dubbo-go/v3/imports"
 	"fmt"
-	"github.com/WesleyWu/ri-service-provider/app/video_collection/model"
-	"github.com/WesleyWu/ri-service-provider/gowing/dubbogo"
-	"github.com/WesleyWu/ri-service-provider/gowing/gwtypes"
+	"github.com/WesleyWu/gowing/protobuf/gwtypes"
+	"github.com/WesleyWu/gowing/rpc/dubbogo"
+	"github.com/WesleyWu/gowing/util/gwwrapper"
+	"github.com/WesleyWu/ri-service-provider/proto/video_collection"
 	"github.com/gogf/gf/contrib/trace/jaeger/v2"
 	"github.com/gogf/gf/v2/encoding/gjson"
 	"github.com/gogf/gf/v2/frame/g"
@@ -20,7 +21,7 @@ import (
 
 var (
 	ctx                   = gctx.New()
-	videoCollectionClient = new(model.VideoCollectionClientImpl)
+	videoCollectionClient = new(proto_video_collection.VideoCollectionClientImpl)
 	ServiceName           = "VideoCollectionTest"
 	JaegerUdpEndpoint     = "localhost:6831"
 )
@@ -33,10 +34,10 @@ func init() {
 }
 
 func TestCount(t *testing.T) {
-	req := &model.VideoCollectionCountReq{
+	req := &proto_video_collection.VideoCollectionCountReq{
 		Id:          nil,
-		Name:        gwtypes.AnyString("推荐视频集"),
-		ContentType: gwtypes.AnyUInt32Slice([]uint32{1, 2}),
+		Name:        gwwrapper.AnyString("推荐视频集"),
+		ContentType: gwwrapper.AnyUInt32Slice([]uint32{1, 2}),
 		FilterType:  nil,
 		Count:       nil,
 		IsOnline:    nil,
@@ -60,12 +61,12 @@ func TestList(t *testing.T) {
 	defer tp.Shutdown(ctx)
 	ctx, span := gtrace.NewSpan(ctx, "ClientList")
 	defer span.End()
-	req := &model.VideoCollectionListReq{
+	req := &proto_video_collection.VideoCollectionListReq{
 		Id:          nil,
-		Name:        gwtypes.AnyCondition(gwtypes.OperatorType_Like, gwtypes.MultiType_Exact, gwtypes.WildcardType_Contains, gwtypes.AnyString("每日")),
-		ContentType: gwtypes.AnyUInt32Slice([]uint32{1, 2}),
+		Name:        gwwrapper.AnyCondition(gwtypes.OperatorType_Like, gwtypes.MultiType_Exact, gwtypes.WildcardType_Contains, gwwrapper.AnyString("每日")),
+		ContentType: gwwrapper.AnyUInt32Slice([]uint32{1, 2}),
 		FilterType:  nil,
-		Count:       gwtypes.AnyCondition(gwtypes.OperatorType_GT, gwtypes.MultiType_Exact, gwtypes.WildcardType_None, gwtypes.AnyUInt32(1)),
+		Count:       gwwrapper.AnyCondition(gwtypes.OperatorType_GT, gwtypes.MultiType_Exact, gwtypes.WildcardType_None, gwwrapper.AnyUInt32(1)),
 		IsOnline:    nil,
 		CreatedAt:   nil,
 		UpdatedAt:   nil,
@@ -90,12 +91,12 @@ func TestListBenchmark(t *testing.T) {
 		g.Log().Fatal(ctx, err)
 	}
 	defer tp.Shutdown(ctx)
-	req := &model.VideoCollectionListReq{
+	req := &proto_video_collection.VideoCollectionListReq{
 		Id:          nil,
-		Name:        gwtypes.AnyCondition(gwtypes.OperatorType_Like, gwtypes.MultiType_Exact, gwtypes.WildcardType_Contains, gwtypes.AnyString("每日")),
-		ContentType: gwtypes.AnyUInt32Slice([]uint32{1, 2}),
+		Name:        gwwrapper.AnyCondition(gwtypes.OperatorType_Like, gwtypes.MultiType_Exact, gwtypes.WildcardType_Contains, gwwrapper.AnyString("每日")),
+		ContentType: gwwrapper.AnyUInt32Slice([]uint32{1, 2}),
 		FilterType:  nil,
-		Count:       gwtypes.AnyCondition(gwtypes.OperatorType_GT, gwtypes.MultiType_Exact, gwtypes.WildcardType_None, gwtypes.AnyUInt32(1)),
+		Count:       gwwrapper.AnyCondition(gwtypes.OperatorType_GT, gwtypes.MultiType_Exact, gwtypes.WildcardType_None, gwwrapper.AnyUInt32(1)),
 		IsOnline:    nil,
 		CreatedAt:   nil,
 		UpdatedAt:   nil,
@@ -122,13 +123,13 @@ func TestListBenchmark(t *testing.T) {
 }
 
 func TestCreate(t *testing.T) {
-	res, err := videoCollectionClient.Create(ctx, &model.VideoCollectionCreateReq{
-		Id:          gwtypes.WrapString("87104859-5598"),
-		Name:        gwtypes.WrapString("特别长的名称特别长的名称特别长的名称特别长的"),
-		ContentType: gwtypes.WrapInt32(3),
-		FilterType:  gwtypes.WrapInt32(4),
-		Count:       gwtypes.WrapUInt32(401),
-		IsOnline:    gwtypes.WrapBool(true),
+	res, err := videoCollectionClient.Create(ctx, &proto_video_collection.VideoCollectionCreateReq{
+		Id:          gwwrapper.WrapString("87104859-5598"),
+		Name:        gwwrapper.WrapString("特别长的名称特别长的名称特别长的名称特别长的"),
+		ContentType: gwwrapper.WrapInt32(3),
+		FilterType:  gwwrapper.WrapInt32(4),
+		Count:       gwwrapper.WrapUInt32(401),
+		IsOnline:    gwwrapper.WrapBool(true),
 	})
 	if err != nil {
 		panic(err)

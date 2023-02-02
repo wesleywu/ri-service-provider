@@ -19,7 +19,7 @@ package test
 
 import (
 	"fmt"
-	"github.com/WesleyWu/ri-service-provider/gowing/util/httpclient"
+	"github.com/WesleyWu/gowing/util/gwhttpclient"
 	"github.com/gogf/gf/v2/encoding/gjson"
 	"github.com/gogf/gf/v2/os/gctx"
 	"github.com/stretchr/testify/assert"
@@ -29,7 +29,7 @@ import (
 
 var (
 	ctx           = gctx.New()
-	client        = httpclient.New(100)
+	client        = gwhttpclient.New(100)
 	commonHeaders = &http.Header{
 		"Content-Type":                  []string{"application/json"},
 		"x-dubbo-http1.1-dubbo-version": []string{"1.0.0"},
