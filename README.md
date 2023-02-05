@@ -11,7 +11,7 @@
 
 本项目的目标是，为 [gowing](https://github.com/wesleywu/gowing) 代码生成工具提供一个 Domain Repository 微服务的具体参考实现
 
-# 功能说明
+## 功能说明
 - 【完成】支持多个Service注册到同一个Provider服务
 - 【完成】字段支持google.protobuf.Any类型
     - 提供Any字段的wrap和unwrap工具方法
@@ -24,25 +24,35 @@
 - 【完成】支持与Pixiu API网关的集成
 - 【完成】支持 rpc call 的声明式透明缓存（对业务代码无侵入）
 - 【完成】支持链路跟踪
+- 【完成】当服务实现代码被引入时，支持进程内 (inproc) 服务调用，方便实现单体服务
 - 【P1】更完善的错误处理
 - 【P1】支持Stream形式的调用
 - 【P2】支持etcd注册中心
 - 【P2】健康检测
 - 【P2】支持国际化
 
-# 运行 
-## 1. 创建 MySQL 数据库和表
-sql 脚本待提供 
-## 2. 启动 Nacos
+## 一、微服务方式运行
 
-## 3. 启动 PRC service provider
-`go run main.go`
+### 1. 运行 provider
+#### - 创建 MySQL 数据库和表
+`sql 脚本待提供` 
+#### - 启动 Nacos
+#### - 启动 PRC service provider
+`go run ./provider --port 22000`
 
-# 测试
-## RPC consumer
+### 2. 运行 consumer 
+#### 启动 restful-api，通过 RPC consumer 访问微服务 provider 
+`go run ./api/cmd/rpc`
+
+测试
+
+`curl --location --request GET 'http://localhost:8200/app/video-collection/one?name=视频推荐'`
+
+### 3. 其他测试
+#### - RPC consumer
 运行 `test/rpc_client/client_test.go` 里的 `TestCase`
 
-## HTTP client
+#### - HTTP client
 首先运行 pixiu API 网关
 
 **需修改 conf.yaml 中的 address 为 nacos 的容器IP:Port （需要能够从docker容器中访问到）**
@@ -90,8 +100,40 @@ curl --location --request POST 'http://localhost:8888/repo_service/VideoCollecti
 }'
 ```
 
-## JSON 反序列化
-**对于 Http 请求，输入参数为json格式，需要特定的编码格式才能被 RPC 服务正确反序列化**
+## 二、单体方式运行
+### 1. 创建 MySQL 数据库和表
+sql 脚本待提供
+
+### 2. 启动单体 restful-api
+`go run ./api/cmd/inproc`
+
+测试
+
+`curl --location --request GET 'http://localhost:8200/app/video-collection/one?name=视频推荐'`
+
+
+## 三、附加说明
+### Jaeger 链路跟踪
+- 运行 Jaeger Docker 镜像
+
+```
+docker run \
+  -p 14268:14268 \
+  -p 16686:16686 \
+  -p 5775:5775/udp \
+  -p 5778:5778 \
+  -p 6831:6831/udp \
+  -p 6832:6832/udp \
+  -p 9411:9411 \
+  -d jaegertracing/all-in-one:1.14
+```
+
+- 浏览器访问 Jaeger
+
+`http://localhost:16686/`
+
+### JSON 反序列化
+**对于通过 pixiu API 网关代理的 HTTP -> RPC 请求，输入参数为json格式，需要特定的编码格式才能被 RPC 服务正确反序列化**
 - 在 Create/Update/Upsert 请求中，*bool 类型字段的编码方式为： "true" | "false" 小写字符串
 - 在 List/Count/One/Delete 请求中，请求结构体中的字段均为 google.protobuf.Any 类型，编码方式如下
   - 单值：
@@ -130,7 +172,7 @@ curl --location --request POST 'http://localhost:8888/repo_service/VideoCollecti
   ```
   参见 `http_test.go`
 
-## 为什么返回结构体中字段都是指针？
+### 为什么service方法返回值的结构体中，所有字段都是指针？
 参考文档 
 - https://protobuf.dev/programming-guides/field_presence/#how-to-enable-explicit-presence-in-proto3
 - https://github.com/protocolbuffers/protobuf/blob/main/docs/field_presence.md

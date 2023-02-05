@@ -88,8 +88,8 @@ func (s *VideoCollectionImpl) List(ctx context.Context, req *proto_video_collect
 		return nil, err
 	}
 	return &proto_video_collection.VideoCollectionListRes{
-		Total:   gwwrapper.WrapInt32(int32(total)),
-		Current: gwwrapper.WrapInt32(int32(page)),
+		Total:   gwwrapper.WrapUInt64(uint64(total)),
+		Current: gwwrapper.WrapUInt32(uint32(page)),
 		Items:   list,
 	}, nil
 }

@@ -77,8 +77,8 @@ message VideoCollectionListReq {
 }
 
 message VideoCollectionListRes {
-  optional int32 total = 1 [(tagger.tags) = "json:\"total\""];
-  optional int32 current = 2 [(tagger.tags) = "json:\"current\""];
+  optional uint64 total = 1 [(tagger.tags) = "json:\"total\""];
+  optional uint32 current = 2 [(tagger.tags) = "json:\"current\""];
   repeated VideoCollectionItem items = 3 [(tagger.tags) = "json:\"items\""];
 }
 
