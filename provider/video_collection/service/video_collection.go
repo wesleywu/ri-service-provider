@@ -265,9 +265,6 @@ func (s *VideoCollectionImpl) Delete(ctx context.Context, req *proto_video_colle
 		err          error
 	)
 	m := dao.VideoCollection.Ctx(ctx).WithAll()
-	//if req.IsEmpty() {
-	//	return nil, errors.NewBadRequestErrorf(req, "必须指定删除条件")
-	//}
 	m, err = gworm.ParseConditions(ctx, req, dao.VideoCollection.ColumnMap, m)
 	if err != nil {
 		return nil, err

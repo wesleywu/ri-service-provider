@@ -105,7 +105,7 @@ curl --location --request POST 'http://localhost:8888/repo_service/VideoCollecti
 sql 脚本待提供
 
 ### 2. 启动单体 restful-api
-`go run ./api/cmd/inproc`
+`go run ./api/cmd/local`
 
 测试
 

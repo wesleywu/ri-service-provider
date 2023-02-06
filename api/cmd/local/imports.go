@@ -18,5 +18,5 @@
 package main
 
 import (
-	_ "github.com/WesleyWu/ri-service-provider/api/video_collection/router/inproc"
+	_ "github.com/WesleyWu/ri-service-provider/api/video_collection/router/local"
 )

@@ -1,4 +1,4 @@
-package inproc
+package local
 
 import (
 	"github.com/WesleyWu/gowing/web/middleware"
