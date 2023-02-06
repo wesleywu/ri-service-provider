@@ -296,8 +296,6 @@ github.com/gogf/gf/contrib/drivers/mysql/v2 v2.3.1/go.mod h1:z+/0qiOwMroAnj5ESuo
 github.com/gogf/gf/contrib/trace/jaeger/v2 v2.3.1 h1:MFPSyGH2mD2j2HhM0y7xup6U7QZvW7vmC1pIaXvFGs4=
 github.com/gogf/gf/contrib/trace/jaeger/v2 v2.3.1/go.mod h1:RMX9eZNqz4sdIyGcXM9W1HXW8D6lATYjAKgFBbdOnLk=
 github.com/gogf/gf/v2 v2.0.0/go.mod h1:apktt6TleWtCIwpz63vBqUnw8MX8gWKoZyxgDpXFtgM=
-github.com/gogf/gf/v2 v2.3.1 h1:uptCJK47N6KSRwTBnFAqBWYnYa/OXBkZ0OlhO9CK7bQ=
-github.com/gogf/gf/v2 v2.3.1/go.mod h1:tsbmtwcAl2chcYoq/fP9W2FZf06aw4i89X34nbSHo9Y=
 github.com/gogo/googleapis v1.1.0/go.mod h1:gf4bu3Q80BeJ6H1S1vYPm8/ELATdvryBaNFGgqEef3s=
 github.com/gogo/protobuf v1.1.1/go.mod h1:r8qH/GZQm5c6nD/R0oafs1akxWv10x8SbQlK7atdtwQ=
 github.com/gogo/protobuf v1.2.0/go.mod h1:r8qH/GZQm5c6nD/R0oafs1akxWv10x8SbQlK7atdtwQ=

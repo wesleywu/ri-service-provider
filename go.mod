@@ -15,6 +15,11 @@ require (
 	google.golang.org/protobuf v1.28.1
 )
 
+replace (
+	github.com/WesleyWu/gowing v0.1.0 => ../gowing
+	github.com/gogf/gf/v2 v2.3.1 => ../gf
+)
+
 require (
 	cloud.google.com/go v0.65.0 // indirect
 	contrib.go.opencensus.io/exporter/prometheus v0.4.1 // indirect
@@ -146,6 +151,3 @@ require (
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
-
-//replace github.com/gogf/gf/v2 v2.3.1 => ../gf
-replace github.com/WesleyWu/gowing v0.1.0 => ../gowing
