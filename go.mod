@@ -4,21 +4,21 @@ go 1.19
 
 require (
 	dubbo.apache.org/dubbo-go/v3 v3.0.4-rc1
-	github.com/WesleyWu/gowing v0.1.0
+	github.com/WesleyWu/gowing v0.2.0
 	github.com/dubbogo/grpc-go v1.42.10
 	github.com/dubbogo/triple v1.2.2-rc2
 	github.com/gogf/gf/contrib/drivers/mysql/v2 v2.3.1
 	github.com/gogf/gf/contrib/trace/jaeger/v2 v2.3.1
-	github.com/gogf/gf/v2 v2.3.1
+	github.com/gogf/gf/v2 v2.3.2
 	github.com/srikrsna/protoc-gen-gotag v0.6.2
 	github.com/stretchr/testify v1.8.1
 	google.golang.org/protobuf v1.28.1
 )
 
-replace (
-	github.com/WesleyWu/gowing v0.1.0 => ../gowing
-	github.com/gogf/gf/v2 v2.3.1 => ../gf
-)
+//replace (
+//	github.com/WesleyWu/gowing v0.2.0 => ../gowing
+//	github.com/gogf/gf/v2 v2.3.2 => ../gf
+//)
 
 require (
 	cloud.google.com/go v0.65.0 // indirect

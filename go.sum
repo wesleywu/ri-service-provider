@@ -53,6 +53,8 @@ github.com/Shopify/sarama v1.19.0/go.mod h1:FVkBWblsNy7DGZRfXLU0O9RCGt5g3g3yEuWX
 github.com/Shopify/toxiproxy v2.1.4+incompatible/go.mod h1:OXgGpZ6Cli1/URJOF1DMxUHB2q5Ap20/P/eIdh4G0pI=
 github.com/StackExchange/wmi v0.0.0-20190523213315-cbe66965904d/go.mod h1:3eOhrUMpNV+6aFIbp5/iudMxNCF27Vw2OZgy4xEx0Fg=
 github.com/VividCortex/gohistogram v1.0.0/go.mod h1:Pf5mBqqDxYaXu3hDrrU+w6nw50o/4+TcAqDqk/vUH7g=
+github.com/WesleyWu/gowing v0.2.0 h1:voyht0wfDTqb2JFh9IEzMn/D0vjlYoHQXzNqvYjC0+8=
+github.com/WesleyWu/gowing v0.2.0/go.mod h1:NfGmjc/sjQpPE7TTNxHRhKGqdwtX6kyoO9P2gttcHjM=
 github.com/Workiva/go-datastructures v1.0.52 h1:PLSK6pwn8mYdaoaCZEMsXBpBotr4HHn9abU0yMQt0NI=
 github.com/Workiva/go-datastructures v1.0.52/go.mod h1:Z+F2Rca0qCsVYDS8z7bAGm8f3UkzuWYS/oBZz5a7VVA=
 github.com/afex/hystrix-go v0.0.0-20180502004556-fa1af6a1f4f5 h1:rFw4nCn9iMW+Vajsk51NtYIcwSTkXr+JGrMd36kTDJw=
@@ -296,6 +298,8 @@ github.com/gogf/gf/contrib/drivers/mysql/v2 v2.3.1/go.mod h1:z+/0qiOwMroAnj5ESuo
 github.com/gogf/gf/contrib/trace/jaeger/v2 v2.3.1 h1:MFPSyGH2mD2j2HhM0y7xup6U7QZvW7vmC1pIaXvFGs4=
 github.com/gogf/gf/contrib/trace/jaeger/v2 v2.3.1/go.mod h1:RMX9eZNqz4sdIyGcXM9W1HXW8D6lATYjAKgFBbdOnLk=
 github.com/gogf/gf/v2 v2.0.0/go.mod h1:apktt6TleWtCIwpz63vBqUnw8MX8gWKoZyxgDpXFtgM=
+github.com/gogf/gf/v2 v2.3.2 h1:nlJ0zuDWqFb93/faZmr7V+GADx/lzz5Unz/9x6OJ2u8=
+github.com/gogf/gf/v2 v2.3.2/go.mod h1:tsbmtwcAl2chcYoq/fP9W2FZf06aw4i89X34nbSHo9Y=
 github.com/gogo/googleapis v1.1.0/go.mod h1:gf4bu3Q80BeJ6H1S1vYPm8/ELATdvryBaNFGgqEef3s=
 github.com/gogo/protobuf v1.1.1/go.mod h1:r8qH/GZQm5c6nD/R0oafs1akxWv10x8SbQlK7atdtwQ=
 github.com/gogo/protobuf v1.2.0/go.mod h1:r8qH/GZQm5c6nD/R0oafs1akxWv10x8SbQlK7atdtwQ=

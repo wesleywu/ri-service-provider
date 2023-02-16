@@ -1,8 +1,11 @@
 package model
 
 import (
+	proto "github.com/WesleyWu/ri-service-provider/proto/video_collection"
+	"github.com/gogf/gf/v2/errors/gerror"
 	"github.com/gogf/gf/v2/frame/g"
 	"github.com/gogf/gf/v2/os/gtime"
+	"reflect"
 )
 
 // VideoCollectionCountReq 查询记录总条数的条件数据结构
@@ -160,4 +163,106 @@ type VideoCollectionDeleteReq struct {
 type VideoCollectionDeleteRes struct {
 	Message      string `json:"message"`      // 提示信息
 	RowsAffected int64  `json:"rowsAffected"` // 影响的条数
+}
+
+func (x *VideoCollectionItem) UnmarshalValue(value interface{}) error {
+	var (
+		id          string
+		name        string
+		contentType int32
+		filterType  int32
+		count       uint32
+		isOnline    bool
+		createdAt   *gtime.Time
+		updatedAt   *gtime.Time
+	)
+	if item, ok := value.(*proto.VideoCollectionItem); ok {
+		if idPtr := item.Id; idPtr != nil {
+			id = *idPtr
+		}
+		if namePtr := item.Name; namePtr != nil {
+			name = *namePtr
+		}
+		if contentTypePtr := item.ContentType; contentTypePtr != nil {
+			contentType = *contentTypePtr
+		}
+		if filterTypePtr := item.FilterType; filterTypePtr != nil {
+			filterType = *filterTypePtr
+		}
+		if countPtr := item.Count; countPtr != nil {
+			count = *countPtr
+		}
+		if isOnlinePtr := item.IsOnline; isOnlinePtr != nil {
+			isOnline = *isOnlinePtr
+		}
+		if createdAtPtr := item.CreatedAt; createdAtPtr != nil {
+			createdAt = gtime.New(createdAtPtr.AsTime())
+		}
+		if updatedAtPtr := item.UpdatedAt; updatedAtPtr != nil {
+			updatedAt = gtime.New(updatedAtPtr.AsTime())
+		}
+		*x = VideoCollectionItem{
+			Id:          id,
+			Name:        name,
+			ContentType: int(contentType),
+			FilterType:  int(filterType),
+			Count:       count,
+			IsOnline:    isOnline,
+			CreatedAt:   createdAt,
+			UpdatedAt:   updatedAt,
+		}
+		return nil
+	}
+	return gerror.Newf(`unsupported value type for UnmarshalValue: %v`, reflect.TypeOf(value))
+}
+
+func (x *VideoCollectionOneRes) UnmarshalValue(value interface{}) error {
+	var (
+		id          string
+		name        string
+		contentType int32
+		filterType  int32
+		count       uint32
+		isOnline    bool
+		createdAt   *gtime.Time
+		updatedAt   *gtime.Time
+	)
+	if item, ok := value.(*proto.VideoCollectionOneRes); ok {
+		if idPtr := item.Id; idPtr != nil {
+			id = *idPtr
+		}
+		if namePtr := item.Name; namePtr != nil {
+			name = *namePtr
+		}
+		if contentTypePtr := item.ContentType; contentTypePtr != nil {
+			contentType = *contentTypePtr
+		}
+		if filterTypePtr := item.FilterType; filterTypePtr != nil {
+			filterType = *filterTypePtr
+		}
+		if countPtr := item.Count; countPtr != nil {
+			count = *countPtr
+		}
+		if isOnlinePtr := item.IsOnline; isOnlinePtr != nil {
+			isOnline = *isOnlinePtr
+		}
+		if createdAtPtr := item.CreatedAt; createdAtPtr != nil {
+			createdAt = gtime.New(createdAtPtr.AsTime())
+		}
+		if updatedAtPtr := item.UpdatedAt; updatedAtPtr != nil {
+			updatedAt = gtime.New(updatedAtPtr.AsTime())
+		}
+		*x = VideoCollectionOneRes{
+			Id:          id,
+			Name:        name,
+			ContentType: int(contentType),
+			FilterType:  int(filterType),
+			Count:       count,
+			IsOnline:    isOnline,
+			CreatedAt:   createdAt,
+			UpdatedAt:   updatedAt,
+		}
+		return nil
+	}
+	return gerror.Newf(`unsupported value type for UnmarshalValue: %v`, reflect.TypeOf(value))
 }
