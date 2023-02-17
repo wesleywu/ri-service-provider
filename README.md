@@ -48,9 +48,79 @@
 
 `curl --location --request GET 'http://localhost:8200/app/video-collection/one?name=视频推荐'`
 
-### 3. 其他测试
+### 3. 测试dubbo-go provider
+
 #### - RPC consumer
 运行 `test/rpc_client/client_test.go` 里的 `TestCase`
+
+#### - gRPC client
+`dubbo-go`协议底层采用`gRPC`协议，可以采用`gRPC`客户端工具`evans`来测试。详细介绍请跳转 https://github.com/ktr0731/evans
+
+```
+# evans -r repl -p 22000
+# 输出如下
+  ______
+ |  ____|
+ | |__    __   __   __ _   _ __    ___
+ |  __|   \ \ / /  / _. | | '_ \  / __|
+ | |____   \ V /  | (_| | | | | | \__ \
+ |______|   \_/    \__,_| |_| |_| |___/
+
+ more expressive universal gRPC client
+proto.video_collection.VideoCollection@127.0.0.1:22000>
+
+# 查看grpc server提供了哪些服务和rpc接口
+proto.video_collection.VideoCollection@127.0.0.1:22000> show service
+
++-----------------+--------+--------------------------+--------------------------+
+|     SERVICE     |  RPC   |       REQUEST TYPE       |      RESPONSE TYPE       |
++-----------------+--------+--------------------------+--------------------------+
+| VideoCollection | Count  | VideoCollectionCountReq  | VideoCollectionCountRes  |
+| VideoCollection | One    | VideoCollectionOneReq    | VideoCollectionOneRes    |
+| VideoCollection | List   | VideoCollectionListReq   | VideoCollectionListRes   |
+| VideoCollection | Create | VideoCollectionCreateReq | VideoCollectionCreateRes |
+| VideoCollection | Update | VideoCollectionUpdateReq | VideoCollectionUpdateRes |
+| VideoCollection | Upsert | VideoCollectionUpsertReq | VideoCollectionUpsertRes |
+| VideoCollection | Delete | VideoCollectionDeleteReq | VideoCollectionDeleteRes |
++-----------------+--------+--------------------------+--------------------------+
+
+# 查看grpc server提供了哪些服务和rpc接口
+proto.video_collection.VideoCollection@127.0.0.1:22000> service VideoCollection
+# 已切换到 VideoCollection 服务下，之后的 call 命令可以直接调用该服务下的 rpc method 了
+
+proto.video_collection.VideoCollection@127.0.0.1:22000> call One
+✔ _
+meta (TYPE_ENUM) => 
+id::type_url (TYPE_STRING) => type.googleapis.com/google.protobuf.StringValue
+id::value (TYPE_BYTES) => \n\r32559711-7365
+name::type_url (TYPE_STRING) =>
+name::value (TYPE_BYTES) =>
+contentType::type_url (TYPE_STRING) =>
+contentType::value (TYPE_BYTES) =>
+filterType::type_url (TYPE_STRING) =>
+filterType::value (TYPE_BYTES) =>
+count::type_url (TYPE_STRING) =>
+count::value (TYPE_BYTES) =>
+isOnline::type_url (TYPE_STRING) =>
+isOnline::value (TYPE_BYTES) =>
+createdAt::type_url (TYPE_STRING) =>
+createdAt::value (TYPE_BYTES) =>
+updatedAt::type_url (TYPE_STRING) =>
+updatedAt::value (TYPE_BYTES) =>
+orderBy (TYPE_STRING) =>
+
+# 结果如下
+{
+  "contentType": 1,
+  "count": 0,
+  "createdAt": "2023-01-10T13:36:58.111869Z",
+  "filterType": 0,
+  "id": "32559711-7365",
+  "isOnline": false,
+  "name": "",
+  "updatedAt": "2023-01-10T15:10:26.002333Z"
+}
+```
 
 #### - HTTP client
 首先运行 pixiu API 网关
