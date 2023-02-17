@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package proto.video_collection;
 
-option go_package = "proto.video_collection";
+option go_package = "proto/video_collection";
 option java_package = "repo.video_collection";
 
 import "google/protobuf/timestamp.proto";

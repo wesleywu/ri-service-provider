@@ -7,24 +7,24 @@ import (
 	"github.com/WesleyWu/gowing/errors/gwerror"
 	"github.com/WesleyWu/gowing/util/gworm"
 	"github.com/WesleyWu/gowing/util/gwwrapper"
-	"github.com/WesleyWu/ri-service-provider/proto/video_collection"
+	p "github.com/WesleyWu/ri-service-provider/proto/video_collection"
 	"github.com/WesleyWu/ri-service-provider/provider/video_collection/service/internal/dao"
 	"github.com/gogf/gf/v2/frame/g"
 	"github.com/gogf/gf/v2/util/gconv"
 )
 
 type IVideoCollection interface {
-	Count(ctx context.Context, req *proto_video_collection.VideoCollectionCountReq) (*proto_video_collection.VideoCollectionCountRes, error)
-	One(ctx context.Context, req *proto_video_collection.VideoCollectionOneReq) (*proto_video_collection.VideoCollectionOneRes, error)
-	List(ctx context.Context, req *proto_video_collection.VideoCollectionListReq) (*proto_video_collection.VideoCollectionListRes, error)
-	Create(ctx context.Context, req *proto_video_collection.VideoCollectionCreateReq) (*proto_video_collection.VideoCollectionCreateRes, error)
-	Update(ctx context.Context, req *proto_video_collection.VideoCollectionUpdateReq) (*proto_video_collection.VideoCollectionUpdateRes, error)
-	Upsert(ctx context.Context, req *proto_video_collection.VideoCollectionUpsertReq) (*proto_video_collection.VideoCollectionUpsertRes, error)
-	Delete(ctx context.Context, req *proto_video_collection.VideoCollectionDeleteReq) (*proto_video_collection.VideoCollectionDeleteRes, error)
+	Count(ctx context.Context, req *p.VideoCollectionCountReq) (*p.VideoCollectionCountRes, error)
+	One(ctx context.Context, req *p.VideoCollectionOneReq) (*p.VideoCollectionOneRes, error)
+	List(ctx context.Context, req *p.VideoCollectionListReq) (*p.VideoCollectionListRes, error)
+	Create(ctx context.Context, req *p.VideoCollectionCreateReq) (*p.VideoCollectionCreateRes, error)
+	Update(ctx context.Context, req *p.VideoCollectionUpdateReq) (*p.VideoCollectionUpdateRes, error)
+	Upsert(ctx context.Context, req *p.VideoCollectionUpsertReq) (*p.VideoCollectionUpsertRes, error)
+	Delete(ctx context.Context, req *p.VideoCollectionDeleteReq) (*p.VideoCollectionDeleteRes, error)
 }
 
 type VideoCollectionImpl struct {
-	proto_video_collection.UnimplementedVideoCollectionServer
+	p.UnimplementedVideoCollectionServer
 }
 
 var (
@@ -34,7 +34,7 @@ var (
 // Count 根据req指定的查询条件获取记录列表
 // 支持翻页和排序参数，支持查询条件参数类型自动转换
 // 未赋值或或赋值为nil的字段不参与条件查询
-func (s *VideoCollectionImpl) Count(ctx context.Context, req *proto_video_collection.VideoCollectionCountReq) (*proto_video_collection.VideoCollectionCountRes, error) {
+func (s *VideoCollectionImpl) Count(ctx context.Context, req *p.VideoCollectionCountReq) (*p.VideoCollectionCountRes, error) {
 	var err error
 	m := dao.VideoCollection.Ctx(ctx).WithAll()
 	m, err = gworm.ParseConditions(ctx, req, dao.VideoCollection.ColumnMap, m)
@@ -45,18 +45,18 @@ func (s *VideoCollectionImpl) Count(ctx context.Context, req *proto_video_collec
 	if err != nil {
 		return nil, err
 	}
-	return &proto_video_collection.VideoCollectionCountRes{Total: gwwrapper.WrapInt32(gconv.Int32(count))}, err
+	return &p.VideoCollectionCountRes{Total: gwwrapper.WrapInt32(gconv.Int32(count))}, err
 }
 
 // List 根据req指定的查询条件获取记录列表
 // 支持翻页和排序参数，支持查询条件参数类型自动转换
 // 未赋值或或赋值为nil的字段不参与条件查询
-func (s *VideoCollectionImpl) List(ctx context.Context, req *proto_video_collection.VideoCollectionListReq) (*proto_video_collection.VideoCollectionListRes, error) {
+func (s *VideoCollectionImpl) List(ctx context.Context, req *p.VideoCollectionListReq) (*p.VideoCollectionListRes, error) {
 	var (
 		total int
 		page  int
 		order string
-		list  []*proto_video_collection.VideoCollectionItem
+		list  []*p.VideoCollectionItem
 		err   error
 	)
 	m := dao.VideoCollection.Ctx(ctx).WithAll()
@@ -80,14 +80,14 @@ func (s *VideoCollectionImpl) List(ctx context.Context, req *proto_video_collect
 	if !g.IsEmpty(req.OrderBy) {
 		order = req.OrderBy
 	}
-	list = []*proto_video_collection.VideoCollectionItem{}
-	err = m.Fields(proto_video_collection.VideoCollectionItem{}).Page(page, int(req.PageSize)).Order(order).Scan(&list)
+	list = []*p.VideoCollectionItem{}
+	err = m.Fields(p.VideoCollectionItem{}).Page(page, int(req.PageSize)).Order(order).Scan(&list)
 	if err != nil {
 		g.Log().Error(ctx, err)
 		err = gwerror.WrapServiceErrorf(err, req, "获取数据列表失败")
 		return nil, err
 	}
-	return &proto_video_collection.VideoCollectionListRes{
+	return &p.VideoCollectionListRes{
 		Total:   gwwrapper.WrapUInt64(uint64(total)),
 		Current: gwwrapper.WrapUInt32(uint32(page)),
 		Items:   list,
@@ -97,9 +97,9 @@ func (s *VideoCollectionImpl) List(ctx context.Context, req *proto_video_collect
 // One 根据req指定的查询条件获取单条数据
 // 支持排序参数，支持查询条件参数类型自动转换
 // 未赋值或或赋值为nil的字段不参与条件查询
-func (s *VideoCollectionImpl) One(ctx context.Context, req *proto_video_collection.VideoCollectionOneReq) (*proto_video_collection.VideoCollectionOneRes, error) {
+func (s *VideoCollectionImpl) One(ctx context.Context, req *p.VideoCollectionOneReq) (*p.VideoCollectionOneRes, error) {
 	var (
-		list  []*proto_video_collection.VideoCollectionItem
+		list  []*p.VideoCollectionItem
 		order string
 		err   error
 	)
@@ -111,7 +111,7 @@ func (s *VideoCollectionImpl) One(ctx context.Context, req *proto_video_collecti
 	if !g.IsEmpty(req.OrderBy) {
 		order = req.OrderBy
 	}
-	err = m.Fields(proto_video_collection.VideoCollectionItem{}).Order(order).Limit(1).Scan(&list)
+	err = m.Fields(p.VideoCollectionItem{}).Order(order).Limit(1).Scan(&list)
 	if err != nil {
 		g.Log().Error(ctx, err)
 		err = gwerror.WrapServiceErrorf(err, req, "获取单条数据记录失败")
@@ -121,7 +121,7 @@ func (s *VideoCollectionImpl) One(ctx context.Context, req *proto_video_collecti
 		return nil, gwerror.NewNotFoundErrorf(req, "找不到要获取的数据")
 	}
 	v := list[0]
-	return &proto_video_collection.VideoCollectionOneRes{
+	return &p.VideoCollectionOneRes{
 		Id:          v.Id,
 		Name:        v.Name,
 		ContentType: v.ContentType,
@@ -136,7 +136,7 @@ func (s *VideoCollectionImpl) One(ctx context.Context, req *proto_video_collecti
 // Create 插入记录
 // 包括表中所有字段，支持字段类型自动转换，支持对非主键且可为空字段不赋值
 // 未赋值或赋值为nil的字段将被更新为 NULL 或数据库表指定的DEFAULT
-func (s *VideoCollectionImpl) Create(ctx context.Context, req *proto_video_collection.VideoCollectionCreateReq) (*proto_video_collection.VideoCollectionCreateRes, error) {
+func (s *VideoCollectionImpl) Create(ctx context.Context, req *p.VideoCollectionCreateReq) (*p.VideoCollectionCreateRes, error) {
 	var (
 		result       sql.Result
 		lastInsertId int64
@@ -168,7 +168,7 @@ func (s *VideoCollectionImpl) Create(ctx context.Context, req *proto_video_colle
 	if rowsAffected == 0 {
 		message = "未插入任何记录" // should not happen
 	}
-	return &proto_video_collection.VideoCollectionCreateRes{
+	return &p.VideoCollectionCreateRes{
 		Message:      gwwrapper.WrapString(message),
 		LastInsertId: gwwrapper.WrapInt64(lastInsertId),
 		RowsAffected: gwwrapper.WrapInt64(rowsAffected),
@@ -178,7 +178,7 @@ func (s *VideoCollectionImpl) Create(ctx context.Context, req *proto_video_colle
 // Update 根据主键更新对应记录
 // 支持字段类型自动转换，支持对非主键字段赋值/不赋值
 // 未赋值或赋值为nil的字段不参与更新（即不会修改原记录的字段值）
-func (s *VideoCollectionImpl) Update(ctx context.Context, req *proto_video_collection.VideoCollectionUpdateReq) (*proto_video_collection.VideoCollectionUpdateRes, error) {
+func (s *VideoCollectionImpl) Update(ctx context.Context, req *p.VideoCollectionUpdateReq) (*p.VideoCollectionUpdateRes, error) {
 	var (
 		result       sql.Result
 		rowsAffected int64
@@ -206,7 +206,7 @@ func (s *VideoCollectionImpl) Update(ctx context.Context, req *proto_video_colle
 	if rowsAffected == 0 {
 		return nil, gwerror.NewNotFoundErrorf(req, "不存在要更新的记录")
 	}
-	return &proto_video_collection.VideoCollectionUpdateRes{
+	return &p.VideoCollectionUpdateRes{
 		Message:      gwwrapper.WrapString(message),
 		RowsAffected: gwwrapper.WrapInt64(rowsAffected),
 	}, nil
@@ -215,7 +215,7 @@ func (s *VideoCollectionImpl) Update(ctx context.Context, req *proto_video_colle
 // Upsert 根据主键（或唯一索引）是否存在且已在req中赋值，更新或插入对应记录。
 // 支持字段类型自动转换，支持对非主键字段赋值/不赋值
 // 未赋值或赋值为nil的字段不参与更新/插入（即更新时不会修改原记录的字段值）
-func (s *VideoCollectionImpl) Upsert(ctx context.Context, req *proto_video_collection.VideoCollectionUpsertReq) (*proto_video_collection.VideoCollectionUpsertRes, error) {
+func (s *VideoCollectionImpl) Upsert(ctx context.Context, req *p.VideoCollectionUpsertReq) (*p.VideoCollectionUpsertRes, error) {
 	var (
 		result       sql.Result
 		lastInsertId int64
@@ -249,7 +249,7 @@ func (s *VideoCollectionImpl) Upsert(ctx context.Context, req *proto_video_colle
 	} else if rowsAffected == 1 {
 		message = "插入成功"
 	}
-	return &proto_video_collection.VideoCollectionUpsertRes{
+	return &p.VideoCollectionUpsertRes{
 		Message:      gwwrapper.WrapString(message),
 		LastInsertId: gwwrapper.WrapInt64(lastInsertId),
 		RowsAffected: gwwrapper.WrapInt64(rowsAffected),
@@ -258,7 +258,7 @@ func (s *VideoCollectionImpl) Upsert(ctx context.Context, req *proto_video_colle
 
 // Delete 根据req指定的条件删除表中记录
 // 未赋值或或赋值为nil的字段不参与条件查询
-func (s *VideoCollectionImpl) Delete(ctx context.Context, req *proto_video_collection.VideoCollectionDeleteReq) (*proto_video_collection.VideoCollectionDeleteRes, error) {
+func (s *VideoCollectionImpl) Delete(ctx context.Context, req *p.VideoCollectionDeleteReq) (*p.VideoCollectionDeleteRes, error) {
 	var (
 		result       sql.Result
 		rowsAffected int64
@@ -285,7 +285,7 @@ func (s *VideoCollectionImpl) Delete(ctx context.Context, req *proto_video_colle
 		message = "不存在要删除的记录"
 	}
 
-	return &proto_video_collection.VideoCollectionDeleteRes{
+	return &p.VideoCollectionDeleteRes{
 		Message:      gwwrapper.WrapString(message),
 		RowsAffected: gwwrapper.WrapInt64(rowsAffected),
 	}, nil

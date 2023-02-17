@@ -1,4 +1,4 @@
-package proto_video_collection
+package video_collection
 
 import (
 	"github.com/WesleyWu/gowing/util/gwwrapper"
