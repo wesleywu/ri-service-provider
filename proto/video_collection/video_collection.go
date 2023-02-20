@@ -56,5 +56,5 @@ func (x *VideoCollectionItem) UnmarshalValue(value interface{}) error {
 		}
 		return nil
 	}
-	return gerror.Newf(`unsupported value type for UnmarshalValue: %v`, reflect.TypeOf(value))
+	return gerror.Newf(`unsupported value type for UnmarshalMessage: %v`, reflect.TypeOf(value))
 }

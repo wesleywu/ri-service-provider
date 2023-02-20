@@ -27,16 +27,12 @@
 
 # Database.
 [database]
+#    [[database.default]]
+#        link  = "mysql:arco-demo:arco-demo@tcp(127.0.0.1:3306)/arco-demo?charset=utf8mb4&parseTime=true&loc=Local"
+#        timezone= "Asia/Shanghai"
+#        debug = true
     [[database.default]]
-        type = "mysql"
-        link  = "arco-demo:arco-demo@tcp(127.0.0.1:3306)/arco-demo?charset=utf8mb4&parseTime=true&loc=Local"
-        role = "master"
-        timezone= "Asia/Shanghai"
-        debug = true
-    [[database.default]]
-        type = "mysql"
-        link  = "arco-demo:arco-demo@tcp(127.0.0.1:3306)/arco-demo?charset=utf8mb4&parseTime=true&loc=Local"
-        role = "slave"
+        link  = "pgsql:wumengye:CvoOuic4I5T6jZCVbK9Ucg@tcp(castbox-test-5292.6wr.cockroachlabs.cloud:26257)/gowing?sslmode=verify-full"
         timezone= "Asia/Shanghai"
         debug = true
     # Database logger.

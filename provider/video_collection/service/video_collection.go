@@ -152,12 +152,7 @@ func (s *VideoCollectionImpl) Create(ctx context.Context, req *p.VideoCollection
 		g.Log().Error(ctx, err)
 		return nil, err
 	}
-	lastInsertId, err = result.LastInsertId()
-	if err != nil {
-		err = gwerror.WrapServiceErrorf(err, req, "获取插入记录主键键值出错")
-		g.Log().Error(ctx, err)
-		return nil, err
-	}
+	lastInsertId, _ = result.LastInsertId()
 	rowsAffected, err = result.RowsAffected()
 	if err != nil {
 		err = gwerror.WrapServiceErrorf(err, req, "获取插入记录条数出错")
@@ -231,12 +226,7 @@ func (s *VideoCollectionImpl) Upsert(ctx context.Context, req *p.VideoCollection
 		g.Log().Error(ctx, err)
 		return nil, err
 	}
-	lastInsertId, err = result.LastInsertId()
-	if err != nil {
-		err = gwerror.WrapServiceErrorf(err, req, "获取插入记录主键键值出错")
-		g.Log().Error(ctx, err)
-		return nil, err
-	}
+	lastInsertId, _ = result.LastInsertId()
 	rowsAffected, err = result.RowsAffected()
 	if err != nil {
 		err = gwerror.WrapServiceErrorf(err, req, "获取插入/更新记录条数出错")

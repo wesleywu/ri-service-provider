@@ -1,11 +1,10 @@
 package model
 
 import (
+	"github.com/WesleyWu/gowing/util/gwwrapper"
 	proto "github.com/WesleyWu/ri-service-provider/proto/video_collection"
-	"github.com/gogf/gf/v2/errors/gerror"
 	"github.com/gogf/gf/v2/frame/g"
 	"github.com/gogf/gf/v2/os/gtime"
-	"reflect"
 )
 
 // VideoCollectionCountReq 查询记录总条数的条件数据结构
@@ -165,58 +164,46 @@ type VideoCollectionDeleteRes struct {
 	RowsAffected int64  `json:"rowsAffected"` // 影响的条数
 }
 
-func (x *VideoCollectionItem) UnmarshalValue(value interface{}) error {
-	var (
-		id          string
-		name        string
-		contentType int32
-		filterType  int32
-		count       uint32
-		isOnline    bool
-		createdAt   *gtime.Time
-		updatedAt   *gtime.Time
-	)
-	if item, ok := value.(*proto.VideoCollectionItem); ok {
-		if idPtr := item.Id; idPtr != nil {
-			id = *idPtr
-		}
-		if namePtr := item.Name; namePtr != nil {
-			name = *namePtr
-		}
-		if contentTypePtr := item.ContentType; contentTypePtr != nil {
-			contentType = *contentTypePtr
-		}
-		if filterTypePtr := item.FilterType; filterTypePtr != nil {
-			filterType = *filterTypePtr
-		}
-		if countPtr := item.Count; countPtr != nil {
-			count = *countPtr
-		}
-		if isOnlinePtr := item.IsOnline; isOnlinePtr != nil {
-			isOnline = *isOnlinePtr
-		}
-		if createdAtPtr := item.CreatedAt; createdAtPtr != nil {
-			createdAt = gtime.New(createdAtPtr.AsTime())
-		}
-		if updatedAtPtr := item.UpdatedAt; updatedAtPtr != nil {
-			updatedAt = gtime.New(updatedAtPtr.AsTime())
-		}
-		*x = VideoCollectionItem{
-			Id:          id,
-			Name:        name,
-			ContentType: int(contentType),
-			FilterType:  int(filterType),
-			Count:       count,
-			IsOnline:    isOnline,
-			CreatedAt:   createdAt,
-			UpdatedAt:   updatedAt,
-		}
-		return nil
-	}
-	return gerror.Newf(`unsupported value type for UnmarshalValue: %v`, reflect.TypeOf(value))
+func (x *VideoCollectionCreateReq) MarshalMessage() (*proto.VideoCollectionCreateReq, error) {
+	return &proto.VideoCollectionCreateReq{
+		Id:          gwwrapper.WrapString(x.Id),
+		Name:        gwwrapper.WrapString(x.Name),
+		ContentType: gwwrapper.WrapInt32(x.ContentType),
+		FilterType:  gwwrapper.WrapInt32(x.FilterType),
+		Count:       gwwrapper.WrapUInt32(x.Count),
+		IsOnline:    gwwrapper.WrapBool(x.IsOnline),
+		CreatedAt:   gwwrapper.WrapTimestamp(x.CreatedAt),
+		UpdatedAt:   gwwrapper.WrapTimestamp(x.UpdatedAt),
+	}, nil
 }
 
-func (x *VideoCollectionOneRes) UnmarshalValue(value interface{}) error {
+func (x *VideoCollectionUpdateReq) MarshalMessage() (*proto.VideoCollectionUpdateReq, error) {
+	return &proto.VideoCollectionUpdateReq{
+		Id:          gwwrapper.WrapString(x.Id),
+		Name:        gwwrapper.WrapString(x.Name),
+		ContentType: gwwrapper.WrapInt32(x.ContentType),
+		FilterType:  gwwrapper.WrapInt32(x.FilterType),
+		Count:       gwwrapper.WrapUInt32(x.Count),
+		IsOnline:    gwwrapper.WrapBool(x.IsOnline),
+		CreatedAt:   gwwrapper.WrapTimestamp(x.CreatedAt),
+		UpdatedAt:   gwwrapper.WrapTimestamp(x.UpdatedAt),
+	}, nil
+}
+
+func (x *VideoCollectionUpsertReq) MarshalMessage() (*proto.VideoCollectionUpsertReq, error) {
+	return &proto.VideoCollectionUpsertReq{
+		Id:          gwwrapper.WrapString(x.Id),
+		Name:        gwwrapper.WrapString(x.Name),
+		ContentType: gwwrapper.WrapInt32(x.ContentType),
+		FilterType:  gwwrapper.WrapInt32(x.FilterType),
+		Count:       gwwrapper.WrapUInt32(x.Count),
+		IsOnline:    gwwrapper.WrapBool(x.IsOnline),
+		CreatedAt:   gwwrapper.WrapTimestamp(x.CreatedAt),
+		UpdatedAt:   gwwrapper.WrapTimestamp(x.UpdatedAt),
+	}, nil
+}
+
+func (x *VideoCollectionItem) UnmarshalMessage(res *proto.VideoCollectionItem) error {
 	var (
 		id          string
 		name        string
@@ -227,42 +214,102 @@ func (x *VideoCollectionOneRes) UnmarshalValue(value interface{}) error {
 		createdAt   *gtime.Time
 		updatedAt   *gtime.Time
 	)
-	if item, ok := value.(*proto.VideoCollectionOneRes); ok {
-		if idPtr := item.Id; idPtr != nil {
-			id = *idPtr
-		}
-		if namePtr := item.Name; namePtr != nil {
-			name = *namePtr
-		}
-		if contentTypePtr := item.ContentType; contentTypePtr != nil {
-			contentType = *contentTypePtr
-		}
-		if filterTypePtr := item.FilterType; filterTypePtr != nil {
-			filterType = *filterTypePtr
-		}
-		if countPtr := item.Count; countPtr != nil {
-			count = *countPtr
-		}
-		if isOnlinePtr := item.IsOnline; isOnlinePtr != nil {
-			isOnline = *isOnlinePtr
-		}
-		if createdAtPtr := item.CreatedAt; createdAtPtr != nil {
-			createdAt = gtime.New(createdAtPtr.AsTime())
-		}
-		if updatedAtPtr := item.UpdatedAt; updatedAtPtr != nil {
-			updatedAt = gtime.New(updatedAtPtr.AsTime())
-		}
-		*x = VideoCollectionOneRes{
-			Id:          id,
-			Name:        name,
-			ContentType: int(contentType),
-			FilterType:  int(filterType),
-			Count:       count,
-			IsOnline:    isOnline,
-			CreatedAt:   createdAt,
-			UpdatedAt:   updatedAt,
-		}
-		return nil
+	if idPtr := res.Id; idPtr != nil {
+		id = *idPtr
 	}
-	return gerror.Newf(`unsupported value type for UnmarshalValue: %v`, reflect.TypeOf(value))
+	if namePtr := res.Name; namePtr != nil {
+		name = *namePtr
+	}
+	if contentTypePtr := res.ContentType; contentTypePtr != nil {
+		contentType = *contentTypePtr
+	}
+	if filterTypePtr := res.FilterType; filterTypePtr != nil {
+		filterType = *filterTypePtr
+	}
+	if countPtr := res.Count; countPtr != nil {
+		count = *countPtr
+	}
+	if isOnlinePtr := res.IsOnline; isOnlinePtr != nil {
+		isOnline = *isOnlinePtr
+	}
+	if createdAtPtr := res.CreatedAt; createdAtPtr != nil {
+		createdAt = gtime.New(createdAtPtr.AsTime())
+	}
+	if updatedAtPtr := res.UpdatedAt; updatedAtPtr != nil {
+		updatedAt = gtime.New(updatedAtPtr.AsTime())
+	}
+	*x = VideoCollectionItem{
+		Id:          id,
+		Name:        name,
+		ContentType: int(contentType),
+		FilterType:  int(filterType),
+		Count:       count,
+		IsOnline:    isOnline,
+		CreatedAt:   createdAt,
+		UpdatedAt:   updatedAt,
+	}
+	return nil
+}
+
+func (x *VideoCollectionOneRes) UnmarshalMessage(res *proto.VideoCollectionOneRes) error {
+	var (
+		id          string
+		name        string
+		contentType int32
+		filterType  int32
+		count       uint32
+		isOnline    bool
+		createdAt   *gtime.Time
+		updatedAt   *gtime.Time
+	)
+
+	if idPtr := res.Id; idPtr != nil {
+		id = *idPtr
+	}
+	if namePtr := res.Name; namePtr != nil {
+		name = *namePtr
+	}
+	if contentTypePtr := res.ContentType; contentTypePtr != nil {
+		contentType = *contentTypePtr
+	}
+	if filterTypePtr := res.FilterType; filterTypePtr != nil {
+		filterType = *filterTypePtr
+	}
+	if countPtr := res.Count; countPtr != nil {
+		count = *countPtr
+	}
+	if isOnlinePtr := res.IsOnline; isOnlinePtr != nil {
+		isOnline = *isOnlinePtr
+	}
+	if createdAtPtr := res.CreatedAt; createdAtPtr != nil {
+		createdAt = gtime.New(createdAtPtr.AsTime())
+	}
+	if updatedAtPtr := res.UpdatedAt; updatedAtPtr != nil {
+		updatedAt = gtime.New(updatedAtPtr.AsTime())
+	}
+	*x = VideoCollectionOneRes{
+		Id:          id,
+		Name:        name,
+		ContentType: int(contentType),
+		FilterType:  int(filterType),
+		Count:       count,
+		IsOnline:    isOnline,
+		CreatedAt:   createdAt,
+		UpdatedAt:   updatedAt,
+	}
+	return nil
+}
+
+func (x *VideoCollectionListRes) UnmarshalMessage(res *proto.VideoCollectionListRes) error {
+	items := make([]*VideoCollectionItem, len(res.Items))
+	for i, item := range res.Items {
+		items[i] = &VideoCollectionItem{}
+		_ = items[i].UnmarshalMessage(item)
+	}
+	*x = VideoCollectionListRes{
+		Total:   *res.Total,
+		Current: *res.Current,
+		Items:   items,
+	}
+	return nil
 }
