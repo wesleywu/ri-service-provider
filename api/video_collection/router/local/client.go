@@ -20,7 +20,7 @@ package local
 import (
 	"github.com/WesleyWu/gowing/rpc/proxy"
 	proto "github.com/WesleyWu/ri-service-provider/proto/video_collection"
-	"github.com/WesleyWu/ri-service-provider/provider/video_collection/service"
+	"github.com/WesleyWu/ri-service-provider/provider/video_collection_mongo/service"
 )
 
 const (

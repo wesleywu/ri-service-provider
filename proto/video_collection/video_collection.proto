@@ -34,7 +34,7 @@ message VideoCollectionCountReq {
 }
 
 message VideoCollectionCountRes {
-  optional int32 total = 1 [(tagger.tags) = "json:\"total\""];
+  optional int64 total = 1 [(tagger.tags) = "json:\"total\""];
 }
 
 message VideoCollectionOneReq {
@@ -77,7 +77,7 @@ message VideoCollectionListReq {
 }
 
 message VideoCollectionListRes {
-  optional uint64 total = 1 [(tagger.tags) = "json:\"total\""];
+  optional int64 total = 1 [(tagger.tags) = "json:\"total\""];
   optional uint32 current = 2 [(tagger.tags) = "json:\"current\""];
   repeated VideoCollectionItem items = 3 [(tagger.tags) = "json:\"items\""];
 }
@@ -94,20 +94,20 @@ message VideoCollectionItem {
 }
 
 message VideoCollectionCreateReq {
-  gmeta.Meta meta = 1 [(tagger.tags) = "orm:\"do:true\" validation:\"false\" json:\"-\""];
-  optional string id = 2 [(tagger.tags) = "p:\"id\" v:\"required#视频集ID，字符串格式不能为空\" json:\"id\""];
-  optional string name = 3 [(tagger.tags) = "p:\"name\" v:\"required|max-length:50#视频集名称不能为空|视频集名称不能超过50个字\" json:\"name\""];
-  optional int32 contentType = 4 [(tagger.tags) = "p:\"contentType\" v:\"required#内容类型不能为空\" json:\"contentType\""];
-  optional int32 filterType = 5 [(tagger.tags) = "p:\"filterType\" json:\"filterType\""];
-  optional uint32 count = 6 [(tagger.tags) = "p:\"count\" json:\"count\""];
-  optional bool isOnline = 7 [(tagger.tags) = "p:\"isOnline\" json:\"isOnline\""];
-  optional google.protobuf.Timestamp createdAt = 8 [(tagger.tags) = "p:\"createdAt\" json:\"createdAt\""];
-  optional google.protobuf.Timestamp updatedAt = 9 [(tagger.tags) = "p:\"updatedAt\" json:\"updatedAt\""];
+  gmeta.Meta meta = 1 [(tagger.tags) = "orm:\"do:true\" validation:\"false\" json:\"-\" bson:\"-\""];
+  optional string id = 2 [(tagger.tags) = "p:\"id\" v:\"required#视频集ID，字符串格式不能为空\" json:\"id\" bson:\"_id,omitempty\""];
+  optional string name = 3 [(tagger.tags) = "p:\"name\" v:\"required|max-length:50#视频集名称不能为空|视频集名称不能超过50个字\" json:\"name\" bson:\"name,omitempty\""];
+  optional int32 contentType = 4 [(tagger.tags) = "p:\"contentType\" v:\"required#内容类型不能为空\" json:\"contentType\" bson:\"contentType,omitempty\""];
+  optional int32 filterType = 5 [(tagger.tags) = "p:\"filterType\" json:\"filterType\" bson:\"filterType,omitempty\""];
+  optional uint32 count = 6 [(tagger.tags) = "p:\"count\" json:\"count\" bson:\"count,omitempty\""];
+  optional bool isOnline = 7 [(tagger.tags) = "p:\"isOnline\" json:\"isOnline\" bson:\"isOnline,omitempty\""];
+  optional google.protobuf.Timestamp createdAt = 8 [(tagger.tags) = "p:\"createdAt\" json:\"createdAt\" bson:\"createdAt,omitempty\""];
+  optional google.protobuf.Timestamp updatedAt = 9 [(tagger.tags) = "p:\"updatedAt\" json:\"updatedAt\" bson:\"updatedAt,omitempty\""];
 }
 
 message VideoCollectionCreateRes {
   optional string message = 1 [(tagger.tags) = "json:\"message\""];
-  optional int64 lastInsertId = 2 [(tagger.tags) = "json:\"lastInsertId\""];
+  optional string insertedId = 2 [(tagger.tags) = "json:\"insertedId\""];
   optional int64 rowsAffected = 3 [(tagger.tags) = "json:\"rowsAffected\""];
 }
 
@@ -142,7 +142,7 @@ message VideoCollectionUpsertReq {
 
 message VideoCollectionUpsertRes {
   optional string message = 1 [(tagger.tags) = "json:\"message\""];
-  optional int64 lastInsertId = 2 [(tagger.tags) = "json:\"lastInsertId\""];
+  optional string insertedId = 2 [(tagger.tags) = "json:\"insertedId\""];
   optional int64 rowsAffected = 3 [(tagger.tags) = "json:\"rowsAffected\""];
 }
 
@@ -160,6 +160,6 @@ message VideoCollectionDeleteReq {
 
 message VideoCollectionDeleteRes {
   optional string message = 1 [(tagger.tags) = "json:\"message\""];
-  optional int64 lastInsertId = 2 [(tagger.tags) = "json:\"lastInsertId\""];
+  optional int64 insertedId = 2 [(tagger.tags) = "json:\"insertedId\""];
   optional int64 rowsAffected = 3 [(tagger.tags) = "json:\"rowsAffected\""];
 }

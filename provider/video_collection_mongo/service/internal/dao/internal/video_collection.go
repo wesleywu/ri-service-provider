@@ -3,10 +3,12 @@ package internal
 import (
 	"context"
 	"github.com/WesleyWu/gowing/util/gworm"
-	_ "github.com/gogf/gf/contrib/drivers/mysql/v2"
-	_ "github.com/gogf/gf/contrib/drivers/pgsql/v2"
-	"github.com/gogf/gf/v2/database/gdb"
+	"github.com/WesleyWu/gowing/util/gworm/mongodb"
+	"github.com/WesleyWu/gowing/util/gworm/mongodb/codecs"
 	"github.com/gogf/gf/v2/frame/g"
+	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 // VideoCollectionDao is the manager for logic model data accessing and custom defined data operations functions management.
@@ -63,25 +65,18 @@ func NewVideoCollectionDao() *VideoCollectionDao {
 	return videoCollectionDao
 }
 
-// DB retrieves and returns the underlying raw database management object of current DAO.
-func (dao *VideoCollectionDao) DB() gdb.DB {
-	return g.DB(dao.Group)
-}
-
 // Ctx creates and returns the Model for current DAO, It automatically sets the context for current operation.
 func (dao *VideoCollectionDao) Ctx(ctx context.Context) *gworm.Model {
-	return &gworm.Model{
-		Type:    gworm.GF_ORM,
-		GfModel: dao.DB().Model(videoCollectionDao.Table).Safe().Ctx(ctx),
-	}
-}
+	// Register custom codecs for protobuf Timestamp and wrapper types
+	reg := codecs.Register(bson.NewRegistryBuilder()).Build()
 
-// Transaction wraps the transaction logic using function f.
-// It rollbacks the transaction and returns the error from function f if it returns non-nil error.
-// It commits the transaction and returns nil if function f returns nil.
-//
-// Note that, you should not Commit or Rollback the transaction in function f
-// as it is automatically handled by this function.
-func (dao *VideoCollectionDao) Transaction(ctx context.Context, f func(ctx context.Context, tx gdb.TX) error) (err error) {
-	return dao.Ctx(ctx).GfModel.Transaction(ctx, f)
+	client, err := mongo.Connect(ctx, options.Client().ApplyURI("mongodb://127.0.0.1:27017").SetRegistry(reg))
+	if err != nil {
+		panic(err)
+	}
+	collection := client.Database("gowing").Collection("video_collection")
+	return &gworm.Model{
+		Type:       gworm.MONGO,
+		MongoModel: mongodb.NewModel(collection),
+	}
 }

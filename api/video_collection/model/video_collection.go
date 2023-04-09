@@ -81,7 +81,7 @@ type VideoCollectionItem struct {
 
 // VideoCollectionListRes 分页返回结果
 type VideoCollectionListRes struct {
-	Total   uint64                 `json:"total"`   // 记录总数
+	Total   int64                  `json:"total"`   // 记录总数
 	Current uint32                 `json:"current"` // 当前页码
 	Items   []*VideoCollectionItem `json:"items"`   // 当前页记录列表
 }
