@@ -3,6 +3,7 @@ package service
 import (
 	"context"
 	"fmt"
+
 	"github.com/WesleyWu/gowing/errors/gwerror"
 	"github.com/WesleyWu/gowing/util/gworm"
 	"github.com/WesleyWu/gowing/util/gwwrapper"
@@ -33,14 +34,10 @@ var (
 // 支持翻页和排序参数，支持查询条件参数类型自动转换
 // 未赋值或或赋值为nil的字段不参与条件查询
 func (s *VideoCollectionImpl) Count(ctx context.Context, req *p.VideoCollectionCountReq) (*p.VideoCollectionCountRes, error) {
-	var err error
-	m := dao.VideoCollection.Ctx(ctx).WithAll()
-	m, err = gworm.ParseConditions(ctx, req, dao.VideoCollection.ColumnMap, m)
+	count, err := dao.VideoCollection.Count(ctx, req)
 	if err != nil {
-		return nil, err
-	}
-	count, err := m.Count(ctx)
-	if err != nil {
+		g.Log().Errorf(ctx, "%+v", err)
+		err = gwerror.WrapServiceErrorf(err, req, "获取数据总记录数失败")
 		return nil, err
 	}
 	return &p.VideoCollectionCountRes{Total: gwwrapper.WrapInt64(count)}, err
@@ -51,43 +48,24 @@ func (s *VideoCollectionImpl) Count(ctx context.Context, req *p.VideoCollectionC
 // 未赋值或或赋值为nil的字段不参与条件查询
 func (s *VideoCollectionImpl) List(ctx context.Context, req *p.VideoCollectionListReq) (*p.VideoCollectionListRes, error) {
 	var (
-		total int64
-		page  int
-		order string
-		list  []*p.VideoCollectionItem
-		err   error
+		filterRequest gworm.FilterRequest
+		pageRequest   gworm.PageRequest
+		list          []*p.VideoCollectionItem
+		pageInfo      *gworm.PageInfo
+		err           error
 	)
-	m := dao.VideoCollection.Ctx(ctx).WithAll()
-	m, err = gworm.ParseConditions(ctx, req, dao.VideoCollection.ColumnMap, m)
-	if err != nil {
-		return nil, err
-	}
-	total, err = m.Count(ctx)
-	if err != nil {
-		g.Log().Error(ctx, err)
-		err = gwerror.WrapServiceErrorf(err, req, "获取数据总记录数失败")
-		return nil, err
-	}
-	if req.Page == 0 {
-		req.Page = 1
-	}
-	page = int(req.Page)
-	if req.PageSize == 0 {
-		req.PageSize = 10
-	}
-	if !g.IsEmpty(req.OrderBy) {
-		order = req.OrderBy
-	}
-	list = []*p.VideoCollectionItem{}
-	err = m.Fields(p.VideoCollectionItem{}).Page(page, int(req.PageSize)).Order(order).Scan(ctx, &list)
+	filterRequest, err = gworm.ExtractFilters(ctx, req, dao.VideoCollection.ColumnMap, dao.VideoCollection.Type)
+	pageRequest.Of(req.Page, req.PageSize)
+	pageRequest.AddSortByString(req.OrderBy)
+	list, pageInfo, err = dao.VideoCollection.List(ctx, filterRequest, pageRequest)
 	if err != nil {
 		g.Log().Error(ctx, err)
 		err = gwerror.WrapServiceErrorf(err, req, "获取数据列表失败")
 		return nil, err
 	}
 	return &p.VideoCollectionListRes{
-		Total:   gwwrapper.WrapInt64(uint64(total)),
-		Current: gwwrapper.WrapUInt32(uint32(page)),
+		Total:   gwwrapper.WrapInt64(pageInfo.TotalElements),
+		Current: gwwrapper.WrapUInt32(pageInfo.Number),
 		Items:   list,
 	}, nil
 }
@@ -97,37 +75,28 @@ func (s *VideoCollectionImpl) List(ctx context.Context, req *p.VideoCollectionLi
 // 未赋值或或赋值为nil的字段不参与条件查询
 func (s *VideoCollectionImpl) One(ctx context.Context, req *p.VideoCollectionOneReq) (*p.VideoCollectionOneRes, error) {
 	var (
-		list  []*p.VideoCollectionItem
-		order string
-		err   error
+		filterRequest gworm.FilterRequest
+		pageRequest   gworm.PageRequest
+		item          *p.VideoCollectionItem
+		err           error
 	)
-	m := dao.VideoCollection.Ctx(ctx).WithAll()
-	m, err = gworm.ParseConditions(ctx, req, dao.VideoCollection.ColumnMap, m)
-	if err != nil {
-		return nil, err
-	}
-	if !g.IsEmpty(req.OrderBy) {
-		order = req.OrderBy
-	}
-	err = m.Fields(p.VideoCollectionItem{}).Order(order).Limit(1).Scan(ctx, &list)
+	filterRequest, err = gworm.ExtractFilters(ctx, req, dao.VideoCollection.ColumnMap, dao.VideoCollection.Type)
+	pageRequest.AddSortByString(req.OrderBy)
+	item, err = dao.VideoCollection.One(ctx, filterRequest, pageRequest)
 	if err != nil {
 		g.Log().Error(ctx, err)
 		err = gwerror.WrapServiceErrorf(err, req, "获取单条数据记录失败")
 		return nil, err
 	}
-	if g.IsEmpty(list) || len(list) == 0 {
-		return nil, gwerror.NewNotFoundErrorf(req, "找不到要获取的数据")
-	}
-	v := list[0]
 	return &p.VideoCollectionOneRes{
-		Id:          v.Id,
-		Name:        v.Name,
-		ContentType: v.ContentType,
-		FilterType:  v.FilterType,
-		Count:       v.Count,
-		IsOnline:    v.IsOnline,
-		CreatedAt:   v.CreatedAt,
-		UpdatedAt:   v.UpdatedAt,
+		Id:          item.Id,
+		Name:        item.Name,
+		ContentType: item.ContentType,
+		FilterType:  item.FilterType,
+		Count:       item.Count,
+		IsOnline:    item.IsOnline,
+		CreatedAt:   item.CreatedAt,
+		UpdatedAt:   item.UpdatedAt,
 	}, nil
 }
 
@@ -136,35 +105,23 @@ func (s *VideoCollectionImpl) One(ctx context.Context, req *p.VideoCollectionOne
 // 未赋值或赋值为nil的字段将被更新为 NULL 或数据库表指定的DEFAULT
 func (s *VideoCollectionImpl) Create(ctx context.Context, req *p.VideoCollectionCreateReq) (*p.VideoCollectionCreateRes, error) {
 	var (
-		result       *gworm.Result
-		insertedId   string
-		rowsAffected int64
-		err          error
+		result *gworm.Result
+		err    error
 	)
-	result, err = dao.VideoCollection.Ctx(ctx).InsertOne(ctx, req)
+	result, err = dao.VideoCollection.Create(ctx, req)
 	if err != nil {
-		if reqErr, ok := gwerror.DbErrorToRequestError(req, err, dao.VideoCollectionDbType); ok {
-			return nil, reqErr
-		}
 		err = gwerror.WrapServiceErrorf(err, req, "插入失败")
 		g.Log().Error(ctx, err)
 		return nil, err
 	}
-	insertedId, _ = result.InsertedId()
-	rowsAffected, err = result.RowsAffected()
-	if err != nil {
-		err = gwerror.WrapServiceErrorf(err, req, "获取插入记录条数出错")
-		g.Log().Error(ctx, err)
-		return nil, err
-	}
 	message := "插入成功"
-	if rowsAffected == 0 {
+	if result.RowsAffected == 0 {
 		message = "未插入任何记录" // should not happen
 	}
 	return &p.VideoCollectionCreateRes{
 		Message:      gwwrapper.WrapString(message),
-		InsertedId:   gwwrapper.WrapString(insertedId),
-		RowsAffected: gwwrapper.WrapInt64(rowsAffected),
+		InsertedId:   gwwrapper.WrapString(result.LastInsertedId),
+		RowsAffected: gwwrapper.WrapInt64(result.RowsAffected),
 	}, nil
 }
 
@@ -177,24 +134,13 @@ func (s *VideoCollectionImpl) Update(ctx context.Context, req *p.VideoCollection
 		rowsAffected int64
 		err          error
 	)
-	result, err = dao.VideoCollection.Ctx(ctx).
-		FieldsEx(dao.VideoCollection.Columns.Id,
-			dao.VideoCollection.Columns.CreatedAt).
-		WherePri(req.Id).
-		Update(req)
+	result, err = dao.VideoCollection.Update(ctx, req.Id, req)
 	if err != nil {
-		if reqErr, ok := gwerror.DbErrorToRequestError(req, err, dao.VideoCollectionDbType); ok {
-			return nil, reqErr
-		}
 		err = gwerror.WrapServiceErrorf(err, req, "更新失败")
 		g.Log().Error(ctx, err)
 		return nil, err
 	}
-	rowsAffected, err = result.RowsAffected()
-	if err != nil {
-		err = gwerror.WrapServiceErrorf(err, req, "获取插入记录条数出错")
-		return nil, err
-	}
+	rowsAffected = result.RowsAffected
 	message := "更新成功"
 	if rowsAffected == 0 {
 		return nil, gwerror.NewNotFoundErrorf(req, "不存在要更新的记录")
@@ -215,17 +161,14 @@ func (s *VideoCollectionImpl) Upsert(ctx context.Context, req *p.VideoCollection
 		rowsAffected int64
 		err          error
 	)
-	result, err = dao.VideoCollection.Ctx(ctx).FieldsEx(dao.VideoCollection.Columns.CreatedAt).Data(req).Save()
+	result, err = dao.VideoCollection.Upsert(ctx, req.Id, req)
 	if err != nil {
-		if reqErr, ok := gwerror.DbErrorToRequestError(req, err, dao.VideoCollectionDbType); ok {
-			return nil, reqErr
-		}
 		err = gwerror.WrapServiceErrorf(err, req, "插入/更新失败")
 		g.Log().Error(ctx, err)
 		return nil, err
 	}
-	insertedId, _ = result.InsertedId()
-	rowsAffected, err = result.RowsAffected()
+	insertedId = result.LastInsertedId
+	rowsAffected = result.RowsAffected
 	if err != nil {
 		err = gwerror.WrapServiceErrorf(err, req, "获取插入/更新记录条数出错")
 		g.Log().Error(ctx, err)
@@ -252,18 +195,13 @@ func (s *VideoCollectionImpl) Delete(ctx context.Context, req *p.VideoCollection
 		rowsAffected int64
 		err          error
 	)
-	m := dao.VideoCollection.Ctx(ctx).WithAll()
-	m, err = gworm.ParseConditions(ctx, req, dao.VideoCollection.ColumnMap, m)
-	if err != nil {
-		return nil, err
-	}
-	result, err = m.Delete()
+	result, err = dao.VideoCollection.Delete(ctx, req)
 	if err != nil {
 		err = gwerror.WrapServiceErrorf(err, req, "删除失败")
 		g.Log().Error(ctx, err)
 		return nil, err
 	}
-	rowsAffected, err = result.RowsAffected()
+	rowsAffected = result.RowsAffected
 	if err != nil {
 		err = gwerror.WrapServiceErrorf(err, req, "获取删除记录条数出错")
 		return nil, err

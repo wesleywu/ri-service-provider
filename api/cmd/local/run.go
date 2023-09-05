@@ -23,6 +23,7 @@ import (
 	"github.com/gogf/gf/contrib/trace/jaeger/v2"
 	"github.com/gogf/gf/v2/frame/g"
 	"github.com/gogf/gf/v2/os/gctx"
+	"github.com/wesleywu/go-lifespan/lifespan"
 )
 
 var (
@@ -32,6 +33,7 @@ var (
 )
 
 func main() {
+	lifespan.OnBootstrap(ctx)
 	tp, err := jaeger.Init(ServiceName, JaegerUdpEndpoint)
 	if err != nil {
 		g.Log().Fatalf(ctx, "%+v", err)
@@ -39,4 +41,5 @@ func main() {
 	defer tp.Shutdown(ctx)
 	s := g.Server()
 	s.Run()
+	lifespan.OnShutdown(ctx)
 }

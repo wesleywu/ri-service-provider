@@ -7,13 +7,12 @@ import (
 // videoCollectionDao is the manager for logic model data accessing and custom defined data operations functions management.
 // You can define custom methods on it to extend its functionality as you wish.
 type videoCollectionDao struct {
-	*internal.VideoCollectionDao
+	*internal.VideoCollectionDaoMongodb
 }
 
 var (
 	// VideoCollection is globally public accessible object for table tools_gen_table operations.
 	VideoCollection = videoCollectionDao{
-		internal.NewVideoCollectionDao(),
+		internal.NewVideoCollectionDaoMongodb(),
 	}
-	VideoCollectionDbType = VideoCollection.DB().GetConfig().Type
 )

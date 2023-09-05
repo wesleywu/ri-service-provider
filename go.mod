@@ -4,7 +4,7 @@ go 1.19
 
 require (
 	dubbo.apache.org/dubbo-go/v3 v3.0.5
-	github.com/WesleyWu/gowing v0.2.1
+	github.com/WesleyWu/gowing v0.2.2
 	github.com/dubbogo/grpc-go v1.42.10
 	github.com/dubbogo/triple v1.2.2-rc2
 	github.com/gogf/gf/contrib/drivers/mysql/v2 v2.3.2
@@ -12,12 +12,12 @@ require (
 	github.com/gogf/gf/contrib/trace/jaeger/v2 v2.3.2
 	github.com/gogf/gf/v2 v2.3.2
 	github.com/srikrsna/protoc-gen-gotag v0.6.2
-	github.com/stretchr/testify v1.8.1
-	go.mongodb.org/mongo-driver v1.11.2
+	github.com/stretchr/testify v1.8.4
+	github.com/wesleywu/go-lifespan v0.8.2
 	google.golang.org/protobuf v1.28.1
 )
 
-replace github.com/WesleyWu/gowing v0.2.1 => ../gowing
+//replace github.com/WesleyWu/gowing v0.2.1 => ../gowing
 
 require (
 	cloud.google.com/go v0.65.0 // indirect
@@ -133,6 +133,7 @@ require (
 	go.etcd.io/etcd/api/v3 v3.5.7 // indirect
 	go.etcd.io/etcd/client/pkg/v3 v3.5.7 // indirect
 	go.etcd.io/etcd/client/v3 v3.5.7 // indirect
+	go.mongodb.org/mongo-driver v1.11.2 // indirect
 	go.opencensus.io v0.23.0 // indirect
 	go.opentelemetry.io/otel v1.13.0 // indirect
 	go.opentelemetry.io/otel/exporters/jaeger v1.12.0 // indirect

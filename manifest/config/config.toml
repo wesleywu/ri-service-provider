@@ -27,14 +27,14 @@
 
 # Database.
 [database]
-#    [[database.default]]
-#        link  = "mysql:arco-demo:arco-demo@tcp(127.0.0.1:3306)/arco-demo?charset=utf8mb4&parseTime=true&loc=Local"
-#        timezone= "Asia/Shanghai"
-#        debug = true
     [[database.default]]
-        link  = "pgsql:wumengye:CvoOuic4I5T6jZCVbK9Ucg@tcp(castbox-test-5292.6wr.cockroachlabs.cloud:26257)/gowing?sslmode=verify-full"
+        link  = "mysql:arco-demo:arco-demo@tcp(127.0.0.1:3306)/arco-demo?charset=utf8mb4&parseTime=true&loc=Local"
         timezone= "Asia/Shanghai"
         debug = true
+#    [[database.default]]
+#        link  = "pgsql:wumengye:CvoOuic4I5T6jZCVbK9Ucg@tcp(castbox-test-5292.6wr.cockroachlabs.cloud:26257)/gowing?sslmode=verify-full"
+#        timezone= "Asia/Shanghai"
+#        debug = true
     # Database logger.
     [database.logger]
         Path   = "./data/log/gf-app/sql"
@@ -47,7 +47,7 @@
         address = "127.0.0.1:6379"
 
 [gwcache]
-    enabled  = true     # 是否开启 service rpc call 的缓存
+    enabled  = false     # 是否开启 service rpc call 的缓存
     provider = "memory" # 可选项 memory|redis ， redis 依赖 GoFrame 的Redis配置
     debug    = true     # 打印缓存 Get/Set 的调试信息
     tracing  = true     # 为缓存操作增加otel tracing
@@ -57,3 +57,16 @@
     enabled        = true
     serviceName    = "ri-service-provider"
     jaegerEndpoint = "localhost:6831"
+
+[rpc]
+    [rpc.registry]
+        id = "etcd"
+        protocol = "etcdv3"
+        address = "127.0.0.1:2379"
+
+[mongodb]
+    host = "127.0.0.1"
+    port = 27017
+    database = "gowing"
+    username = "gowing"
+    password = "gowing"
