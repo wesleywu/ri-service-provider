@@ -13,7 +13,7 @@ require (
 	github.com/srikrsna/protoc-gen-gotag v0.6.2
 	github.com/stretchr/testify v1.8.4
 	github.com/wesleywu/go-lifespan v0.8.2
-	github.com/wesleywu/gowing v0.2.3
+	github.com/wesleywu/gowing v0.2.4
 	google.golang.org/protobuf v1.28.1
 )
 

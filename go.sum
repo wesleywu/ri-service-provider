@@ -850,8 +850,8 @@ github.com/urfave/cli v1.20.0/go.mod h1:70zkFmudgCuE/ngEzBv17Jvp/497gISqfk5gWijb
 github.com/urfave/cli v1.22.1/go.mod h1:Gos4lmkARVdJ6EkW0WaNv/tZAAMe9V7XWyB60NtXRu0=
 github.com/wesleywu/go-lifespan v0.8.2 h1:cxB0BRMV889p9Q/PLDqsap0go0v/ulIM/k38Gsq841Q=
 github.com/wesleywu/go-lifespan v0.8.2/go.mod h1:FHQLwj4o70S7mTrZV0948MInGrktcGTb0PiYmedgohM=
-github.com/wesleywu/gowing v0.2.3 h1:QAPpMaOdqC1epYBclUe7AdCNiPSoWFXbAo3gh1xdH8g=
-github.com/wesleywu/gowing v0.2.3/go.mod h1:1yoEcYOlUb+ueYOtNDKRHbwkchbhoiPFV5/ldRthqlE=
+github.com/wesleywu/gowing v0.2.4 h1:Yjcf9ZXYR3qXYGotz+NmsZhybnC4GUuhpNPlfcEG+Ao=
+github.com/wesleywu/gowing v0.2.4/go.mod h1:1yoEcYOlUb+ueYOtNDKRHbwkchbhoiPFV5/ldRthqlE=
 github.com/xdg-go/pbkdf2 v1.0.0 h1:Su7DPu48wXMwC3bs7MCNG+z4FhcyEuz5dlvchbq0B0c=
 github.com/xdg-go/pbkdf2 v1.0.0/go.mod h1:jrpuAogTd400dnrH08LKmI/xc1MbPOebTwRqcT5RDeI=
 github.com/xdg-go/scram v1.1.1 h1:VOMT+81stJgXW3CpHyqHN3AXDYIMsx56mEFrB37Mb/E=
