@@ -2,9 +2,10 @@ package api
 
 import (
 	"context"
-	"github.com/WesleyWu/gowing/rpc/proxy"
-	m "github.com/WesleyWu/ri-service-provider/api/video_collection/model"
-	p "github.com/WesleyWu/ri-service-provider/proto/video_collection"
+
+	"github.com/wesleywu/gowing/rpc/proxy"
+	m "github.com/wesleywu/ri-service-provider/api/video_collection/model"
+	p "github.com/wesleywu/ri-service-provider/proto/video_collection"
 )
 
 type VideoCollectionApi struct {

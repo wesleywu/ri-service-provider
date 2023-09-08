@@ -18,9 +18,9 @@
 package local
 
 import (
-	"github.com/WesleyWu/gowing/rpc/proxy"
-	proto "github.com/WesleyWu/ri-service-provider/proto/video_collection"
-	"github.com/WesleyWu/ri-service-provider/provider/video_collection/service"
+	"github.com/wesleywu/gowing/rpc/proxy"
+	proto "github.com/wesleywu/ri-service-provider/proto/video_collection"
+	"github.com/wesleywu/ri-service-provider/provider/video_collection/service"
 )
 
 const (

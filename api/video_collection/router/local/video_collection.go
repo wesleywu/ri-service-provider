@@ -1,10 +1,10 @@
 package local
 
 import (
-	"github.com/WesleyWu/gowing/web/middleware"
-	"github.com/WesleyWu/ri-service-provider/api/video_collection/api"
 	"github.com/gogf/gf/v2/frame/g"
 	"github.com/gogf/gf/v2/net/ghttp"
+	"github.com/wesleywu/gowing/web/middleware"
+	"github.com/wesleywu/ri-service-provider/api/video_collection/api"
 )
 
 // 加载路由

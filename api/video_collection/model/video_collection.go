@@ -1,10 +1,10 @@
 package model
 
 import (
-	"github.com/WesleyWu/gowing/util/gwwrapper"
-	proto "github.com/WesleyWu/ri-service-provider/proto/video_collection"
 	"github.com/gogf/gf/v2/frame/g"
 	"github.com/gogf/gf/v2/os/gtime"
+	"github.com/wesleywu/gowing/util/gwwrapper"
+	proto "github.com/wesleywu/ri-service-provider/proto/video_collection"
 )
 
 // VideoCollectionCountReq 查询记录总条数的条件数据结构

@@ -4,12 +4,12 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/WesleyWu/gowing/errors/gwerror"
-	"github.com/WesleyWu/gowing/util/gworm"
-	"github.com/WesleyWu/gowing/util/gwwrapper"
-	p "github.com/WesleyWu/ri-service-provider/proto/video_collection"
-	"github.com/WesleyWu/ri-service-provider/provider/video_collection/service/internal/dao"
 	"github.com/gogf/gf/v2/frame/g"
+	"github.com/wesleywu/gowing/errors/gwerror"
+	"github.com/wesleywu/gowing/util/gworm"
+	"github.com/wesleywu/gowing/util/gwwrapper"
+	p "github.com/wesleywu/ri-service-provider/proto/video_collection"
+	"github.com/wesleywu/ri-service-provider/provider/video_collection/service/internal/dao"
 )
 
 type IVideoCollection interface {
@@ -34,7 +34,12 @@ var (
 // 支持翻页和排序参数，支持查询条件参数类型自动转换
 // 未赋值或或赋值为nil的字段不参与条件查询
 func (s *VideoCollectionImpl) Count(ctx context.Context, req *p.VideoCollectionCountReq) (*p.VideoCollectionCountRes, error) {
-	count, err := dao.VideoCollection.Count(ctx, req)
+	var (
+		filterRequest gworm.FilterRequest
+		err           error
+	)
+	filterRequest, err = gworm.ExtractFilters(ctx, req, dao.VideoCollection.ColumnMap, dao.VideoCollection.Type)
+	count, err := dao.VideoCollection.Count(ctx, filterRequest)
 	if err != nil {
 		g.Log().Errorf(ctx, "%+v", err)
 		err = gwerror.WrapServiceErrorf(err, req, "获取数据总记录数失败")

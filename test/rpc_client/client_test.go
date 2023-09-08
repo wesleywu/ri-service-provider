@@ -4,10 +4,6 @@ import (
 	"context"
 	_ "dubbo.apache.org/dubbo-go/v3/imports"
 	"fmt"
-	"github.com/WesleyWu/gowing/protobuf/gwtypes"
-	"github.com/WesleyWu/gowing/rpc/dubbogo"
-	"github.com/WesleyWu/gowing/util/gwwrapper"
-	"github.com/WesleyWu/ri-service-provider/proto/video_collection"
 	"github.com/gogf/gf/contrib/trace/jaeger/v2"
 	"github.com/gogf/gf/v2/encoding/gjson"
 	"github.com/gogf/gf/v2/frame/g"
@@ -16,6 +12,10 @@ import (
 	"github.com/gogf/gf/v2/os/gtime"
 	"github.com/gogf/gf/v2/util/gconv"
 	"github.com/stretchr/testify/assert"
+	"github.com/wesleywu/gowing/protobuf/gwtypes"
+	"github.com/wesleywu/gowing/rpc/dubbogo"
+	"github.com/wesleywu/gowing/util/gwwrapper"
+	"github.com/wesleywu/ri-service-provider/proto/video_collection"
 	"testing"
 )
 

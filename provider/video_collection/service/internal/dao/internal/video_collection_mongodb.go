@@ -4,11 +4,11 @@ import (
 	"context"
 	"database/sql"
 
-	"github.com/WesleyWu/gowing/errors/gwerror"
-	"github.com/WesleyWu/gowing/util/gworm"
-	"github.com/WesleyWu/gowing/util/gworm/mongodb"
-	p "github.com/WesleyWu/ri-service-provider/proto/video_collection"
 	"github.com/gogf/gf/v2/frame/g"
+	"github.com/wesleywu/gowing/errors/gwerror"
+	"github.com/wesleywu/gowing/util/gworm"
+	"github.com/wesleywu/gowing/util/gworm/mongodb"
+	p "github.com/wesleywu/ri-service-provider/proto/video_collection"
 )
 
 // VideoCollectionDaoMongodb is the manager for logic model data accessing and custom defined data operations functions management.
@@ -89,10 +89,10 @@ func (dao *VideoCollectionDaoMongodb) Delete(ctx context.Context, data interface
 	return result, err
 }
 
-func (dao *VideoCollectionDaoMongodb) Count(ctx context.Context, data *p.VideoCollectionCountReq) (int64, error) {
+func (dao *VideoCollectionDaoMongodb) Count(ctx context.Context, req gworm.FilterRequest) (int64, error) {
 	var err error
 	m := dao.Ctx(ctx).WithAll()
-	m, err = gworm.ParseConditions(ctx, data, dao.ColumnMap, m)
+	m, err = gworm.ApplyFilter(ctx, req, m)
 	if err != nil {
 		return 0, err
 	}
@@ -105,7 +105,6 @@ func (dao *VideoCollectionDaoMongodb) Count(ctx context.Context, data *p.VideoCo
 
 func (dao *VideoCollectionDaoMongodb) One(ctx context.Context, req gworm.FilterRequest, pageRequest gworm.PageRequest) (item *p.VideoCollectionItem, err error) {
 	m := dao.Ctx(ctx).WithAll()
-	// todo replace parseCondition
 	m, err = gworm.ApplyFilter(ctx, req, m)
 	if err != nil {
 		return nil, err

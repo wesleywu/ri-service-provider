@@ -1,10 +1,9 @@
-module github.com/WesleyWu/ri-service-provider
+module github.com/wesleywu/ri-service-provider
 
 go 1.19
 
 require (
 	dubbo.apache.org/dubbo-go/v3 v3.0.5
-	github.com/WesleyWu/gowing v0.2.2
 	github.com/dubbogo/grpc-go v1.42.10
 	github.com/dubbogo/triple v1.2.2-rc2
 	github.com/gogf/gf/contrib/drivers/mysql/v2 v2.3.2
@@ -14,10 +13,11 @@ require (
 	github.com/srikrsna/protoc-gen-gotag v0.6.2
 	github.com/stretchr/testify v1.8.4
 	github.com/wesleywu/go-lifespan v0.8.2
+	github.com/wesleywu/gowing v0.2.3
 	google.golang.org/protobuf v1.28.1
 )
 
-//replace github.com/WesleyWu/gowing v0.2.1 => ../gowing
+//replace github.com/wesleywu/gowing v0.2.1 => ../gowing
 
 require (
 	cloud.google.com/go v0.65.0 // indirect

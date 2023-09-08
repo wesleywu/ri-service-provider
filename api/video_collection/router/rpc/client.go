@@ -18,8 +18,8 @@
 package inproc
 
 import (
-	"github.com/WesleyWu/gowing/rpc/dubbogo"
-	proto "github.com/WesleyWu/ri-service-provider/proto/video_collection"
+	"github.com/wesleywu/gowing/rpc/dubbogo"
+	proto "github.com/wesleywu/ri-service-provider/proto/video_collection"
 )
 
 var Client = new(proto.VideoCollectionClientImpl)

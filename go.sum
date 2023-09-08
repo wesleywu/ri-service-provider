@@ -53,8 +53,6 @@ github.com/Shopify/sarama v1.19.0/go.mod h1:FVkBWblsNy7DGZRfXLU0O9RCGt5g3g3yEuWX
 github.com/Shopify/toxiproxy v2.1.4+incompatible/go.mod h1:OXgGpZ6Cli1/URJOF1DMxUHB2q5Ap20/P/eIdh4G0pI=
 github.com/StackExchange/wmi v0.0.0-20190523213315-cbe66965904d/go.mod h1:3eOhrUMpNV+6aFIbp5/iudMxNCF27Vw2OZgy4xEx0Fg=
 github.com/VividCortex/gohistogram v1.0.0/go.mod h1:Pf5mBqqDxYaXu3hDrrU+w6nw50o/4+TcAqDqk/vUH7g=
-github.com/WesleyWu/gowing v0.2.2 h1:UWK9tr7jxGHRYNVNL8xv0qcoLI25dJw/Z+CKZ3t/p8k=
-github.com/WesleyWu/gowing v0.2.2/go.mod h1:KstWpGpRrpSFDaeQEbhRtKT4FwnYLqQAUl32dACBqRc=
 github.com/Workiva/go-datastructures v1.0.52 h1:PLSK6pwn8mYdaoaCZEMsXBpBotr4HHn9abU0yMQt0NI=
 github.com/Workiva/go-datastructures v1.0.52/go.mod h1:Z+F2Rca0qCsVYDS8z7bAGm8f3UkzuWYS/oBZz5a7VVA=
 github.com/afex/hystrix-go v0.0.0-20180502004556-fa1af6a1f4f5 h1:rFw4nCn9iMW+Vajsk51NtYIcwSTkXr+JGrMd36kTDJw=
@@ -852,6 +850,8 @@ github.com/urfave/cli v1.20.0/go.mod h1:70zkFmudgCuE/ngEzBv17Jvp/497gISqfk5gWijb
 github.com/urfave/cli v1.22.1/go.mod h1:Gos4lmkARVdJ6EkW0WaNv/tZAAMe9V7XWyB60NtXRu0=
 github.com/wesleywu/go-lifespan v0.8.2 h1:cxB0BRMV889p9Q/PLDqsap0go0v/ulIM/k38Gsq841Q=
 github.com/wesleywu/go-lifespan v0.8.2/go.mod h1:FHQLwj4o70S7mTrZV0948MInGrktcGTb0PiYmedgohM=
+github.com/wesleywu/gowing v0.2.3 h1:QAPpMaOdqC1epYBclUe7AdCNiPSoWFXbAo3gh1xdH8g=
+github.com/wesleywu/gowing v0.2.3/go.mod h1:1yoEcYOlUb+ueYOtNDKRHbwkchbhoiPFV5/ldRthqlE=
 github.com/xdg-go/pbkdf2 v1.0.0 h1:Su7DPu48wXMwC3bs7MCNG+z4FhcyEuz5dlvchbq0B0c=
 github.com/xdg-go/pbkdf2 v1.0.0/go.mod h1:jrpuAogTd400dnrH08LKmI/xc1MbPOebTwRqcT5RDeI=
 github.com/xdg-go/scram v1.1.1 h1:VOMT+81stJgXW3CpHyqHN3AXDYIMsx56mEFrB37Mb/E=

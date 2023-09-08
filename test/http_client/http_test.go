@@ -19,12 +19,13 @@ package test
 
 import (
 	"fmt"
-	"github.com/WesleyWu/gowing/util/gwhttpclient"
+	"net/http"
+	"testing"
+
 	"github.com/gogf/gf/v2/encoding/gjson"
 	"github.com/gogf/gf/v2/os/gctx"
 	"github.com/stretchr/testify/assert"
-	"net/http"
-	"testing"
+	"github.com/wesleywu/gowing/util/gwhttpclient"
 )
 
 var (

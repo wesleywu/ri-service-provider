@@ -7,9 +7,9 @@
 package video_collection
 
 import (
-	gmeta "github.com/WesleyWu/gowing/protobuf/gmeta"
-	_ "github.com/WesleyWu/gowing/protobuf/gwtypes"
 	_ "github.com/srikrsna/protoc-gen-gotag/tagger"
+	gmeta "github.com/wesleywu/gowing/protobuf/gmeta"
+	_ "github.com/wesleywu/gowing/protobuf/gwtypes"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	anypb "google.golang.org/protobuf/types/known/anypb"

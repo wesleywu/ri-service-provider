@@ -20,12 +20,12 @@ package main
 import (
 	"context"
 	_ "dubbo.apache.org/dubbo-go/v3/imports"
-	_ "github.com/WesleyWu/gowing/boot"
-	"github.com/WesleyWu/gowing/rpc/dubbogo"
-	_ "github.com/WesleyWu/gowing/web/router"
 	"github.com/gogf/gf/contrib/trace/jaeger/v2"
 	"github.com/gogf/gf/v2/frame/g"
 	"github.com/gogf/gf/v2/os/gctx"
+	_ "github.com/wesleywu/gowing/boot"
+	"github.com/wesleywu/gowing/rpc/dubbogo"
+	_ "github.com/wesleywu/gowing/web/router"
 )
 
 var (

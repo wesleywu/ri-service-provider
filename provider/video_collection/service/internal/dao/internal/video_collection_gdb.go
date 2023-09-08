@@ -4,14 +4,14 @@ import (
 	"context"
 	"database/sql"
 
-	"github.com/WesleyWu/gowing/errors/gwerror"
-	"github.com/WesleyWu/gowing/util/gworm"
-	p "github.com/WesleyWu/ri-service-provider/proto/video_collection"
 	_ "github.com/gogf/gf/contrib/drivers/mysql/v2"
 	_ "github.com/gogf/gf/contrib/drivers/pgsql/v2"
 	"github.com/gogf/gf/v2/database/gdb"
 	"github.com/gogf/gf/v2/frame/g"
 	"github.com/gogf/gf/v2/util/gconv"
+	"github.com/wesleywu/gowing/errors/gwerror"
+	"github.com/wesleywu/gowing/util/gworm"
+	p "github.com/wesleywu/ri-service-provider/proto/video_collection"
 )
 
 // VideoCollectionDaoGdb is the manager for logic model data accessing and custom defined data operations functions management.

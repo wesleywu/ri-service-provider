@@ -3,9 +3,9 @@ package video_collection
 import (
 	"reflect"
 
-	"github.com/WesleyWu/gowing/util/gwwrapper"
 	"github.com/gogf/gf/v2/database/gdb"
 	"github.com/gogf/gf/v2/errors/gerror"
+	"github.com/wesleywu/gowing/util/gwwrapper"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 

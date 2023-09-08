@@ -18,12 +18,12 @@
 package main
 
 import (
-	_ "github.com/WesleyWu/gowing/boot"
-	_ "github.com/WesleyWu/gowing/web/router"
 	"github.com/gogf/gf/contrib/trace/jaeger/v2"
 	"github.com/gogf/gf/v2/frame/g"
 	"github.com/gogf/gf/v2/os/gctx"
 	"github.com/wesleywu/go-lifespan/lifespan"
+	_ "github.com/wesleywu/gowing/boot"
+	_ "github.com/wesleywu/gowing/web/router"
 )
 
 var (

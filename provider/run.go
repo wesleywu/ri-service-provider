@@ -20,14 +20,14 @@ package main
 import (
 	"context"
 	_ "dubbo.apache.org/dubbo-go/v3/imports"
-	_ "github.com/WesleyWu/gowing/boot"
-	"github.com/WesleyWu/gowing/rpc/dubbogo"
-	"github.com/WesleyWu/ri-service-provider/provider/video_collection/service"
 	"github.com/gogf/gf/contrib/trace/jaeger/v2"
 	"github.com/gogf/gf/v2/errors/gerror"
 	"github.com/gogf/gf/v2/frame/g"
 	"github.com/gogf/gf/v2/os/gcmd"
 	"github.com/gogf/gf/v2/os/gctx"
+	_ "github.com/wesleywu/gowing/boot"
+	"github.com/wesleywu/gowing/rpc/dubbogo"
+	"github.com/wesleywu/ri-service-provider/provider/video_collection/service"
 )
 
 var (
