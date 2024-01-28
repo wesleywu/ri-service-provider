@@ -1,36 +1,85 @@
 syntax = "proto3";
 
-package proto.video_collection;
+package video_collection;
 
-option go_package = "proto/video_collection";
-option java_package = "repo.video_collection";
+option go_package = "video_collection/v1;video_collection";
+option java_multiple_files = true;
+option java_package = "repo.video_collection.v1";
+option java_outer_classname = "VideoCollectionV1";
 
 import "google/protobuf/timestamp.proto";
 import "google/protobuf/any.proto";
 import "tagger/tagger.proto";
-import "gmeta/gmeta.proto";
-import "gwtypes/gwtypes.proto";
+import "guru/service/annotations/annotations.proto";
 
 service VideoCollection {
-  rpc Count (VideoCollectionCountReq) returns (VideoCollectionCountRes){}
-  rpc One (VideoCollectionOneReq) returns (VideoCollectionOneRes){}
-  rpc List (VideoCollectionListReq) returns (VideoCollectionListRes){}
-  rpc Create (VideoCollectionCreateReq) returns (VideoCollectionCreateRes){}
-  rpc Update (VideoCollectionUpdateReq) returns (VideoCollectionUpdateRes){}
-  rpc Upsert (VideoCollectionUpsertReq) returns (VideoCollectionUpsertRes){}
-  rpc Delete (VideoCollectionDeleteReq) returns (VideoCollectionDeleteRes){}
+  rpc Count (VideoCollectionCountReq) returns (VideoCollectionCountRes){
+    option (guru.service.annotations.cache) = {
+      cachable: true,
+      name: "VideoCollection",
+      ttl: "30s",
+      key: "",
+    };
+  }
+  rpc One (VideoCollectionOneReq) returns (VideoCollectionOneRes){
+    option (guru.service.annotations.cache) = {
+      cachable: true,
+      name: "VideoCollection",
+      ttl: "30s",
+      key: "",
+    };
+  }
+  rpc List (VideoCollectionListReq) returns (VideoCollectionListRes){
+    option (guru.service.annotations.cache) = {
+      cachable: true,
+      name: "VideoCollection",
+      ttl: "30s",
+      key: "",
+    };
+  }
+  rpc Create (VideoCollectionCreateReq) returns (VideoCollectionCreateRes){
+    option (guru.service.annotations.cache) = {
+      cachable: true,
+      name: "VideoCollection",
+      ttl: "30s",
+      key: "",
+    };
+  }
+  rpc Update (VideoCollectionUpdateReq) returns (VideoCollectionUpdateRes){
+    option (guru.service.annotations.cache) = {
+      cachable: true,
+      name: "VideoCollection",
+      ttl: "30s",
+      key: "",
+    };
+  }
+  rpc Upsert (VideoCollectionUpsertReq) returns (VideoCollectionUpsertRes){
+    option (guru.service.annotations.cache) = {
+      cachable: true,
+      name: "VideoCollection",
+      ttl: "30s",
+      key: "",
+    };
+  }
+  rpc Delete (VideoCollectionDeleteReq) returns (VideoCollectionDeleteRes){
+    option (guru.service.annotations.cache) = {
+      cachable: true,
+      name: "VideoCollection",
+      ttl: "30s",
+      key: "",
+    };
+  }
 }
 
 message VideoCollectionCountReq {
-  gmeta.Meta meta = 1 [(tagger.tags) = "validation:\"false\" cache:\"true,adapter=memory,ttl=3600\" json:\"-\""];
-  google.protobuf.Any  id = 2;
-  google.protobuf.Any  name = 3;
-  google.protobuf.Any  contentType = 4;
-  google.protobuf.Any  filterType = 5;
-  google.protobuf.Any  count = 6;
-  google.protobuf.Any  isOnline = 7;
-  google.protobuf.Any  createdAt = 8;
-  google.protobuf.Any  updatedAt = 9;
+  google.protobuf.Any  id = 1;
+  google.protobuf.Any  name = 2;
+  google.protobuf.Any  contentType = 3;
+  google.protobuf.Any  filterType = 4;
+  google.protobuf.Any  count = 5;
+  google.protobuf.Any  isOnline = 6;
+  google.protobuf.Any  createdAt = 7;
+  google.protobuf.Any  updatedAt = 8;
 }
 
 message VideoCollectionCountRes {
@@ -38,42 +87,34 @@ message VideoCollectionCountRes {
 }
 
 message VideoCollectionOneReq {
-  gmeta.Meta meta = 1 [(tagger.tags) = "validation:\"false\" cache:\"true,adapter=memory,ttl=3600\" json:\"-\""];
-  google.protobuf.Any  id = 2;
-  google.protobuf.Any  name = 3;
-  google.protobuf.Any  contentType = 4;
-  google.protobuf.Any  filterType = 5;
-  google.protobuf.Any  count = 6;
-  google.protobuf.Any  isOnline = 7;
-  google.protobuf.Any  createdAt = 8;
-  google.protobuf.Any  updatedAt = 9;
-  string orderBy = 10;
+  google.protobuf.Any  id = 1;
+  google.protobuf.Any  name = 2;
+  google.protobuf.Any  contentType = 3;
+  google.protobuf.Any  filterType = 4;
+  google.protobuf.Any  count = 5;
+  google.protobuf.Any  isOnline = 6;
+  google.protobuf.Any  createdAt = 7;
+  google.protobuf.Any  updatedAt = 8;
+  string orderBy = 9;
 }
 
 message VideoCollectionOneRes {
-  optional string id = 1 [(tagger.tags) = "json:\"id\""];
-  optional string name = 2 [(tagger.tags) = "json:\"name\""];
-  optional int32 contentType = 3 [(tagger.tags) = "json:\"contentType\""];
-  optional int32 filterType = 4 [(tagger.tags) = "json:\"filterType\""];
-  optional uint32 count = 5 [(tagger.tags) = "json:\"count\""];
-  optional bool isOnline = 6 [(tagger.tags) = "json:\"isOnline\""];
-  optional google.protobuf.Timestamp createdAt = 7 [(tagger.tags) = "json:\"createdAt\""];
-  optional google.protobuf.Timestamp updatedAt = 8 [(tagger.tags) = "json:\"updatedAt\""];
+  bool found = 1;
+  optional VideoCollectionItem item = 2;
 }
 
 message VideoCollectionListReq {
-  gmeta.Meta meta = 1 [(tagger.tags) = "validation:\"false\" cache:\"true,adapter=memory,ttl=3600\" json:\"-\""];
-  google.protobuf.Any  id = 2;
-  google.protobuf.Any  name = 3;
-  google.protobuf.Any  contentType = 4;
-  google.protobuf.Any  filterType = 5;
-  google.protobuf.Any  count = 6;
-  google.protobuf.Any  isOnline = 7;
-  google.protobuf.Any  createdAt = 8;
-  google.protobuf.Any  updatedAt = 9;
-  uint32 page = 10 [(tagger.tags) = "d:\"1\""];
-  uint32 pageSize = 11 [(tagger.tags) = "d:\"10\""];
-  string orderBy = 12;
+  google.protobuf.Any  id = 1;
+  google.protobuf.Any  name = 2;
+  google.protobuf.Any  contentType = 3;
+  google.protobuf.Any  filterType = 4;
+  google.protobuf.Any  count = 5;
+  google.protobuf.Any  isOnline = 6;
+  google.protobuf.Any  createdAt = 7;
+  google.protobuf.Any  updatedAt = 8;
+  uint32 page = 9 [(tagger.tags) = "d:\"1\""];
+  uint32 pageSize = 10 [(tagger.tags) = "d:\"10\""];
+  string orderBy = 11;
 }
 
 message VideoCollectionListRes {
@@ -94,15 +135,14 @@ message VideoCollectionItem {
 }
 
 message VideoCollectionCreateReq {
-  gmeta.Meta meta = 1 [(tagger.tags) = "orm:\"do:true\" validation:\"false\" json:\"-\" bson:\"-\""];
-  optional string id = 2 [(tagger.tags) = "p:\"id\" v:\"required#视频集ID，字符串格式不能为空\" json:\"id\" bson:\"_id,omitempty\""];
-  optional string name = 3 [(tagger.tags) = "p:\"name\" v:\"required|max-length:50#视频集名称不能为空|视频集名称不能超过50个字\" json:\"name\" bson:\"name,omitempty\""];
-  optional int32 contentType = 4 [(tagger.tags) = "p:\"contentType\" v:\"required#内容类型不能为空\" json:\"contentType\" bson:\"contentType,omitempty\""];
-  optional int32 filterType = 5 [(tagger.tags) = "p:\"filterType\" json:\"filterType\" bson:\"filterType,omitempty\""];
-  optional uint32 count = 6 [(tagger.tags) = "p:\"count\" json:\"count\" bson:\"count,omitempty\""];
-  optional bool isOnline = 7 [(tagger.tags) = "p:\"isOnline\" json:\"isOnline\" bson:\"isOnline,omitempty\""];
-  optional google.protobuf.Timestamp createdAt = 8 [(tagger.tags) = "p:\"createdAt\" json:\"createdAt\" bson:\"createdAt,omitempty\""];
-  optional google.protobuf.Timestamp updatedAt = 9 [(tagger.tags) = "p:\"updatedAt\" json:\"updatedAt\" bson:\"updatedAt,omitempty\""];
+  optional string id = 1 [(tagger.tags) = "p:\"id\" v:\"required#视频集ID，字符串格式不能为空\" json:\"id\" bson:\"_id,omitempty\""];
+  optional string name = 2 [(tagger.tags) = "p:\"name\" v:\"required|max-length:50#视频集名称不能为空|视频集名称不能超过50个字\" json:\"name\" bson:\"name,omitempty\""];
+  optional int32 contentType = 3 [(tagger.tags) = "p:\"contentType\" v:\"required#内容类型不能为空\" json:\"contentType\" bson:\"contentType,omitempty\""];
+  optional int32 filterType = 4 [(tagger.tags) = "p:\"filterType\" json:\"filterType\" bson:\"filterType,omitempty\""];
+  optional uint32 count = 5 [(tagger.tags) = "p:\"count\" json:\"count\" bson:\"count,omitempty\""];
+  optional bool isOnline = 6 [(tagger.tags) = "p:\"isOnline\" json:\"isOnline\" bson:\"isOnline,omitempty\""];
+  optional google.protobuf.Timestamp createdAt = 7 [(tagger.tags) = "p:\"createdAt\" json:\"createdAt\" bson:\"createdAt,omitempty\""];
+  optional google.protobuf.Timestamp updatedAt = 8 [(tagger.tags) = "p:\"updatedAt\" json:\"updatedAt\" bson:\"updatedAt,omitempty\""];
 }
 
 message VideoCollectionCreateRes {
@@ -112,15 +152,14 @@ message VideoCollectionCreateRes {
 }
 
 message VideoCollectionUpdateReq {
-  gmeta.Meta meta = 1 [(tagger.tags) = "orm:\"do:true\" validation:\"false\" json:\"-\" bson:\"-\""];
-  optional string id = 2 [(tagger.tags) = "p:\"id\" v:\"required#视频集ID，字符串格式不能为空\" json:\"id\" bson:\"_id,omitempty\""];
-  optional string name = 3 [(tagger.tags) = "p:\"name\" json:\"name\" bson:\"name,omitempty\""];
-  optional int32 contentType = 4 [(tagger.tags) = "p:\"contentType\" json:\"contentType\" bson:\"contentType,omitempty\""];
-  optional int32 filterType = 5 [(tagger.tags) = "p:\"filterType\" json:\"filterType\" bson:\"filterType,omitempty\""];
-  optional uint32 count = 6 [(tagger.tags) = "p:\"count\" json:\"count\" bson:\"count,omitempty\""];
-  optional bool isOnline = 7 [(tagger.tags) = "p:\"isOnline\" json:\"isOnline\" bson:\"isOnline,omitempty\""];
-  optional google.protobuf.Timestamp createdAt = 8 [(tagger.tags) = "p:\"createdAt\" json:\"createdAt\" bson:\"createdAt,omitempty\""];
-  optional google.protobuf.Timestamp updatedAt = 9 [(tagger.tags) = "p:\"updatedAt\" json:\"updatedAt\" bson:\"updatedAt,omitempty\""];
+  optional string id = 1 [(tagger.tags) = "p:\"id\" v:\"required#视频集ID，字符串格式不能为空\" json:\"id\" bson:\"_id,omitempty\""];
+  optional string name = 2 [(tagger.tags) = "p:\"name\" json:\"name\" bson:\"name,omitempty\""];
+  optional int32 contentType = 3 [(tagger.tags) = "p:\"contentType\" json:\"contentType\" bson:\"contentType,omitempty\""];
+  optional int32 filterType = 4 [(tagger.tags) = "p:\"filterType\" json:\"filterType\" bson:\"filterType,omitempty\""];
+  optional uint32 count = 5 [(tagger.tags) = "p:\"count\" json:\"count\" bson:\"count,omitempty\""];
+  optional bool isOnline = 6 [(tagger.tags) = "p:\"isOnline\" json:\"isOnline\" bson:\"isOnline,omitempty\""];
+  optional google.protobuf.Timestamp createdAt = 7 [(tagger.tags) = "p:\"createdAt\" json:\"createdAt\" bson:\"createdAt,omitempty\""];
+  optional google.protobuf.Timestamp updatedAt = 8 [(tagger.tags) = "p:\"updatedAt\" json:\"updatedAt\" bson:\"updatedAt,omitempty\""];
 }
 
 message VideoCollectionUpdateRes {
@@ -129,15 +168,14 @@ message VideoCollectionUpdateRes {
 }
 
 message VideoCollectionUpsertReq {
-  gmeta.Meta meta = 1 [(tagger.tags) = "orm:\"do:true\" validation:\"false\" json:\"-\" bson:\"-\""];
-  optional string id = 2 [(tagger.tags) = "p:\"id\" v:\"required#视频集ID，字符串格式不能为空\" json:\"id\" bson:\"_id,omitempty\""];
-  optional string name = 3 [(tagger.tags) = "p:\"name\" json:\"name\" bson:\"name,omitempty\""];
-  optional int32 contentType = 4 [(tagger.tags) = "p:\"contentType\" json:\"contentType\" bson:\"contentType,omitempty\""];
-  optional int32 filterType = 5 [(tagger.tags) = "p:\"filterType\" json:\"filterType\" bson:\"filterType,omitempty\""];
-  optional uint32 count = 6 [(tagger.tags) = "p:\"count\" json:\"count\" bson:\"count,omitempty\""];
-  optional bool isOnline = 7 [(tagger.tags) = "p:\"isOnline\" json:\"isOnline\" bson:\"isOnline,omitempty\""];
-  optional google.protobuf.Timestamp createdAt = 8 [(tagger.tags) = "p:\"createdAt\" json:\"createdAt\" bson:\"createdAt,omitempty\""];
-  optional google.protobuf.Timestamp updatedAt = 9 [(tagger.tags) = "p:\"updatedAt\" json:\"updatedAt\" bson:\"updatedAt,omitempty\""];
+  optional string id = 1 [(tagger.tags) = "p:\"id\" v:\"required#视频集ID，字符串格式不能为空\" json:\"id\" bson:\"_id,omitempty\""];
+  optional string name = 2 [(tagger.tags) = "p:\"name\" json:\"name\" bson:\"name,omitempty\""];
+  optional int32 contentType = 3 [(tagger.tags) = "p:\"contentType\" json:\"contentType\" bson:\"contentType,omitempty\""];
+  optional int32 filterType = 4 [(tagger.tags) = "p:\"filterType\" json:\"filterType\" bson:\"filterType,omitempty\""];
+  optional uint32 count = 5 [(tagger.tags) = "p:\"count\" json:\"count\" bson:\"count,omitempty\""];
+  optional bool isOnline = 6 [(tagger.tags) = "p:\"isOnline\" json:\"isOnline\" bson:\"isOnline,omitempty\""];
+  optional google.protobuf.Timestamp createdAt = 7 [(tagger.tags) = "p:\"createdAt\" json:\"createdAt\" bson:\"createdAt,omitempty\""];
+  optional google.protobuf.Timestamp updatedAt = 8 [(tagger.tags) = "p:\"updatedAt\" json:\"updatedAt\" bson:\"updatedAt,omitempty\""];
 }
 
 message VideoCollectionUpsertRes {
@@ -147,15 +185,14 @@ message VideoCollectionUpsertRes {
 }
 
 message VideoCollectionDeleteReq {
-  gmeta.Meta meta = 1 [(tagger.tags) = "validation:\"false\" json:\"-\" bson:\"-\""];
-  google.protobuf.Any  id = 2;
-  google.protobuf.Any  name = 3;
-  google.protobuf.Any  contentType = 4;
-  google.protobuf.Any  filterType = 5;
-  google.protobuf.Any  count = 6;
-  google.protobuf.Any  isOnline = 7;
-  google.protobuf.Any  createdAt = 8;
-  google.protobuf.Any  updatedAt = 9;
+  google.protobuf.Any  id = 1;
+  google.protobuf.Any  name = 2;
+  google.protobuf.Any  contentType = 3;
+  google.protobuf.Any  filterType = 4;
+  google.protobuf.Any  count = 5;
+  google.protobuf.Any  isOnline = 6;
+  google.protobuf.Any  createdAt = 7;
+  google.protobuf.Any  updatedAt = 8;
 }
 
 message VideoCollectionDeleteRes {

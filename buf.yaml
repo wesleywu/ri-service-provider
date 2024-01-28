@@ -1,7 +1,9 @@
 version: v1
 deps:
+  - buf.build/googleapis/googleapis
   - buf.build/srikrsna/protoc-gen-gotag
   - buf.build/wesleywu/gowing
+  - buf.build/castbox/guru-service
 breaking:
   use:
     - FILE

@@ -2,10 +2,15 @@
 version: v1
 deps:
   - remote: buf.build
+    owner: castbox
+    repository: guru-service
+    commit: 93239fd5435e4be8b666224bcb27e957
+    digest: shake256:3a2d81060a905c30f78f89e44d9d6cd90b632703a036baddd5f4aff8ab27dd1b1158a85e06d4e498a6145f71df50b4aeec427dc2aa5b2512c6a098a7e86f969c
+  - remote: buf.build
     owner: googleapis
     repository: googleapis
-    commit: 62f35d8aed1149c291d606d958a7ce32
-    digest: shake256:c5f5c2401cf70b7c9719834954f31000a978397fdfebda861419bb4ab90fa8efae92710fddab0820533908a1e25ed692a8e119432b7b260c895087a4975b32f3
+    commit: a86849a25cc04f4dbe9b15ddddfbc488
+    digest: shake256:e19143328f8cbfe13fc226aeee5e63773ca494693a72740a7560664270039a380d94a1344234b88c7691311460df9a9b1c2982190d0a2612eae80368718e1943
   - remote: buf.build
     owner: srikrsna
     repository: protoc-gen-gotag

@@ -4,4 +4,3 @@ managed:
 plugins:
   - plugin: gotag
     out: .
-    opt: paths=source_relative

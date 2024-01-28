@@ -7,7 +7,6 @@
 .settings/
 .vscode/
 vendor/
-data/
 composer.lock
 gitpush.sh
 pkg/

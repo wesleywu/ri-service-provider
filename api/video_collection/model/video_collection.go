@@ -1,15 +1,14 @@
 package model
 
 import (
-	"github.com/gogf/gf/v2/frame/g"
-	"github.com/gogf/gf/v2/os/gtime"
+	"time"
+
 	"github.com/wesleywu/gowing/util/gwwrapper"
-	proto "github.com/wesleywu/ri-service-provider/proto/video_collection"
+	proto "github.com/wesleywu/ri-service-provider/provider/api/video_collection/v1"
 )
 
 // VideoCollectionCountReq 查询记录总条数的条件数据结构
 type VideoCollectionCountReq struct {
-	g.Meta      `json:"-" path:"/count" method:"get"`
 	Id          interface{} `p:"id" json:"id"`                                         // 视频集ID，字符串格式
 	Name        interface{} `p:"name" wildcard:"none" json:"name,omitempty"`           // 视频集名称
 	ContentType interface{} `p:"contentType" json:"contentType,omitempty"`             // 内容类型
@@ -27,7 +26,6 @@ type VideoCollectionCountRes struct {
 
 // VideoCollectionOneReq 查询单一记录的条件数据结构
 type VideoCollectionOneReq struct {
-	g.Meta      `json:"-" path:"/one" method:"get"`
 	Id          interface{} `p:"id" json:"id"`                                         // 视频集ID，字符串格式
 	Name        interface{} `p:"name" wildcard:"none" json:"name,omitempty"`           // 视频集名称
 	ContentType interface{} `p:"contentType" json:"contentType,omitempty"`             // 内容类型
@@ -41,19 +39,12 @@ type VideoCollectionOneReq struct {
 
 // VideoCollectionOneRes 查询单一记录的返回结果
 type VideoCollectionOneRes struct {
-	Id          string      `json:"id"`          // 视频集ID，字符串格式
-	Name        string      `json:"name"`        // 视频集名称
-	ContentType int         `json:"contentType"` // 内容类型
-	FilterType  int         `json:"filterType"`  // 筛选类型
-	Count       uint32      `json:"count"`       // 集合内视频数量
-	IsOnline    bool        `json:"isOnline"`    // 是否上线：0 未上线|1 已上线
-	CreatedAt   *gtime.Time `json:"createdAt"`   // 创建时间
-	UpdatedAt   *gtime.Time `json:"updatedAt"`   // 更新时间
+	Found bool                 `json:"found"` // 是否找到记录
+	Item  *VideoCollectionItem `json:"item"`  // 找到的记录
 }
 
 // VideoCollectionListReq 用于列表查询的查询条件数据结构，支持翻页和排序参数，支持查询条件参数类型自动转换
 type VideoCollectionListReq struct {
-	g.Meta      `json:"-" path:"/list" method:"get"`
 	Id          interface{} `p:"id" json:"id"`                                         // 视频集ID，字符串格式
 	Name        interface{} `p:"name" wildcard:"none" json:"name,omitempty"`           // 视频集名称
 	ContentType interface{} `p:"contentType" json:"contentType,omitempty"`             // 内容类型
@@ -69,14 +60,14 @@ type VideoCollectionListReq struct {
 
 // VideoCollectionItem 数据对象
 type VideoCollectionItem struct {
-	Id          string      `json:"id"`          // 视频集ID，字符串格式
-	Name        string      `json:"name"`        // 视频集名称
-	ContentType int         `json:"contentType"` // 内容类型
-	FilterType  int         `json:"filterType"`  // 筛选类型
-	Count       uint32      `json:"count"`       // 集合内视频数量
-	IsOnline    bool        `json:"isOnline"`    // 是否上线：0 未上线|1 已上线
-	CreatedAt   *gtime.Time `json:"createdAt"`   // 创建时间
-	UpdatedAt   *gtime.Time `json:"updatedAt"`   // 更新时间
+	Id          string     `json:"id"`          // 视频集ID，字符串格式
+	Name        string     `json:"name"`        // 视频集名称
+	ContentType int        `json:"contentType"` // 内容类型
+	FilterType  int        `json:"filterType"`  // 筛选类型
+	Count       uint32     `json:"count"`       // 集合内视频数量
+	IsOnline    bool       `json:"isOnline"`    // 是否上线：0 未上线|1 已上线
+	CreatedAt   *time.Time `json:"createdAt"`   // 创建时间
+	UpdatedAt   *time.Time `json:"updatedAt"`   // 更新时间
 }
 
 // VideoCollectionListRes 分页返回结果
@@ -88,7 +79,6 @@ type VideoCollectionListRes struct {
 
 // VideoCollectionCreateReq 插入操作请求参数
 type VideoCollectionCreateReq struct {
-	g.Meta      `orm:"do:true" json:"-" path:"/" method:"post"`
 	Id          interface{} `p:"id" v:"required#视频集ID，字符串格式不能为空" json:"id"` // 视频集ID，字符串格式
 	Name        interface{} `p:"name" json:"name"`                          // 视频集名称
 	ContentType interface{} `p:"contentType" json:"contentType"`            // 内容类型
@@ -108,7 +98,6 @@ type VideoCollectionCreateRes struct {
 
 // VideoCollectionUpdateReq 更新操作请求参数
 type VideoCollectionUpdateReq struct {
-	g.Meta      `orm:"do:true" json:"-" path:"/:id" method:"patch"`
 	Id          interface{} `p:"id" v:"required#视频集ID，字符串格式不能为空" json:"id"` // 视频集ID，字符串格式
 	Name        interface{} `p:"name" json:"name"`                          // 视频集名称
 	ContentType interface{} `p:"contentType" json:"contentType"`            // 内容类型
@@ -127,7 +116,6 @@ type VideoCollectionUpdateRes struct {
 
 // VideoCollectionUpsertReq 更新插入操作请求参数
 type VideoCollectionUpsertReq struct {
-	g.Meta      `orm:"do:true" json:"-" path:"/" method:"put"`
 	Id          interface{} `p:"id" v:"required#视频集ID，字符串格式不能为空" json:"id"` // 视频集ID，字符串格式
 	Name        interface{} `p:"name" json:"name"`                          // 视频集名称
 	ContentType interface{} `p:"contentType" json:"contentType"`            // 内容类型
@@ -147,7 +135,6 @@ type VideoCollectionUpsertRes struct {
 
 // VideoCollectionDeleteReq 删除操作请求参数
 type VideoCollectionDeleteReq struct {
-	g.Meta      `json:"-" path:"/*id" method:"delete"`
 	Id          interface{} `p:"id" json:"id"`                                         // 视频集ID，字符串格式
 	Name        interface{} `p:"name" wildcard:"none" json:"name,omitempty"`           // 视频集名称
 	ContentType interface{} `p:"contentType" json:"contentType,omitempty"`             // 内容类型
@@ -211,8 +198,8 @@ func (x *VideoCollectionItem) UnmarshalMessage(res *proto.VideoCollectionItem) e
 		filterType  int32
 		count       uint32
 		isOnline    bool
-		createdAt   *gtime.Time
-		updatedAt   *gtime.Time
+		createdAt   time.Time
+		updatedAt   time.Time
 	)
 	if idPtr := res.Id; idPtr != nil {
 		id = *idPtr
@@ -233,10 +220,10 @@ func (x *VideoCollectionItem) UnmarshalMessage(res *proto.VideoCollectionItem) e
 		isOnline = *isOnlinePtr
 	}
 	if createdAtPtr := res.CreatedAt; createdAtPtr != nil {
-		createdAt = gtime.New(createdAtPtr.AsTime())
+		createdAt = createdAtPtr.AsTime()
 	}
 	if updatedAtPtr := res.UpdatedAt; updatedAtPtr != nil {
-		updatedAt = gtime.New(updatedAtPtr.AsTime())
+		updatedAt = updatedAtPtr.AsTime()
 	}
 	*x = VideoCollectionItem{
 		Id:          id,
@@ -245,57 +232,23 @@ func (x *VideoCollectionItem) UnmarshalMessage(res *proto.VideoCollectionItem) e
 		FilterType:  int(filterType),
 		Count:       count,
 		IsOnline:    isOnline,
-		CreatedAt:   createdAt,
-		UpdatedAt:   updatedAt,
+		CreatedAt:   &createdAt,
+		UpdatedAt:   &updatedAt,
 	}
 	return nil
 }
 
 func (x *VideoCollectionOneRes) UnmarshalMessage(res *proto.VideoCollectionOneRes) error {
-	var (
-		id          string
-		name        string
-		contentType int32
-		filterType  int32
-		count       uint32
-		isOnline    bool
-		createdAt   *gtime.Time
-		updatedAt   *gtime.Time
-	)
-
-	if idPtr := res.Id; idPtr != nil {
-		id = *idPtr
-	}
-	if namePtr := res.Name; namePtr != nil {
-		name = *namePtr
-	}
-	if contentTypePtr := res.ContentType; contentTypePtr != nil {
-		contentType = *contentTypePtr
-	}
-	if filterTypePtr := res.FilterType; filterTypePtr != nil {
-		filterType = *filterTypePtr
-	}
-	if countPtr := res.Count; countPtr != nil {
-		count = *countPtr
-	}
-	if isOnlinePtr := res.IsOnline; isOnlinePtr != nil {
-		isOnline = *isOnlinePtr
-	}
-	if createdAtPtr := res.CreatedAt; createdAtPtr != nil {
-		createdAt = gtime.New(createdAtPtr.AsTime())
-	}
-	if updatedAtPtr := res.UpdatedAt; updatedAtPtr != nil {
-		updatedAt = gtime.New(updatedAtPtr.AsTime())
+	item := &VideoCollectionItem{}
+	if res.Item != nil {
+		err := item.UnmarshalMessage(res.Item)
+		if err != nil {
+			return err
+		}
 	}
 	*x = VideoCollectionOneRes{
-		Id:          id,
-		Name:        name,
-		ContentType: int(contentType),
-		FilterType:  int(filterType),
-		Count:       count,
-		IsOnline:    isOnline,
-		CreatedAt:   createdAt,
-		UpdatedAt:   updatedAt,
+		Found: res.Found,
+		Item:  item,
 	}
 	return nil
 }

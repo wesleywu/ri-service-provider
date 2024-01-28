@@ -4,11 +4,10 @@ import (
 	"context"
 	"database/sql"
 
-	"github.com/gogf/gf/v2/frame/g"
 	"github.com/wesleywu/gowing/errors/gwerror"
 	"github.com/wesleywu/gowing/util/gworm"
 	"github.com/wesleywu/gowing/util/gworm/mongodb"
-	p "github.com/wesleywu/ri-service-provider/proto/video_collection"
+	p "github.com/wesleywu/ri-service-provider/provider/api/video_collection/v1"
 )
 
 // VideoCollectionDaoMongodb is the manager for logic model data accessing and custom defined data operations functions management.
@@ -20,7 +19,7 @@ type VideoCollectionDaoMongodb struct {
 }
 
 var (
-	videoCollectionMongoColumnMap = g.MapStrStr{
+	videoCollectionMongoColumnMap = map[string]string{
 		"Id":          "_id",
 		"Name":        "name",
 		"ContentType": "contentType",

@@ -1,7 +1,7 @@
 package dao
 
 import (
-	"github.com/wesleywu/ri-service-provider/provider/video_collection/service/internal/dao/internal"
+	"github.com/wesleywu/ri-service-provider/provider/internal/service/video_collection/service/internal/dao/internal"
 )
 
 // videoCollectionDao is the manager for logic model data accessing and custom defined data operations functions management.

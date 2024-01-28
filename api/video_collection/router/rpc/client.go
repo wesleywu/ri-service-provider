@@ -17,18 +17,18 @@
 
 package inproc
 
-import (
-	"github.com/wesleywu/gowing/rpc/dubbogo"
-	proto "github.com/wesleywu/ri-service-provider/proto/video_collection"
-)
-
-var Client = new(proto.VideoCollectionClientImpl)
-
-func init() {
-	dubbogo.AddConsumerReference(
-		&dubbogo.ConsumerReference{
-			ClientImplStructName: "VideoCollectionClientImpl",
-			Service:              Client,
-			Protocol:             "tri",
-		})
-}
+//import (
+//	"github.com/wesleywu/gowing/rpc/dubbogo"
+//	proto "github.com/wesleywu/ri-service-provider/provider/api/video_collection/v1"
+//)
+//
+//var Client = new(proto.VideoCollectionClientImpl)
+//
+//func init() {
+//	dubbogo.AddConsumerReference(
+//		&dubbogo.ConsumerReference{
+//			ClientImplStructName: "VideoCollectionClientImpl",
+//			Service:              Client,
+//			Protocol:             "tri",
+//		})
+//}

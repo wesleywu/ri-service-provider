@@ -4,7 +4,7 @@ managed:
 plugins:
   - plugin: go
     out: .
-    opt: paths=source_relative
-  - plugin: go-triple
+  - plugin: go-grpc
     out: .
-    opt: paths=source_relative
+  - plugin: go-guru
+    out: .

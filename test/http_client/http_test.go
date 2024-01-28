@@ -18,18 +18,18 @@
 package test
 
 import (
+	"context"
 	"fmt"
 	"net/http"
 	"testing"
 
 	"github.com/gogf/gf/v2/encoding/gjson"
-	"github.com/gogf/gf/v2/os/gctx"
 	"github.com/stretchr/testify/assert"
 	"github.com/wesleywu/gowing/util/gwhttpclient"
 )
 
 var (
-	ctx           = gctx.New()
+	ctx           = context.Background()
 	client        = gwhttpclient.New(100)
 	commonHeaders = &http.Header{
 		"Content-Type":                  []string{"application/json"},

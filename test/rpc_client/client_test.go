@@ -2,28 +2,22 @@ package rpc_client
 
 import (
 	"context"
-	_ "dubbo.apache.org/dubbo-go/v3/imports"
 	"fmt"
-	"github.com/gogf/gf/contrib/trace/jaeger/v2"
+	"testing"
+	"time"
+
 	"github.com/gogf/gf/v2/encoding/gjson"
 	"github.com/gogf/gf/v2/frame/g"
-	"github.com/gogf/gf/v2/net/gtrace"
-	"github.com/gogf/gf/v2/os/gctx"
-	"github.com/gogf/gf/v2/os/gtime"
-	"github.com/gogf/gf/v2/util/gconv"
 	"github.com/stretchr/testify/assert"
 	"github.com/wesleywu/gowing/protobuf/gwtypes"
 	"github.com/wesleywu/gowing/rpc/dubbogo"
 	"github.com/wesleywu/gowing/util/gwwrapper"
-	"github.com/wesleywu/ri-service-provider/proto/video_collection"
-	"testing"
+	protoVideoCollection "github.com/wesleywu/ri-service-provider/provider/api/video_collection/v1"
 )
 
 var (
-	ctx                   = gctx.New()
-	videoCollectionClient = new(proto_video_collection.VideoCollectionClientImpl)
-	ServiceName           = "VideoCollectionTest"
-	JaegerUdpEndpoint     = "localhost:6831"
+	ctx                   = context.Background()
+	videoCollectionClient = protoVideoCollection.NewVideoCollectionClient(nil)
 )
 
 func init() {
@@ -34,7 +28,7 @@ func init() {
 }
 
 func TestCount(t *testing.T) {
-	req := &proto_video_collection.VideoCollectionCountReq{
+	req := &protoVideoCollection.VideoCollectionCountReq{
 		Id:          nil,
 		Name:        gwwrapper.AnyString("推荐视频集"),
 		ContentType: gwwrapper.AnyUInt32Slice([]uint32{1, 2}),
@@ -54,14 +48,7 @@ func TestCount(t *testing.T) {
 }
 
 func TestList(t *testing.T) {
-	tp, err := jaeger.Init(ServiceName, JaegerUdpEndpoint)
-	if err != nil {
-		g.Log().Fatal(ctx, err)
-	}
-	defer tp.Shutdown(ctx)
-	ctx, span := gtrace.NewSpan(ctx, "ClientList")
-	defer span.End()
-	req := &proto_video_collection.VideoCollectionListReq{
+	req := &protoVideoCollection.VideoCollectionListReq{
 		Id:          nil,
 		Name:        gwwrapper.AnyCondition(gwtypes.OperatorType_Like, gwtypes.MultiType_Exact, gwtypes.WildcardType_Contains, gwwrapper.AnyString("每日")),
 		ContentType: gwwrapper.AnyUInt32Slice([]uint32{1, 2}),
@@ -86,12 +73,7 @@ func TestList(t *testing.T) {
 }
 
 func TestListBenchmark(t *testing.T) {
-	tp, err := jaeger.Init(ServiceName, JaegerUdpEndpoint)
-	if err != nil {
-		g.Log().Fatal(ctx, err)
-	}
-	defer tp.Shutdown(ctx)
-	req := &proto_video_collection.VideoCollectionListReq{
+	req := &protoVideoCollection.VideoCollectionListReq{
 		Id:          nil,
 		Name:        gwwrapper.AnyCondition(gwtypes.OperatorType_Like, gwtypes.MultiType_Exact, gwtypes.WildcardType_Contains, gwwrapper.AnyString("每日")),
 		ContentType: gwwrapper.AnyUInt32Slice([]uint32{1, 2}),
@@ -102,10 +84,9 @@ func TestListBenchmark(t *testing.T) {
 		UpdatedAt:   nil,
 	}
 	fmt.Println(gjson.MustEncodeString(req))
-	timeStart := gtime.Now()
+	timeStart := time.Now()
 	benchCount := 10000
 	for i := 0; i < benchCount; i++ {
-		ctx, span := gtrace.NewSpan(ctx, "ClientBenchmark"+gconv.String(i))
 		res, err := videoCollectionClient.List(ctx, req)
 		if err != nil {
 			panic(err)
@@ -114,16 +95,15 @@ func TestListBenchmark(t *testing.T) {
 		if (i+1)%1000 == 0 {
 			g.Log().Infof(ctx, "called %d times", i+1)
 		}
-		span.End()
 	}
-	timeEnd := gtime.Now()
+	timeEnd := time.Now()
 	millisElapsed := timeEnd.UnixMilli() - timeStart.UnixMilli()
 	cps := float64(benchCount) * 1000 / float64(millisElapsed)
 	g.Log().Infof(ctx, "RPC Calls per seconds for VideoCollection.List: %.2f", cps)
 }
 
 func TestCreate(t *testing.T) {
-	res, err := videoCollectionClient.Create(ctx, &proto_video_collection.VideoCollectionCreateReq{
+	res, err := videoCollectionClient.Create(ctx, &protoVideoCollection.VideoCollectionCreateReq{
 		Id:          gwwrapper.WrapString("87104859-5598"),
 		Name:        gwwrapper.WrapString("特别长的名称特别长的名称特别长的名称特别长的"),
 		ContentType: gwwrapper.WrapInt32(3),
