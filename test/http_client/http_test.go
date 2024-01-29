@@ -39,11 +39,11 @@ var (
 )
 
 func TestListBySingleValue(t *testing.T) {
-	url := "http://localhost:8888/repo_service/VideoCollection/List"
+	url := "http://localhost:8080/v1/video-collection/list"
 	data := `{
 				"name": {
 					"@type":"type.googleapis.com/google.protobuf.StringValue",
-					"value":"视频推荐"
+					"value":"每日推荐视频"
 				},
 				"isOnline": {
 					"@type":"type.googleapis.com/google.protobuf.BoolValue",
@@ -62,14 +62,14 @@ func TestListBySingleValue(t *testing.T) {
 }
 
 func TestListBySliceValue(t *testing.T) {
-	url := "http://localhost:8888/repo_service/VideoCollection/List"
+	url := "http://localhost:8080/v1/video-collection/list"
 	data := `{
 				"name": {
-					"@type":"type.googleapis.com/gowing.protobuf.StringSlice",
-					"value":["视频推荐","腾讯视频推荐"]
+					"@type":"gwtypes.StringSlice",
+					"value":["每日推荐视频","日常推荐视频"]
 				},
 				"isOnline": {
-					"@type":"type.googleapis.com/gowing.protobuf.BoolSlice",
+					"@type":"gwtypes.BoolSlice",
 					"value":[true, false]
 				}
 			}`

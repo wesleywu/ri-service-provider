@@ -7,6 +7,7 @@ option java_multiple_files = true;
 option java_package = "repo.video_collection.v1";
 option java_outer_classname = "VideoCollectionV1";
 
+import "google/api/annotations.proto";
 import "google/protobuf/timestamp.proto";
 import "google/protobuf/any.proto";
 import "tagger/tagger.proto";
@@ -14,6 +15,10 @@ import "guru/service/annotations/annotations.proto";
 
 service VideoCollection {
   rpc Count (VideoCollectionCountReq) returns (VideoCollectionCountRes){
+    option (google.api.http) = {
+      post: "/v1/video-collection/count",
+      body: "*",
+    };
     option (guru.service.annotations.cache) = {
       cachable: false,
       name: "VideoCollection",
@@ -22,6 +27,10 @@ service VideoCollection {
     };
   }
   rpc One (VideoCollectionOneReq) returns (VideoCollectionOneRes){
+    option (google.api.http) = {
+      post: "/v1/video-collection/one",
+      body: "*",
+    };
     option (guru.service.annotations.cache) = {
       cachable: false,
       name: "VideoCollection",
@@ -30,6 +39,10 @@ service VideoCollection {
     };
   }
   rpc List (VideoCollectionListReq) returns (VideoCollectionListRes){
+    option (google.api.http) = {
+      post: "/v1/video-collection/list",
+      body: "*",
+    };
     option (guru.service.annotations.cache) = {
       cachable: false,
       name: "VideoCollection",
@@ -38,6 +51,10 @@ service VideoCollection {
     };
   }
   rpc Create (VideoCollectionCreateReq) returns (VideoCollectionCreateRes){
+    option (google.api.http) = {
+      post: "/v1/video-collection",
+      body: "*",
+    };
     option (guru.service.annotations.cache) = {
       cachable: false,
       name: "VideoCollection",
@@ -46,6 +63,10 @@ service VideoCollection {
     };
   }
   rpc Update (VideoCollectionUpdateReq) returns (VideoCollectionUpdateRes){
+    option (google.api.http) = {
+      patch: "/v1/video-collection",
+      body: "*",
+    };
     option (guru.service.annotations.cache) = {
       cachable: false,
       name: "VideoCollection",
@@ -54,6 +75,10 @@ service VideoCollection {
     };
   }
   rpc Upsert (VideoCollectionUpsertReq) returns (VideoCollectionUpsertRes){
+    option (google.api.http) = {
+      put: "/v1/video-collection",
+      body: "*",
+    };
     option (guru.service.annotations.cache) = {
       cachable: false,
       name: "VideoCollection",
@@ -62,6 +87,10 @@ service VideoCollection {
     };
   }
   rpc Delete (VideoCollectionDeleteReq) returns (VideoCollectionDeleteRes){
+    option (google.api.http) = {
+      delete: "/v1/video-collection",
+      body: "*",
+    };
     option (guru.service.annotations.cache) = {
       cachable: false,
       name: "VideoCollection",

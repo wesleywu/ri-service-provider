@@ -10,7 +10,7 @@ import (
 	"github.com/castbox/go-guru/pkg/util/otlp"
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/google/wire"
-	p "github.com/wesleywu/ri-service-provider/provider/api/video_collection/v1"
+	p "github.com/wesleywu/ri-service-provider/api/video_collection/v1"
 	"google.golang.org/grpc"
 )
 

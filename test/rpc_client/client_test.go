@@ -14,8 +14,8 @@ import (
 	"github.com/gogf/gf/v2/encoding/gjson"
 	"github.com/stretchr/testify/assert"
 	"github.com/wesleywu/gowing/protobuf/gwtypes"
+	p "github.com/wesleywu/ri-service-provider/api/video_collection/v1"
 	"github.com/wesleywu/ri-service-provider/gwwrapper"
-	p "github.com/wesleywu/ri-service-provider/provider/api/video_collection/v1"
 )
 
 var (

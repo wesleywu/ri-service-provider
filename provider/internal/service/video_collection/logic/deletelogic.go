@@ -5,10 +5,10 @@ import (
 
 	"github.com/castbox/go-guru/pkg/util/appinfo"
 	"github.com/go-kratos/kratos/v2/log"
+	p "github.com/wesleywu/ri-service-provider/api/video_collection/v1"
 	"github.com/wesleywu/ri-service-provider/gworm"
 	"github.com/wesleywu/ri-service-provider/gworm/mongodb"
 	"github.com/wesleywu/ri-service-provider/gwwrapper"
-	p "github.com/wesleywu/ri-service-provider/provider/api/video_collection/v1"
 	"github.com/wesleywu/ri-service-provider/provider/internal/service/video_collection/mapping"
 	"go.mongodb.org/mongo-driver/mongo"
 )

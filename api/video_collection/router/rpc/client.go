@@ -19,7 +19,7 @@ package inproc
 
 //import (
 //	"github.com/wesleywu/gowing/rpc/dubbogo"
-//	proto "github.com/wesleywu/ri-service-provider/provider/api/video_collection/v1"
+//	proto "github.com/wesleywu/ri-service-provider/api/video_collection/v1"
 //)
 //
 //var Client = new(proto.VideoCollectionClientImpl)

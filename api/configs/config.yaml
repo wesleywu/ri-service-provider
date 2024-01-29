@@ -1,0 +1,41 @@
+server:
+  http:
+    address: "${HTTP_ADDRESS:0.0.0.0:8080}"
+    timeout: "${HTTP_TIMEOUT:300s}"
+    middlewares:
+      trace: true
+      prometheus: true
+      recover: true
+  service_cache:
+    enabled: false
+    provider: memory
+client:
+  grpc:
+    server_endpoint: "${GRPC_SERVER_ENDPOINT:127.0.0.1:20000}"
+    timeout: "${GRPC_TIMEOUT:5s}"
+    middlewares:
+      trace: true
+      prometheus: true
+      recover: true
+data:
+  redis:
+    address: "127.0.0.1:6379"
+    db: 0
+    pool_size: 50
+    min_idle_conns: 30
+    max_idle_conns: 50
+    conn_max_idle_time: 10s
+    pool_timeout: 1s
+    dial_timeout: 1s
+    read_timeout: 1s
+    write_timeout: 1s
+    lock_enabled: true
+    trace_enabled: true
+log:
+  level: debug
+#  path: logs
+otlp:
+#  grpc_endpoint: "${OTLP_GRPC_ENDPOINT:localhost:4319}"
+  http_endpoint: "${OTLP_HTTP_ENDPOINT:localhost:5080}"
+  http_basic_auth_token: cm9vdEBleGFtcGxlLmNvbTpiV0s3eTlEUFcycjNzQTcw
+  insecure: true
