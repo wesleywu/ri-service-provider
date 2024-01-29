@@ -85,10 +85,10 @@ func TestListBySliceValue(t *testing.T) {
 }
 
 func TestListByCondition(t *testing.T) {
-	url := "http://localhost:8888/repo_service/VideoCollection/List"
+	url := "http://localhost:8080/v1/video-collection/list"
 	data := `{
 				"name": {
-					"@type":"type.googleapis.com/gowing.protobuf.Condition",
+					"@type":"gwtypes.Condition",
 					"operator": "Like",
 					"wildcard": "StartsWith",
 					"value": {
@@ -97,10 +97,10 @@ func TestListByCondition(t *testing.T) {
 					}
 				},
 				"count": {
-					"@type":"type.googleapis.com/gowing.protobuf.Condition",
+					"@type":"gwtypes.Condition",
 					"operator": "GT",
 					"value": {
-						"@type":"type.googleapis.com/google.protobuf.UInt32Value",
+						"@type":"type.googleapis.com/google.protobuf.Int32Value",
 						"value":1
 					}
 				}
@@ -113,7 +113,7 @@ func TestListByCondition(t *testing.T) {
 	respJson, err := gjson.DecodeToJson(resp.Body)
 	assert.NoError(t, err)
 	fmt.Println(resp.Body)
-	assert.Equal(t, 4, respJson.Get("total").Int())
+	assert.Equal(t, 1, respJson.Get("total").Int())
 }
 
 func TestCreate(t *testing.T) {
