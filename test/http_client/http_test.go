@@ -25,7 +25,7 @@ import (
 
 	"github.com/gogf/gf/v2/encoding/gjson"
 	"github.com/stretchr/testify/assert"
-	"github.com/wesleywu/gowing/util/gwhttpclient"
+	"github.com/wesleywu/ri-service-provider/gwhttpclient"
 )
 
 var (

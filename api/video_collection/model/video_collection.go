@@ -3,7 +3,7 @@ package model
 import (
 	"time"
 
-	"github.com/wesleywu/gowing/util/gwwrapper"
+	"github.com/wesleywu/ri-service-provider/gwwrapper"
 	proto "github.com/wesleywu/ri-service-provider/provider/api/video_collection/v1"
 )
 

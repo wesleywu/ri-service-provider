@@ -15,7 +15,7 @@ func RegisterVideoCollectionGuruServer(srv VideoCollectionServer) error {
 	var err error
 	server.RegisterServiceDesc(&VideoCollection_ServiceDesc, srv)
 	err = server.RegisterMethodDesc("video_collection.VideoCollection", "Count", &annotations.CacheRule{
-		Cachable: true,
+		Cachable: false,
 		Name:     "VideoCollection",
 		Ttl:      "30s",
 		Key:      "",
@@ -24,7 +24,7 @@ func RegisterVideoCollectionGuruServer(srv VideoCollectionServer) error {
 		return err
 	}
 	err = server.RegisterMethodDesc("video_collection.VideoCollection", "One", &annotations.CacheRule{
-		Cachable: true,
+		Cachable: false,
 		Name:     "VideoCollection",
 		Ttl:      "30s",
 		Key:      "",
@@ -33,7 +33,7 @@ func RegisterVideoCollectionGuruServer(srv VideoCollectionServer) error {
 		return err
 	}
 	err = server.RegisterMethodDesc("video_collection.VideoCollection", "List", &annotations.CacheRule{
-		Cachable: true,
+		Cachable: false,
 		Name:     "VideoCollection",
 		Ttl:      "30s",
 		Key:      "",
@@ -42,7 +42,7 @@ func RegisterVideoCollectionGuruServer(srv VideoCollectionServer) error {
 		return err
 	}
 	err = server.RegisterMethodDesc("video_collection.VideoCollection", "Create", &annotations.CacheRule{
-		Cachable: true,
+		Cachable: false,
 		Name:     "VideoCollection",
 		Ttl:      "30s",
 		Key:      "",
@@ -51,7 +51,7 @@ func RegisterVideoCollectionGuruServer(srv VideoCollectionServer) error {
 		return err
 	}
 	err = server.RegisterMethodDesc("video_collection.VideoCollection", "Update", &annotations.CacheRule{
-		Cachable: true,
+		Cachable: false,
 		Name:     "VideoCollection",
 		Ttl:      "30s",
 		Key:      "",
@@ -60,7 +60,7 @@ func RegisterVideoCollectionGuruServer(srv VideoCollectionServer) error {
 		return err
 	}
 	err = server.RegisterMethodDesc("video_collection.VideoCollection", "Upsert", &annotations.CacheRule{
-		Cachable: true,
+		Cachable: false,
 		Name:     "VideoCollection",
 		Ttl:      "30s",
 		Key:      "",
@@ -69,7 +69,7 @@ func RegisterVideoCollectionGuruServer(srv VideoCollectionServer) error {
 		return err
 	}
 	err = server.RegisterMethodDesc("video_collection.VideoCollection", "Delete", &annotations.CacheRule{
-		Cachable: true,
+		Cachable: false,
 		Name:     "VideoCollection",
 		Ttl:      "30s",
 		Key:      "",

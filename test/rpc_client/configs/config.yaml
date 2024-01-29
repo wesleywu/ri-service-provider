@@ -1,0 +1,17 @@
+client:
+  grpc:
+    server_endpoint: "${GRPC_SERVER_ENDPOINT:127.0.0.1:20000}"
+    timeout: "${GRPC_TIMEOUT:5s}"
+    middlewares:
+      trace: true
+      prometheus: true
+      recover: true
+log:
+  level: debug
+#  time_format: "2006-01-02 15:04:05"
+#  path: logs
+otlp:
+#  grpc_endpoint: "${OTLP_GRPC_ENDPOINT:localhost:4319}"
+  http_endpoint: "${OTLP_HTTP_ENDPOINT:localhost:5080}"
+  http_basic_auth_token: cm9vdEBleGFtcGxlLmNvbTpiV0s3eTlEUFcycjNzQTcw
+  insecure: true

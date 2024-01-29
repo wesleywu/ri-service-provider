@@ -2,53 +2,97 @@ package rpc_client
 
 import (
 	"context"
-	"fmt"
+	"flag"
+	"os"
 	"testing"
-	"time"
 
+	"github.com/castbox/go-guru/pkg/guru/service/conf"
+	"github.com/go-kratos/kratos/v2/config"
+	"github.com/go-kratos/kratos/v2/config/env"
+	"github.com/go-kratos/kratos/v2/config/file"
+	"github.com/go-kratos/kratos/v2/log"
 	"github.com/gogf/gf/v2/encoding/gjson"
-	"github.com/gogf/gf/v2/frame/g"
 	"github.com/stretchr/testify/assert"
 	"github.com/wesleywu/gowing/protobuf/gwtypes"
-	"github.com/wesleywu/gowing/rpc/dubbogo"
-	"github.com/wesleywu/gowing/util/gwwrapper"
-	protoVideoCollection "github.com/wesleywu/ri-service-provider/provider/api/video_collection/v1"
+	"github.com/wesleywu/ri-service-provider/gwwrapper"
+	p "github.com/wesleywu/ri-service-provider/provider/api/video_collection/v1"
 )
 
 var (
 	ctx                   = context.Background()
-	videoCollectionClient = protoVideoCollection.NewVideoCollectionClient(nil)
+	flagconf              string
+	videoCollectionClient p.VideoCollectionClient
+	helper                *log.Helper
 )
 
-func init() {
-	err := startDubboConsumer(ctx)
+func setupSuite() func(tb *testing.M) {
+	flag.StringVar(&flagconf, "conf", "configs", "config path, eg: -conf config.yaml")
+	flag.Parse()
+	c := config.New(
+		config.WithSource(
+			env.NewSource("GURU_"),
+			file.NewSource(flagconf),
+		),
+	)
+	defer func(c config.Config) {
+		_ = c.Close()
+	}(c)
+
+	if err := c.Load(); err != nil {
+		panic(err)
+	}
+	var cfg conf.Application
+	if err := c.Scan(&cfg); err != nil {
+		panic(err)
+	}
+	clients, cleanup, err := wireClient(ctx, cfg.Client, cfg.Log, cfg.Otlp)
 	if err != nil {
 		panic(err)
 	}
+	videoCollectionClient = clients.VideoCollection
+	helper = log.NewHelper(clients.logger)
+
+	// Return a function to teardown the test
+	return func(t *testing.M) {
+		cleanup()
+	}
+}
+
+func TestMain(m *testing.M) {
+	// Setup code goes here
+	f := setupSuite()
+	defer f(m)
+	code := m.Run()
+	// Teardown code goes here
+	os.Exit(code)
 }
 
 func TestCount(t *testing.T) {
-	req := &protoVideoCollection.VideoCollectionCountReq{
+	//teardownSuite := setupSuite(t)
+	//defer teardownSuite(t)
+
+	req := &p.VideoCollectionCountReq{
 		Id:          nil,
-		Name:        gwwrapper.AnyString("推荐视频集"),
-		ContentType: gwwrapper.AnyUInt32Slice([]uint32{1, 2}),
+		Name:        gwwrapper.AnyString("每日推荐视频"),
+		ContentType: gwwrapper.AnyInt32Slice([]int32{1, 2}),
 		FilterType:  nil,
 		Count:       nil,
 		IsOnline:    nil,
 		CreatedAt:   nil,
 		UpdatedAt:   nil,
 	}
-	fmt.Println(gjson.MustEncodeString(req))
+	helper.Info(gjson.MustEncodeString(req))
 	res, err := videoCollectionClient.Count(ctx, req)
 	if err != nil {
 		panic(err)
 	}
-	fmt.Println(gjson.MustEncodeString(res))
-	assert.Equal(t, int32(2), res.Total)
+	helper.Info(gjson.MustEncodeString(res))
+	assert.Equal(t, int64(2), *res.Total)
 }
 
 func TestList(t *testing.T) {
-	req := &protoVideoCollection.VideoCollectionListReq{
+
+	req := &p.VideoCollectionListReq{
 		Id:          nil,
 		Name:        gwwrapper.AnyCondition(gwtypes.OperatorType_Like, gwtypes.MultiType_Exact, gwtypes.WildcardType_Contains, gwwrapper.AnyString("每日")),
 		ContentType: gwwrapper.AnyUInt32Slice([]uint32{1, 2}),
@@ -58,22 +102,18 @@ func TestList(t *testing.T) {
 		CreatedAt:   nil,
 		UpdatedAt:   nil,
 	}
-	fmt.Println(gjson.MustEncodeString(req))
+	helper.Info(gjson.MustEncodeString(req))
 	res, err := videoCollectionClient.List(ctx, req)
 	if err != nil {
 		panic(err)
 	}
-	assert.Equal(t, int32(1), *res.Total)
-	fmt.Println(gjson.MustEncodeString(res))
-	res, err = videoCollectionClient.List(ctx, req)
-	if err != nil {
-		panic(err)
-	}
-	assert.Equal(t, int32(1), *res.Total)
+	assert.Equal(t, int64(2), *res.Total)
+	helper.Info(gjson.MustEncodeString(res))
 }
 
-func TestListBenchmark(t *testing.T) {
-	req := &protoVideoCollection.VideoCollectionListReq{
+func BenchmarkList(b *testing.B) {
+
+	req := &p.VideoCollectionListReq{
 		Id:          nil,
 		Name:        gwwrapper.AnyCondition(gwtypes.OperatorType_Like, gwtypes.MultiType_Exact, gwtypes.WildcardType_Contains, gwwrapper.AnyString("每日")),
 		ContentType: gwwrapper.AnyUInt32Slice([]uint32{1, 2}),
@@ -83,27 +123,24 @@ func TestListBenchmark(t *testing.T) {
 		CreatedAt:   nil,
 		UpdatedAt:   nil,
 	}
-	fmt.Println(gjson.MustEncodeString(req))
-	timeStart := time.Now()
-	benchCount := 10000
-	for i := 0; i < benchCount; i++ {
-		res, err := videoCollectionClient.List(ctx, req)
-		if err != nil {
-			panic(err)
-		}
-		assert.Equal(t, int32(1), *res.Total)
-		if (i+1)%1000 == 0 {
-			g.Log().Infof(ctx, "called %d times", i+1)
-		}
+	helper.Info(gjson.MustEncodeString(req))
+	res, err := videoCollectionClient.List(ctx, req)
+	if err != nil {
+		panic(err)
 	}
-	timeEnd := time.Now()
-	millisElapsed := timeEnd.UnixMilli() - timeStart.UnixMilli()
-	cps := float64(benchCount) * 1000 / float64(millisElapsed)
-	g.Log().Infof(ctx, "RPC Calls per seconds for VideoCollection.List: %.2f", cps)
+	assert.Equal(b, int64(2), *res.Total)
+	helper.Info(gjson.MustEncodeString(res))
 }
 
 func TestCreate(t *testing.T) {
-	res, err := videoCollectionClient.Create(ctx, &protoVideoCollection.VideoCollectionCreateReq{
+	_, err := videoCollectionClient.Delete(ctx, &p.VideoCollectionDeleteReq{
+		Id: gwwrapper.AnyString("87104859-5598"),
+	})
+	if err != nil {
+		panic(err)
+	}
+
+	createRes, err := videoCollectionClient.Create(ctx, &p.VideoCollectionCreateReq{
 		Id:          gwwrapper.WrapString("87104859-5598"),
 		Name:        gwwrapper.WrapString("特别长的名称特别长的名称特别长的名称特别长的"),
 		ContentType: gwwrapper.WrapInt32(3),
@@ -114,45 +151,20 @@ func TestCreate(t *testing.T) {
 	if err != nil {
 		panic(err)
 	}
-	g.Log().Infof(ctx, gjson.MustEncodeString(res))
-}
+	helper.Info(gjson.MustEncodeString(createRes))
 
-func startDubboConsumer(ctx context.Context) error {
-	registryId := g.Cfg().MustGet(ctx, "rpc.registry.id", "nacosRegistry").String()
-	registryProtocol := g.Cfg().MustGet(ctx, "rpc.registry.protocol", "nacos").String()
-	registryAddress := g.Cfg().MustGet(ctx, "rpc.registry.address", "127.0.0.1:8848").String()
-	registryNamespace := g.Cfg().MustGet(ctx, "rpc.registry.namespace", "public").String()
-	development := g.Cfg().MustGet(ctx, "server.debug", "true").Bool()
-	loggerStdout := g.Cfg().MustGet(ctx, "logger.stdout", "true").Bool()
-	loggerPath := g.Cfg().MustGet(ctx, "rpc.consumer.logDir").String()
-	if g.IsEmpty(loggerPath) {
-		loggerPath = g.Cfg().MustGet(ctx, "logger.path", "./data/log/gf-app").String()
+	oneRes, err := videoCollectionClient.One(ctx, &p.VideoCollectionOneReq{
+		Id: gwwrapper.AnyString("87104859-5598"),
+	})
+	if err != nil {
+		panic(err)
 	}
-	loggerFileName := g.Cfg().MustGet(ctx, "rpc.consumer.logFile", "consumer.log").String()
-	loggerLevel := g.Cfg().MustGet(ctx, "rpc.consumer.logLevel", "warn").String()
+	assert.Equal(t, oneRes.Found, true)
 
-	dubbogo.AddConsumerReference(
-		&dubbogo.ConsumerReference{
-			ClientImplStructName: "VideoCollectionClientImpl",
-			Service:              videoCollectionClient,
-			Protocol:             "tri",
-		})
-	return dubbogo.StartConsumers(ctx,
-		&dubbogo.Registry{
-			Id:        registryId,
-			Type:      registryProtocol,
-			Address:   registryAddress,
-			Namespace: registryNamespace,
-		},
-		&dubbogo.ConsumerOption{
-			CheckProviderExists: true,
-			TimeoutSeconds:      180,
-		},
-		&dubbogo.LoggerOption{
-			Development: development,
-			Stdout:      loggerStdout,
-			LogDir:      loggerPath,
-			LogFileName: loggerFileName,
-			Level:       loggerLevel,
-		})
+	_, err = videoCollectionClient.Delete(ctx, &p.VideoCollectionDeleteReq{
+		Id: gwwrapper.AnyString("87104859-5598"),
+	})
+	if err != nil {
+		panic(err)
+	}
 }

@@ -29,7 +29,7 @@ type ServiceImpl struct {
 }
 
 func NewVideoCollectionService(metadata *appinfo.AppMetadata, helper *log.Helper, data *data.Data) *ServiceImpl {
-	collection := data.MongoDatabase.Collection("video-collection")
+	collection := data.MongoDatabase.Collection("video_collection")
 	return &ServiceImpl{
 		metadata:   metadata,
 		helper:     helper,

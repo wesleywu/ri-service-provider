@@ -15,7 +15,7 @@ import "guru/service/annotations/annotations.proto";
 service VideoCollection {
   rpc Count (VideoCollectionCountReq) returns (VideoCollectionCountRes){
     option (guru.service.annotations.cache) = {
-      cachable: true,
+      cachable: false,
       name: "VideoCollection",
       ttl: "30s",
       key: "",
@@ -23,7 +23,7 @@ service VideoCollection {
   }
   rpc One (VideoCollectionOneReq) returns (VideoCollectionOneRes){
     option (guru.service.annotations.cache) = {
-      cachable: true,
+      cachable: false,
       name: "VideoCollection",
       ttl: "30s",
       key: "",
@@ -31,7 +31,7 @@ service VideoCollection {
   }
   rpc List (VideoCollectionListReq) returns (VideoCollectionListRes){
     option (guru.service.annotations.cache) = {
-      cachable: true,
+      cachable: false,
       name: "VideoCollection",
       ttl: "30s",
       key: "",
@@ -39,7 +39,7 @@ service VideoCollection {
   }
   rpc Create (VideoCollectionCreateReq) returns (VideoCollectionCreateRes){
     option (guru.service.annotations.cache) = {
-      cachable: true,
+      cachable: false,
       name: "VideoCollection",
       ttl: "30s",
       key: "",
@@ -47,7 +47,7 @@ service VideoCollection {
   }
   rpc Update (VideoCollectionUpdateReq) returns (VideoCollectionUpdateRes){
     option (guru.service.annotations.cache) = {
-      cachable: true,
+      cachable: false,
       name: "VideoCollection",
       ttl: "30s",
       key: "",
@@ -55,7 +55,7 @@ service VideoCollection {
   }
   rpc Upsert (VideoCollectionUpsertReq) returns (VideoCollectionUpsertRes){
     option (guru.service.annotations.cache) = {
-      cachable: true,
+      cachable: false,
       name: "VideoCollection",
       ttl: "30s",
       key: "",
@@ -63,7 +63,7 @@ service VideoCollection {
   }
   rpc Delete (VideoCollectionDeleteReq) returns (VideoCollectionDeleteRes){
     option (guru.service.annotations.cache) = {
-      cachable: true,
+      cachable: false,
       name: "VideoCollection",
       ttl: "30s",
       key: "",

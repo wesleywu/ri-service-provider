@@ -5,7 +5,7 @@ import (
 
 	"github.com/castbox/go-guru/pkg/util/appinfo"
 	"github.com/go-kratos/kratos/v2/log"
-	"github.com/wesleywu/gowing/util/gwwrapper"
+	"github.com/wesleywu/ri-service-provider/gwwrapper"
 	p "github.com/wesleywu/ri-service-provider/provider/api/video_collection/v1"
 	"go.mongodb.org/mongo-driver/mongo"
 )

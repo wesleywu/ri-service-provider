@@ -5,10 +5,10 @@ import (
 
 	"github.com/castbox/go-guru/pkg/util/appinfo"
 	"github.com/go-kratos/kratos/v2/log"
-	"github.com/wesleywu/gowing/errors/gwerror"
-	"github.com/wesleywu/gowing/util/gworm"
-	"github.com/wesleywu/gowing/util/gworm/mongodb"
-	"github.com/wesleywu/gowing/util/gwwrapper"
+	"github.com/wesleywu/ri-service-provider/gwerror"
+	"github.com/wesleywu/ri-service-provider/gworm"
+	"github.com/wesleywu/ri-service-provider/gworm/mongodb"
+	"github.com/wesleywu/ri-service-provider/gwwrapper"
 	p "github.com/wesleywu/ri-service-provider/provider/api/video_collection/v1"
 	"github.com/wesleywu/ri-service-provider/provider/internal/service/video_collection/mapping"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -37,7 +37,7 @@ func (s *CountLogic) Count(ctx context.Context, req *p.VideoCollectionCountReq) 
 	filterRequest, err = gworm.ExtractFilters(ctx, req, mapping.VideoCollectionColumnMap, gworm.MONGO)
 	m := &gworm.Model{
 		Type:       gworm.MONGO,
-		MongoModel: mongodb.NewModel(ctx, s.collection.Name()),
+		MongoModel: mongodb.NewModel(s.collection),
 	}
 	m, err = gworm.ApplyFilter(ctx, filterRequest, m)
 	if err != nil {
