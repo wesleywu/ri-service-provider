@@ -42,11 +42,11 @@ func TestListBySingleValue(t *testing.T) {
 	url := "http://localhost:8080/v1/video-collection/list"
 	data := `{
 				"name": {
-					"@type":"type.googleapis.com/google.protobuf.StringValue",
+					"@type":"google.protobuf.StringValue",
 					"value":"每日推荐视频"
 				},
 				"isOnline": {
-					"@type":"type.googleapis.com/google.protobuf.BoolValue",
+					"@type":"google.protobuf.BoolValue",
 					"value":false
 				}
 			}`
@@ -92,7 +92,7 @@ func TestListByCondition(t *testing.T) {
 					"operator": "Like",
 					"wildcard": "StartsWith",
 					"value": {
-						"@type":"type.googleapis.com/google.protobuf.StringValue",
+						"@type":"google.protobuf.StringValue",
 						"value":"每日"
 					}
 				},
@@ -100,7 +100,7 @@ func TestListByCondition(t *testing.T) {
 					"@type":"gwtypes.Condition",
 					"operator": "GT",
 					"value": {
-						"@type":"type.googleapis.com/google.protobuf.Int32Value",
+						"@type":"google.protobuf.Int32Value",
 						"value":1
 					}
 				}
@@ -117,30 +117,32 @@ func TestListByCondition(t *testing.T) {
 }
 
 func TestCreate(t *testing.T) {
-	url := "http://localhost:8888/repo_service/VideoCollection/Create"
+	url := "http://localhost:8080/v1/video-collection"
 	data := `{
 			"id": "01186883-7700",
 			"name": "44444",
 			"contentType": 9,
 			"filterType": 9,
 			"count": 1234,
-			"isOnline": "false"
+			"isOnline": false
 		}`
 	resp, err := client.DoPostWithHeaders(ctx, url, commonHeaders, data, 0)
 	assert.NoError(t, err)
 	assert.NotNil(t, resp)
+	fmt.Println(resp.Body)
 	assert.Equal(t, 200, resp.StatusCode)
 }
 
 func TestUpdate(t *testing.T) {
-	url := "http://localhost:8888/repo_service/VideoCollection/Update"
+	url := "http://localhost:8080/v1/video-collection"
 	data := `{
-				"id": "01186883-7698",
+				"id": "01186883-7700",
 				"name": "每日推荐视频集合",
-				"isOnline": "false"
+				"isOnline": true
 			}`
-	resp, err := client.DoPostWithHeaders(ctx, url, commonHeaders, data, 0)
+	resp, err := client.DoPatchWithHeaders(ctx, url, commonHeaders, data, 0)
 	assert.NoError(t, err)
 	assert.NotNil(t, resp)
+	fmt.Println(resp.Body)
 	assert.Equal(t, 200, resp.StatusCode)
 }
