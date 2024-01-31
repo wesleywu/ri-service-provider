@@ -134,13 +134,58 @@ func TestCreate(t *testing.T) {
 }
 
 func TestUpdate(t *testing.T) {
-	url := "http://localhost:8080/v1/video-collection"
+	url := "http://localhost:8080/v1/video-collection/id/01186883-7700"
 	data := `{
-				"id": "01186883-7700",
 				"name": "每日推荐视频集合",
 				"isOnline": true
 			}`
 	resp, err := client.DoPatchWithHeaders(ctx, url, commonHeaders, data, 0)
+	assert.NoError(t, err)
+	assert.NotNil(t, resp)
+	fmt.Println(resp.Body)
+	assert.Equal(t, 200, resp.StatusCode)
+}
+
+func TestUpsert(t *testing.T) {
+	TestDelete(t)
+	url := "http://localhost:8080/v1/video-collection/id/01186883-7700"
+	data := `{
+				"name": "每日推荐视频集合",
+				"contentType": 9,
+				"filterType": 9,
+				"count": 1234,
+				"isOnline": true
+			}`
+	resp, err := client.DoPutWithHeaders(ctx, url, commonHeaders, data, 0)
+	assert.NoError(t, err)
+	assert.NotNil(t, resp)
+	fmt.Println(resp.Body)
+	assert.Equal(t, 200, resp.StatusCode)
+}
+
+func TestDelete(t *testing.T) {
+	url := "http://localhost:8080/v1/video-collection/id/01186883-7700"
+	resp, err := client.DoDeleteWithHeaders(ctx, url, commonHeaders, "", 0)
+	assert.NoError(t, err)
+	assert.NotNil(t, resp)
+	fmt.Println(resp.Body)
+	assert.Equal(t, 200, resp.StatusCode)
+}
+
+func TestDeleteMulti(t *testing.T) {
+	TestCreate(t)
+	url := "http://localhost:8080/v1/video-collection/delete"
+	data := `{
+				"name": {
+					"@type":"gwtypes.Condition",
+					"operator": "Equals",
+					"value": {
+						"@type":"google.protobuf.StringValue",
+						"value":"44444"
+					}
+				}
+			}`
+	resp, err := client.DoPostWithHeaders(ctx, url, commonHeaders, data, 0)
 	assert.NoError(t, err)
 	assert.NotNil(t, resp)
 	fmt.Println(resp.Body)

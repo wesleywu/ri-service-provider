@@ -18,7 +18,7 @@ type Model struct {
 	collection     *mongo.Collection
 	data           interface{}   // Data for operation, which can be type of map/[]map/struct/*struct/string, etc.
 	extraArgs      []interface{} // Extra custom arguments for sql, which are prepended to the arguments before sql committed to underlying driver.
-	filter         bson.D
+	Filter         bson.D
 	fieldsIncluded *gset.StrSet
 	fieldsExcluded *gset.StrSet
 	groupBy        string        // Used for "group by" statement.
@@ -34,7 +34,7 @@ type Model struct {
 func NewModel(collection *mongo.Collection) *Model {
 	return &Model{
 		collection: collection,
-		filter:     bson.D{},
+		Filter:     bson.D{},
 	}
 }
 
@@ -71,7 +71,7 @@ func (m *Model) FieldsEx(fields ...string) *Model {
 }
 
 func (m *Model) WhereEq(key string, value interface{}) *Model {
-	m.filter = append(m.filter, bson.E{
+	m.Filter = append(m.Filter, bson.E{
 		Key:   key,
 		Value: value,
 	})
@@ -79,7 +79,7 @@ func (m *Model) WhereEq(key string, value interface{}) *Model {
 }
 
 func (m *Model) WhereNE(key string, value interface{}) *Model {
-	m.filter = append(m.filter, bson.E{
+	m.Filter = append(m.Filter, bson.E{
 		Key:   key,
 		Value: bson.M{"$ne": value},
 	})
@@ -87,7 +87,7 @@ func (m *Model) WhereNE(key string, value interface{}) *Model {
 }
 
 func (m *Model) WhereGT(key string, value interface{}) *Model {
-	m.filter = append(m.filter, bson.E{
+	m.Filter = append(m.Filter, bson.E{
 		Key:   key,
 		Value: bson.M{"$gt": value},
 	})
@@ -95,7 +95,7 @@ func (m *Model) WhereGT(key string, value interface{}) *Model {
 }
 
 func (m *Model) WhereGTE(key string, value interface{}) *Model {
-	m.filter = append(m.filter, bson.E{
+	m.Filter = append(m.Filter, bson.E{
 		Key:   key,
 		Value: bson.M{"$gte": value},
 	})
@@ -103,7 +103,7 @@ func (m *Model) WhereGTE(key string, value interface{}) *Model {
 }
 
 func (m *Model) WhereLT(key string, value interface{}) *Model {
-	m.filter = append(m.filter, bson.E{
+	m.Filter = append(m.Filter, bson.E{
 		Key:   key,
 		Value: bson.M{"$lt": value},
 	})
@@ -111,7 +111,7 @@ func (m *Model) WhereLT(key string, value interface{}) *Model {
 }
 
 func (m *Model) WhereLTE(key string, value interface{}) *Model {
-	m.filter = append(m.filter, bson.E{
+	m.Filter = append(m.Filter, bson.E{
 		Key:   key,
 		Value: bson.M{"$lte": value},
 	})
@@ -119,7 +119,7 @@ func (m *Model) WhereLTE(key string, value interface{}) *Model {
 }
 
 func (m *Model) WhereIn(key string, value []interface{}) *Model {
-	m.filter = append(m.filter, bson.E{
+	m.Filter = append(m.Filter, bson.E{
 		key,
 		bson.M{
 			"$in": bson.A(value),
@@ -129,7 +129,7 @@ func (m *Model) WhereIn(key string, value []interface{}) *Model {
 }
 
 func (m *Model) WhereNotIn(key string, value []interface{}) *Model {
-	m.filter = append(m.filter, bson.E{
+	m.Filter = append(m.Filter, bson.E{
 		key,
 		bson.M{
 			"$nin": bson.A(value),
@@ -139,7 +139,7 @@ func (m *Model) WhereNotIn(key string, value []interface{}) *Model {
 }
 
 func (m *Model) WhereBetween(key string, min, max interface{}) *Model {
-	m.filter = append(m.filter, bson.E{
+	m.Filter = append(m.Filter, bson.E{
 		Key:   key,
 		Value: bson.M{"$gte": min, "$lte": max},
 	})
@@ -147,7 +147,7 @@ func (m *Model) WhereBetween(key string, min, max interface{}) *Model {
 }
 
 func (m *Model) WhereNotBetween(key string, min, max interface{}) *Model {
-	m.filter = append(m.filter, bson.E{
+	m.Filter = append(m.Filter, bson.E{
 		Key: key,
 		Value: bson.D{
 			{"$or",
@@ -162,7 +162,7 @@ func (m *Model) WhereNotBetween(key string, min, max interface{}) *Model {
 }
 
 func (m *Model) WhereLike(key string, like string) *Model {
-	m.filter = append(m.filter, bson.E{
+	m.Filter = append(m.Filter, bson.E{
 		Key:   key,
 		Value: bson.M{"$regex": like, "$options": "im"},
 	})
@@ -170,7 +170,7 @@ func (m *Model) WhereLike(key string, like string) *Model {
 }
 
 func (m *Model) WhereNotLike(key string, like string) *Model {
-	m.filter = append(m.filter, bson.E{
+	m.Filter = append(m.Filter, bson.E{
 		Key: key,
 		Value: bson.M{
 			"$not": bson.M{"$regex": like, "$options": "im"},
@@ -181,7 +181,7 @@ func (m *Model) WhereNotLike(key string, like string) *Model {
 
 func (m *Model) WhereNull(key ...string) *Model {
 	for _, oneKey := range key {
-		m.filter = append(m.filter, bson.E{
+		m.Filter = append(m.Filter, bson.E{
 			Key:   oneKey,
 			Value: nil,
 		})
@@ -191,7 +191,7 @@ func (m *Model) WhereNull(key ...string) *Model {
 
 func (m *Model) WhereNotNull(key ...string) *Model {
 	for _, oneKey := range key {
-		m.filter = append(m.filter, bson.E{
+		m.Filter = append(m.Filter, bson.E{
 			Key:   oneKey,
 			Value: bson.M{"$ne": nil},
 		})
@@ -210,15 +210,15 @@ func (m *Model) WherePri(args []string) *Model {
 	case 0:
 		return m
 	case 1:
-		m.filter = append(m.filter, bson.E{Key: "_id", Value: args[0]})
+		m.Filter = append(m.Filter, bson.E{Key: "_id", Value: args[0]})
 	default:
-		m.filter = append(m.filter, bson.E{Key: "_id", Value: bson.E{Key: "$in", Value: args}})
+		m.Filter = append(m.Filter, bson.E{Key: "_id", Value: bson.E{Key: "$in", Value: args}})
 	}
 	return m
 }
 
 func (m *Model) Count(ctx context.Context) (int64, error) {
-	return m.collection.CountDocuments(ctx, m.filter, nil)
+	return m.collection.CountDocuments(ctx, m.Filter, nil)
 }
 
 func (m *Model) Scan(ctx context.Context, pointer interface{}) error {
@@ -245,7 +245,7 @@ func (m *Model) Scan(ctx context.Context, pointer interface{}) error {
 }
 
 func (m *Model) doStruct(ctx context.Context, pointer interface{}) error {
-	cursor, err := m.collection.Find(ctx, m.filter)
+	cursor, err := m.collection.Find(ctx, m.Filter)
 	if err != nil {
 		return err
 	}
@@ -260,7 +260,7 @@ func (m *Model) doStruct(ctx context.Context, pointer interface{}) error {
 }
 
 func (m *Model) doStructs(ctx context.Context, pointer interface{}) error {
-	cursor, err := m.collection.Find(ctx, m.filter)
+	cursor, err := m.collection.Find(ctx, m.Filter)
 	if err != nil {
 		return err
 	}
@@ -283,10 +283,10 @@ func (m *Model) Save(ctx context.Context, document interface{},
 			"$set", document,
 		},
 	}
-	return m.collection.UpdateOne(ctx, m.filter, update, opts...)
+	return m.collection.UpdateOne(ctx, m.Filter, update, opts...)
 }
 
 func (m *Model) Delete(ctx context.Context,
 	opts ...*options.DeleteOptions) (*mongo.DeleteResult, error) {
-	return m.collection.DeleteMany(ctx, m.filter, opts...)
+	return m.collection.DeleteMany(ctx, m.Filter, opts...)
 }

@@ -43,11 +43,11 @@ var (
 	VideoCollectionColumns = VideoCollectionColumnsDef{
 		Id:          "id",
 		Name:        "name",
-		ContentType: "content_type",
-		FilterType:  "filter_type",
+		ContentType: "contentType",
+		FilterType:  "filterType",
 		Count:       "count",
 		IsOnline:    "is_online",
-		CreatedAt:   "created_at",
-		UpdatedAt:   "updated_at",
+		CreatedAt:   "createdAt",
+		UpdatedAt:   "updatedAt",
 	}
 )

@@ -5,6 +5,7 @@ import (
 
 	"github.com/castbox/go-guru/pkg/util/appinfo"
 	"github.com/go-kratos/kratos/v2/log"
+	"github.com/wesleywu/ri-service-provider/api/errors"
 	p "github.com/wesleywu/ri-service-provider/api/video_collection/v1"
 	"github.com/wesleywu/ri-service-provider/gworm"
 	"github.com/wesleywu/ri-service-provider/gworm/mongodb"
@@ -33,7 +34,17 @@ func (s *UpsertLogic) Upsert(ctx context.Context, req *p.VideoCollectionUpsertRe
 		result        *gworm.Result
 		err           error
 	)
-	filterRequest, err = gworm.ExtractFilters(ctx, req, mapping.VideoCollectionColumnMap, gworm.MONGO)
+	if req.Id == "" {
+		return nil, errors.ErrorIdValueMissing("主键ID字段的值为空")
+	}
+	filterRequest = gworm.FilterRequest{
+		PropertyFilters: []*gworm.PropertyFilter{
+			{
+				Property: "_id",
+				Value:    req.Id,
+			},
+		},
+	}
 	m := &gworm.Model{
 		Type:       gworm.MONGO,
 		MongoModel: mongodb.NewModel(s.collection),
@@ -43,7 +54,7 @@ func (s *UpsertLogic) Upsert(ctx context.Context, req *p.VideoCollectionUpsertRe
 		return nil, err
 	}
 	result, err = m.Fields(p.VideoCollectionItem{}).
-		FieldsEx(mapping.VideoCollectionColumns.Id, mapping.VideoCollectionColumns.CreatedAt).
+		FieldsEx(mapping.VideoCollectionColumns.Id).
 		Upsert(ctx, req)
 	if err != nil {
 		return nil, err

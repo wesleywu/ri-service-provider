@@ -83,7 +83,7 @@ func (m *Model) Data(ctx context.Context, data ...interface{}) *Model {
 		case reflect.Struct:
 			// If the `data` parameter is a DO struct,
 			// it then adds `OmitNilData` option for this condition,
-			// which will filter all nil parameters in `data`.
+			// which will Filter all nil parameters in `data`.
 			if isDoStruct(value) {
 				m.OmitNilData()
 			}

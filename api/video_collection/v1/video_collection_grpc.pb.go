@@ -19,13 +19,15 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
-	VideoCollection_Count_FullMethodName  = "/video_collection.VideoCollection/Count"
-	VideoCollection_One_FullMethodName    = "/video_collection.VideoCollection/One"
-	VideoCollection_List_FullMethodName   = "/video_collection.VideoCollection/List"
-	VideoCollection_Create_FullMethodName = "/video_collection.VideoCollection/Create"
-	VideoCollection_Update_FullMethodName = "/video_collection.VideoCollection/Update"
-	VideoCollection_Upsert_FullMethodName = "/video_collection.VideoCollection/Upsert"
-	VideoCollection_Delete_FullMethodName = "/video_collection.VideoCollection/Delete"
+	VideoCollection_Count_FullMethodName       = "/video_collection.VideoCollection/Count"
+	VideoCollection_One_FullMethodName         = "/video_collection.VideoCollection/One"
+	VideoCollection_List_FullMethodName        = "/video_collection.VideoCollection/List"
+	VideoCollection_Get_FullMethodName         = "/video_collection.VideoCollection/Get"
+	VideoCollection_Create_FullMethodName      = "/video_collection.VideoCollection/Create"
+	VideoCollection_Update_FullMethodName      = "/video_collection.VideoCollection/Update"
+	VideoCollection_Upsert_FullMethodName      = "/video_collection.VideoCollection/Upsert"
+	VideoCollection_Delete_FullMethodName      = "/video_collection.VideoCollection/Delete"
+	VideoCollection_DeleteMulti_FullMethodName = "/video_collection.VideoCollection/DeleteMulti"
 )
 
 // VideoCollectionClient is the client API for VideoCollection service.
@@ -35,10 +37,12 @@ type VideoCollectionClient interface {
 	Count(ctx context.Context, in *VideoCollectionCountReq, opts ...grpc.CallOption) (*VideoCollectionCountRes, error)
 	One(ctx context.Context, in *VideoCollectionOneReq, opts ...grpc.CallOption) (*VideoCollectionOneRes, error)
 	List(ctx context.Context, in *VideoCollectionListReq, opts ...grpc.CallOption) (*VideoCollectionListRes, error)
+	Get(ctx context.Context, in *VideoCollectionGetReq, opts ...grpc.CallOption) (*VideoCollectionGetRes, error)
 	Create(ctx context.Context, in *VideoCollectionCreateReq, opts ...grpc.CallOption) (*VideoCollectionCreateRes, error)
 	Update(ctx context.Context, in *VideoCollectionUpdateReq, opts ...grpc.CallOption) (*VideoCollectionUpdateRes, error)
 	Upsert(ctx context.Context, in *VideoCollectionUpsertReq, opts ...grpc.CallOption) (*VideoCollectionUpsertRes, error)
 	Delete(ctx context.Context, in *VideoCollectionDeleteReq, opts ...grpc.CallOption) (*VideoCollectionDeleteRes, error)
+	DeleteMulti(ctx context.Context, in *VideoCollectionDeleteMultiReq, opts ...grpc.CallOption) (*VideoCollectionDeleteMultiRes, error)
 }
 
 type videoCollectionClient struct {
@@ -70,6 +74,15 @@ func (c *videoCollectionClient) One(ctx context.Context, in *VideoCollectionOneR
 func (c *videoCollectionClient) List(ctx context.Context, in *VideoCollectionListReq, opts ...grpc.CallOption) (*VideoCollectionListRes, error) {
 	out := new(VideoCollectionListRes)
 	err := c.cc.Invoke(ctx, VideoCollection_List_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *videoCollectionClient) Get(ctx context.Context, in *VideoCollectionGetReq, opts ...grpc.CallOption) (*VideoCollectionGetRes, error) {
+	out := new(VideoCollectionGetRes)
+	err := c.cc.Invoke(ctx, VideoCollection_Get_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -112,6 +125,15 @@ func (c *videoCollectionClient) Delete(ctx context.Context, in *VideoCollectionD
 	return out, nil
 }
 
+func (c *videoCollectionClient) DeleteMulti(ctx context.Context, in *VideoCollectionDeleteMultiReq, opts ...grpc.CallOption) (*VideoCollectionDeleteMultiRes, error) {
+	out := new(VideoCollectionDeleteMultiRes)
+	err := c.cc.Invoke(ctx, VideoCollection_DeleteMulti_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // VideoCollectionServer is the server API for VideoCollection service.
 // All implementations must embed UnimplementedVideoCollectionServer
 // for forward compatibility
@@ -119,10 +141,12 @@ type VideoCollectionServer interface {
 	Count(context.Context, *VideoCollectionCountReq) (*VideoCollectionCountRes, error)
 	One(context.Context, *VideoCollectionOneReq) (*VideoCollectionOneRes, error)
 	List(context.Context, *VideoCollectionListReq) (*VideoCollectionListRes, error)
+	Get(context.Context, *VideoCollectionGetReq) (*VideoCollectionGetRes, error)
 	Create(context.Context, *VideoCollectionCreateReq) (*VideoCollectionCreateRes, error)
 	Update(context.Context, *VideoCollectionUpdateReq) (*VideoCollectionUpdateRes, error)
 	Upsert(context.Context, *VideoCollectionUpsertReq) (*VideoCollectionUpsertRes, error)
 	Delete(context.Context, *VideoCollectionDeleteReq) (*VideoCollectionDeleteRes, error)
+	DeleteMulti(context.Context, *VideoCollectionDeleteMultiReq) (*VideoCollectionDeleteMultiRes, error)
 	mustEmbedUnimplementedVideoCollectionServer()
 }
 
@@ -139,6 +163,9 @@ func (UnimplementedVideoCollectionServer) One(context.Context, *VideoCollectionO
 func (UnimplementedVideoCollectionServer) List(context.Context, *VideoCollectionListReq) (*VideoCollectionListRes, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method List not implemented")
 }
+func (UnimplementedVideoCollectionServer) Get(context.Context, *VideoCollectionGetReq) (*VideoCollectionGetRes, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Get not implemented")
+}
 func (UnimplementedVideoCollectionServer) Create(context.Context, *VideoCollectionCreateReq) (*VideoCollectionCreateRes, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Create not implemented")
 }
@@ -150,6 +177,9 @@ func (UnimplementedVideoCollectionServer) Upsert(context.Context, *VideoCollecti
 }
 func (UnimplementedVideoCollectionServer) Delete(context.Context, *VideoCollectionDeleteReq) (*VideoCollectionDeleteRes, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Delete not implemented")
+}
+func (UnimplementedVideoCollectionServer) DeleteMulti(context.Context, *VideoCollectionDeleteMultiReq) (*VideoCollectionDeleteMultiRes, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DeleteMulti not implemented")
 }
 func (UnimplementedVideoCollectionServer) mustEmbedUnimplementedVideoCollectionServer() {}
 
@@ -214,6 +244,24 @@ func _VideoCollection_List_Handler(srv interface{}, ctx context.Context, dec fun
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(VideoCollectionServer).List(ctx, req.(*VideoCollectionListReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _VideoCollection_Get_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(VideoCollectionGetReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(VideoCollectionServer).Get(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: VideoCollection_Get_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(VideoCollectionServer).Get(ctx, req.(*VideoCollectionGetReq))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -290,6 +338,24 @@ func _VideoCollection_Delete_Handler(srv interface{}, ctx context.Context, dec f
 	return interceptor(ctx, in, info, handler)
 }
 
+func _VideoCollection_DeleteMulti_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(VideoCollectionDeleteMultiReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(VideoCollectionServer).DeleteMulti(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: VideoCollection_DeleteMulti_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(VideoCollectionServer).DeleteMulti(ctx, req.(*VideoCollectionDeleteMultiReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // VideoCollection_ServiceDesc is the grpc.ServiceDesc for VideoCollection service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -310,6 +376,10 @@ var VideoCollection_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _VideoCollection_List_Handler,
 		},
 		{
+			MethodName: "Get",
+			Handler:    _VideoCollection_Get_Handler,
+		},
+		{
 			MethodName: "Create",
 			Handler:    _VideoCollection_Create_Handler,
 		},
@@ -324,6 +394,10 @@ var VideoCollection_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "Delete",
 			Handler:    _VideoCollection_Delete_Handler,
+		},
+		{
+			MethodName: "DeleteMulti",
+			Handler:    _VideoCollection_DeleteMulti_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

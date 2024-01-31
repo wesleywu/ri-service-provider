@@ -41,10 +41,19 @@ func RegisterVideoCollectionGuruServer(srv VideoCollectionServer) error {
 	if err != nil {
 		return err
 	}
+	err = server.RegisterMethodDesc("video_collection.VideoCollection", "Get", &annotations.CacheRule{
+		Cachable: false,
+		Name:     "",
+		Ttl:      "",
+		Key:      "",
+	})
+	if err != nil {
+		return err
+	}
 	err = server.RegisterMethodDesc("video_collection.VideoCollection", "Create", &annotations.CacheRule{
 		Cachable: false,
-		Name:     "VideoCollection",
-		Ttl:      "30s",
+		Name:     "",
+		Ttl:      "",
 		Key:      "",
 	})
 	if err != nil {
@@ -52,8 +61,8 @@ func RegisterVideoCollectionGuruServer(srv VideoCollectionServer) error {
 	}
 	err = server.RegisterMethodDesc("video_collection.VideoCollection", "Update", &annotations.CacheRule{
 		Cachable: false,
-		Name:     "VideoCollection",
-		Ttl:      "30s",
+		Name:     "",
+		Ttl:      "",
 		Key:      "",
 	})
 	if err != nil {
@@ -61,8 +70,8 @@ func RegisterVideoCollectionGuruServer(srv VideoCollectionServer) error {
 	}
 	err = server.RegisterMethodDesc("video_collection.VideoCollection", "Upsert", &annotations.CacheRule{
 		Cachable: false,
-		Name:     "VideoCollection",
-		Ttl:      "30s",
+		Name:     "",
+		Ttl:      "",
 		Key:      "",
 	})
 	if err != nil {
@@ -70,8 +79,17 @@ func RegisterVideoCollectionGuruServer(srv VideoCollectionServer) error {
 	}
 	err = server.RegisterMethodDesc("video_collection.VideoCollection", "Delete", &annotations.CacheRule{
 		Cachable: false,
-		Name:     "VideoCollection",
-		Ttl:      "30s",
+		Name:     "",
+		Ttl:      "",
+		Key:      "",
+	})
+	if err != nil {
+		return err
+	}
+	err = server.RegisterMethodDesc("video_collection.VideoCollection", "DeleteMulti", &annotations.CacheRule{
+		Cachable: false,
+		Name:     "",
+		Ttl:      "",
 		Key:      "",
 	})
 	if err != nil {

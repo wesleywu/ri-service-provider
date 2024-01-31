@@ -9,30 +9,28 @@ import (
 	p "github.com/wesleywu/ri-service-provider/api/video_collection/v1"
 	"github.com/wesleywu/ri-service-provider/gworm"
 	"github.com/wesleywu/ri-service-provider/gworm/mongodb"
-	"github.com/wesleywu/ri-service-provider/gwwrapper"
-	"github.com/wesleywu/ri-service-provider/provider/internal/service/video_collection/mapping"
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
-type UpdateLogic struct {
+type GetLogic struct {
 	metadata   *appinfo.AppMetadata
 	helper     *log.Helper
 	collection *mongo.Collection
 }
 
-func NewUpdateLogic(metadata *appinfo.AppMetadata, helper *log.Helper, collection *mongo.Collection) *UpdateLogic {
-	return &UpdateLogic{
+func NewGetLogic(metadata *appinfo.AppMetadata, helper *log.Helper, collection *mongo.Collection) *GetLogic {
+	return &GetLogic{
 		metadata:   metadata,
 		helper:     helper,
 		collection: collection,
 	}
 }
 
-func (s *UpdateLogic) Update(ctx context.Context, req *p.VideoCollectionUpdateReq) (*p.VideoCollectionUpdateRes, error) {
+func (s *GetLogic) Get(ctx context.Context, req *p.VideoCollectionGetReq) (*p.VideoCollectionGetRes, error) {
 	var (
 		filterRequest gworm.FilterRequest
-		result        *gworm.Result
 		err           error
+		item          *p.VideoCollectionItem
 	)
 	if req.Id == "" {
 		return nil, errors.ErrorIdValueMissing("主键ID字段的值为空")
@@ -53,14 +51,17 @@ func (s *UpdateLogic) Update(ctx context.Context, req *p.VideoCollectionUpdateRe
 	if err != nil {
 		return nil, err
 	}
-	result, err = m.Fields(p.VideoCollectionItem{}).
-		FieldsEx(mapping.VideoCollectionColumns.Id, mapping.VideoCollectionColumns.CreatedAt).
-		Update(ctx, req)
+	singleResult := s.collection.FindOne(ctx, m.MongoModel.Filter)
+	if singleResult.Err() != nil {
+		return nil, err
+	}
+	item = (*p.VideoCollectionItem)(nil)
+	err = singleResult.Decode(item)
 	if err != nil {
 		return nil, err
 	}
-	return &p.VideoCollectionUpdateRes{
-		Message:      gwwrapper.WrapString("创建记录成功"),
-		RowsAffected: gwwrapper.WrapInt64(result.RowsAffected),
-	}, err
+	return &p.VideoCollectionGetRes{
+		Found: true,
+		Item:  item,
+	}, nil
 }

@@ -42,11 +42,8 @@ func (s *ListLogic) List(ctx context.Context, req *p.VideoCollectionListReq) (*p
 		Type:       gworm.MONGO,
 		MongoModel: mongodb.NewModel(s.collection),
 	}
+	// todo: page size not set to default
 	m, err = gworm.ApplyFilter(ctx, filterRequest, m)
-	if err != nil {
-		return nil, err
-	}
-	total, err = m.MongoModel.Count(ctx)
 	if err != nil {
 		return nil, err
 	}
@@ -57,6 +54,14 @@ func (s *ListLogic) List(ctx context.Context, req *p.VideoCollectionListReq) (*p
 		Scan(ctx, &list)
 	if err != nil {
 		return nil, err
+	}
+	if len(list) == int(pageRequest.Size) {
+		total, err = m.MongoModel.Count(ctx)
+		if err != nil {
+			return nil, err
+		}
+	} else {
+		total = int64(len(list))
 	}
 	pageInfo = &gworm.PageInfo{}
 	pageInfo.From(pageRequest, uint32(len(list)), uint64(total))

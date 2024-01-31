@@ -4,6 +4,7 @@ deps:
   - buf.build/srikrsna/protoc-gen-gotag
   - buf.build/wesleywu/gowing
   - buf.build/castbox/guru-service
+  - buf.build/kratos/apis
 breaking:
   use:
     - FILE

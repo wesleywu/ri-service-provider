@@ -50,6 +50,15 @@ service VideoCollection {
       key: "",
     };
   }
+  rpc Get (VideoCollectionGetReq) returns (VideoCollectionGetRes){
+    option (google.api.http) = {
+      get: "/v1/video-collection/id/{id}",
+      body: "*",
+    };
+    option (guru.service.annotations.cache) = {
+      cachable: false,
+    };
+  }
   rpc Create (VideoCollectionCreateReq) returns (VideoCollectionCreateRes){
     option (google.api.http) = {
       post: "/v1/video-collection",
@@ -57,45 +66,42 @@ service VideoCollection {
     };
     option (guru.service.annotations.cache) = {
       cachable: false,
-      name: "VideoCollection",
-      ttl: "30s",
-      key: "",
     };
   }
   rpc Update (VideoCollectionUpdateReq) returns (VideoCollectionUpdateRes){
     option (google.api.http) = {
-      patch: "/v1/video-collection",
+      patch: "/v1/video-collection/id/{id}",
       body: "*",
     };
     option (guru.service.annotations.cache) = {
       cachable: false,
-      name: "VideoCollection",
-      ttl: "30s",
-      key: "",
     };
   }
   rpc Upsert (VideoCollectionUpsertReq) returns (VideoCollectionUpsertRes){
     option (google.api.http) = {
-      put: "/v1/video-collection",
+      put: "/v1/video-collection/id/{id}",
       body: "*",
     };
     option (guru.service.annotations.cache) = {
       cachable: false,
-      name: "VideoCollection",
-      ttl: "30s",
-      key: "",
     };
   }
   rpc Delete (VideoCollectionDeleteReq) returns (VideoCollectionDeleteRes){
     option (google.api.http) = {
-      delete: "/v1/video-collection",
+      delete: "/v1/video-collection/id/{id}",
       body: "*",
     };
     option (guru.service.annotations.cache) = {
       cachable: false,
-      name: "VideoCollection",
-      ttl: "30s",
-      key: "",
+    };
+  }
+  rpc DeleteMulti (VideoCollectionDeleteMultiReq) returns (VideoCollectionDeleteMultiRes){
+    option (google.api.http) = {
+      post: "/v1/video-collection/delete",
+      body: "*",
+    };
+    option (guru.service.annotations.cache) = {
+      cachable: false,
     };
   }
 }
@@ -163,6 +169,15 @@ message VideoCollectionItem {
   optional google.protobuf.Timestamp updatedAt = 8 [(tagger.tags) = "bson:\"updatedAt\" json:\"updatedAt\""];
 }
 
+message VideoCollectionGetReq {
+  string id = 1 [(tagger.tags) = "p:\"id\" v:\"required#视频集ID，字符串格式不能为空\" json:\"id\" bson:\"_id,omitempty\""];
+}
+
+message VideoCollectionGetRes {
+  bool found = 1;
+  optional VideoCollectionItem item = 2;
+}
+
 message VideoCollectionCreateReq {
   optional string id = 1 [(tagger.tags) = "p:\"id\" v:\"required#视频集ID，字符串格式不能为空\" json:\"id\" bson:\"_id,omitempty\""];
   optional string name = 2 [(tagger.tags) = "p:\"name\" v:\"required|max-length:50#视频集名称不能为空|视频集名称不能超过50个字\" json:\"name\" bson:\"name,omitempty\""];
@@ -181,7 +196,7 @@ message VideoCollectionCreateRes {
 }
 
 message VideoCollectionUpdateReq {
-  optional string id = 1 [(tagger.tags) = "p:\"id\" v:\"required#视频集ID，字符串格式不能为空\" json:\"id\" bson:\"_id,omitempty\""];
+  string id = 1 [(tagger.tags) = "p:\"id\" v:\"required#视频集ID，字符串格式不能为空\" json:\"id\" bson:\"_id,omitempty\""];
   optional string name = 2 [(tagger.tags) = "p:\"name\" json:\"name\" bson:\"name,omitempty\""];
   optional int32 contentType = 3 [(tagger.tags) = "p:\"contentType\" json:\"contentType\" bson:\"contentType,omitempty\""];
   optional int32 filterType = 4 [(tagger.tags) = "p:\"filterType\" json:\"filterType\" bson:\"filterType,omitempty\""];
@@ -197,7 +212,7 @@ message VideoCollectionUpdateRes {
 }
 
 message VideoCollectionUpsertReq {
-  optional string id = 1 [(tagger.tags) = "p:\"id\" v:\"required#视频集ID，字符串格式不能为空\" json:\"id\" bson:\"_id,omitempty\""];
+  string id = 1 [(tagger.tags) = "p:\"id\" v:\"required#视频集ID，字符串格式不能为空\" json:\"id\" bson:\"_id,omitempty\""];
   optional string name = 2 [(tagger.tags) = "p:\"name\" json:\"name\" bson:\"name,omitempty\""];
   optional int32 contentType = 3 [(tagger.tags) = "p:\"contentType\" json:\"contentType\" bson:\"contentType,omitempty\""];
   optional int32 filterType = 4 [(tagger.tags) = "p:\"filterType\" json:\"filterType\" bson:\"filterType,omitempty\""];
@@ -214,6 +229,16 @@ message VideoCollectionUpsertRes {
 }
 
 message VideoCollectionDeleteReq {
+  string id = 1 [(tagger.tags) = "p:\"id\" v:\"required#视频集ID，字符串格式不能为空\" json:\"id\" bson:\"_id,omitempty\""];
+}
+
+message VideoCollectionDeleteRes {
+  optional string message = 1 [(tagger.tags) = "json:\"message\""];
+  optional int64 insertedId = 2 [(tagger.tags) = "json:\"insertedId\""];
+  optional int64 rowsAffected = 3 [(tagger.tags) = "json:\"rowsAffected\""];
+}
+
+message VideoCollectionDeleteMultiReq {
   google.protobuf.Any  id = 1;
   google.protobuf.Any  name = 2;
   google.protobuf.Any  contentType = 3;
@@ -224,7 +249,7 @@ message VideoCollectionDeleteReq {
   google.protobuf.Any  updatedAt = 8;
 }
 
-message VideoCollectionDeleteRes {
+message VideoCollectionDeleteMultiRes {
   optional string message = 1 [(tagger.tags) = "json:\"message\""];
   optional int64 insertedId = 2 [(tagger.tags) = "json:\"insertedId\""];
   optional int64 rowsAffected = 3 [(tagger.tags) = "json:\"rowsAffected\""];

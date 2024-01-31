@@ -15,10 +15,12 @@ type IVideoCollection interface {
 	Count(ctx context.Context, req *p.VideoCollectionCountReq) (*p.VideoCollectionCountRes, error)
 	One(ctx context.Context, req *p.VideoCollectionOneReq) (*p.VideoCollectionOneRes, error)
 	List(ctx context.Context, req *p.VideoCollectionListReq) (*p.VideoCollectionListRes, error)
+	Get(ctx context.Context, req *p.VideoCollectionGetReq) (*p.VideoCollectionGetRes, error)
 	Create(ctx context.Context, req *p.VideoCollectionCreateReq) (*p.VideoCollectionCreateRes, error)
 	Update(ctx context.Context, req *p.VideoCollectionUpdateReq) (*p.VideoCollectionUpdateRes, error)
 	Upsert(ctx context.Context, req *p.VideoCollectionUpsertReq) (*p.VideoCollectionUpsertRes, error)
 	Delete(ctx context.Context, req *p.VideoCollectionDeleteReq) (*p.VideoCollectionDeleteRes, error)
+	DeleteMulti(ctx context.Context, req *p.VideoCollectionDeleteMultiReq) (*p.VideoCollectionDeleteMultiRes, error)
 }
 
 type ServiceImpl struct {
@@ -61,6 +63,12 @@ func (s *ServiceImpl) One(ctx context.Context, req *p.VideoCollectionOneReq) (*p
 	return l.One(ctx, req)
 }
 
+// Get 根据主键/ID查询特定记录
+func (s *ServiceImpl) Get(ctx context.Context, req *p.VideoCollectionGetReq) (*p.VideoCollectionGetRes, error) {
+	l := logic.NewGetLogic(s.metadata, s.helper, s.collection)
+	return l.Get(ctx, req)
+}
+
 // Create 插入记录
 // 包括表中所有字段，支持字段类型自动转换，支持对非主键且可为空字段不赋值
 // 未赋值或赋值为nil的字段将被更新为 NULL 或数据库表指定的DEFAULT
@@ -85,9 +93,15 @@ func (s *ServiceImpl) Upsert(ctx context.Context, req *p.VideoCollectionUpsertRe
 	return l.Upsert(ctx, req)
 }
 
-// Delete 根据req指定的条件删除表中记录
-// 未赋值或或赋值为nil的字段不参与条件查询
+// Delete 根据主键删除对应记录
 func (s *ServiceImpl) Delete(ctx context.Context, req *p.VideoCollectionDeleteReq) (*p.VideoCollectionDeleteRes, error) {
 	l := logic.NewDeleteLogic(s.metadata, s.helper, s.collection)
 	return l.Delete(ctx, req)
+}
+
+// DeleteMulti 根据req指定的条件删除表中记录（可能多条）
+// 未赋值或或赋值为nil的字段不参与条件查询
+func (s *ServiceImpl) DeleteMulti(ctx context.Context, req *p.VideoCollectionDeleteMultiReq) (*p.VideoCollectionDeleteMultiRes, error) {
+	l := logic.NewDeleteMultiLogic(s.metadata, s.helper, s.collection)
+	return l.DeleteMulti(ctx, req)
 }
