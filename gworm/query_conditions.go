@@ -28,6 +28,7 @@ import (
 	"github.com/gogf/gf/v2/util/gconv"
 	"github.com/wesleywu/gowing/protobuf/gwtypes"
 	"github.com/wesleywu/ri-service-provider/gwerror"
+	"go.mongodb.org/mongo-driver/bson"
 	"google.golang.org/protobuf/types/known/anypb"
 	"google.golang.org/protobuf/types/known/wrapperspb"
 )
@@ -42,6 +43,7 @@ const (
 
 type FilterRequest struct {
 	PropertyFilters []*PropertyFilter
+	Filters         *bson.D
 }
 
 type PropertyFilter struct {
@@ -52,12 +54,254 @@ type PropertyFilter struct {
 	Wildcard gwtypes.WildcardType `json:"wildcard"`
 }
 
-func (fr *FilterRequest) AddPropertyFilter(f *PropertyFilter) *FilterRequest {
+func WhereEq(key string, value interface{}) *bson.E {
+	return &bson.E{
+		Key:   key,
+		Value: value,
+	}
+}
+
+func WhereNotEq(key string, value interface{}) *bson.E {
+	return &bson.E{
+		Key:   key,
+		Value: bson.M{"$ne": value},
+	}
+}
+
+func WhereGT(key string, value interface{}) *bson.E {
+	return &bson.E{
+		Key:   key,
+		Value: bson.M{"$gt": value},
+	}
+}
+
+func WhereGTE(key string, value interface{}) *bson.E {
+	return &bson.E{
+		Key:   key,
+		Value: bson.M{"$gte": value},
+	}
+}
+
+func WhereLT(key string, value interface{}) *bson.E {
+	return &bson.E{
+		Key:   key,
+		Value: bson.M{"$lt": value},
+	}
+}
+
+func WhereLTE(key string, value interface{}) *bson.E {
+	return &bson.E{
+		Key:   key,
+		Value: bson.M{"$lte": value},
+	}
+}
+
+func WhereIn(key string, value []interface{}) *bson.E {
+	return &bson.E{
+		key,
+		bson.M{
+			"$in": bson.A(value),
+		},
+	}
+}
+
+func WhereNotIn(key string, value []interface{}) *bson.E {
+	return &bson.E{
+		key,
+		bson.M{
+			"$nin": bson.A(value),
+		},
+	}
+}
+
+func WhereBetween(key string, min, max interface{}) *bson.E {
+	return &bson.E{
+		Key:   key,
+		Value: bson.M{"$gte": min, "$lte": max},
+	}
+}
+
+func WhereNotBetween(key string, min, max interface{}) *bson.E {
+	return &bson.E{
+		Key: key,
+		Value: bson.D{
+			{"$or",
+				bson.A{
+					bson.D{{key, bson.D{{"$gt", max}}}},
+					bson.D{{key, bson.D{{"$lt", min}}}},
+				},
+			},
+		},
+	}
+}
+
+func WhereLike(key string, like string) *bson.E {
+	return &bson.E{
+		Key:   key,
+		Value: bson.M{"$regex": like, "$options": "im"},
+	}
+}
+
+func WhereNotLike(key string, like string) *bson.E {
+	return &bson.E{
+		Key: key,
+		Value: bson.M{
+			"$not": bson.M{"$regex": like, "$options": "im"},
+		},
+	}
+}
+
+func WhereNull(key string) *bson.E {
+	return &bson.E{
+		Key:   key,
+		Value: nil,
+	}
+}
+
+func WhereNotNull(key string) *bson.E {
+	return &bson.E{
+		Key:   key,
+		Value: bson.M{"$ne": nil},
+	}
+}
+
+// WherePri does the same logic as Model.Where except that if the parameter `where`
+// is a single condition like int/string/float/slice, it treats the condition as the primary
+// key value. That is, if primary key is "id" and given `where` parameter as "123", the
+// WherePri function treats the condition as "id=123", but Model.Where treats the condition
+// as string "123".
+func WherePri(args []string) *bson.E {
+	lenArgs := len(args)
+	switch lenArgs {
+	case 0:
+		return nil
+	case 1:
+		return &bson.E{Key: "_id", Value: args[0]}
+	default:
+		return &bson.E{Key: "_id", Value: bson.E{Key: "$in", Value: args}}
+	}
+}
+
+func (fr *FilterRequest) addPropertyFilter(f *PropertyFilter) *FilterRequest {
 	fr.PropertyFilters = append(fr.PropertyFilters, f)
 	return fr
 }
 
-func ExtractFilters(ctx context.Context, req interface{}, columnMap map[string]string, mType ModelType) (fr FilterRequest, err error) {
+func (fr *FilterRequest) GetFilters() (*bson.D, error) {
+	if fr.Filters != nil {
+		return fr.Filters, nil
+	}
+	var (
+		filters bson.D
+		filter  *bson.E
+		err     error
+	)
+	filters = bson.D{}
+	for _, pf := range fr.PropertyFilters {
+		filter, err = pf.GetFilter()
+		if err != nil {
+			return nil, err
+		}
+		if filter == nil {
+			continue
+		}
+		filters = append(filters, *filter)
+	}
+	fr.Filters = &filters
+	return fr.Filters, nil
+}
+
+func (pf *PropertyFilter) GetFilter() (*bson.E, error) {
+	if pf == nil {
+		return nil, nil
+	}
+	if pf.Value == nil {
+		return nil, nil
+	}
+	property := pf.Property
+	switch pf.Operator {
+	case gwtypes.OperatorType_EQ:
+		switch pf.Multi {
+		case gwtypes.MultiType_Exact:
+			return WhereEq(property, pf.Value), nil
+		case gwtypes.MultiType_Between:
+			valueSlice := gconv.SliceAny(pf.Value)
+			valueLen := len(valueSlice)
+			if valueLen == 0 {
+				return nil, nil
+			} else if valueLen == 1 {
+				return WhereEq(property, valueSlice[0]), nil
+			} else if valueLen == 2 {
+				return WhereBetween(property, valueSlice[0], valueSlice[1]), nil
+			} else {
+				return nil, gwerror.NewBadRequestErrorf("column %s requires between query but given %d values", property, valueLen)
+			}
+		case gwtypes.MultiType_NotBetween:
+			valueSlice := gconv.SliceAny(pf.Value)
+			valueLen := len(valueSlice)
+			if valueLen == 0 {
+				return nil, nil
+			} else if valueLen == 1 {
+				return WhereNotEq(property, valueSlice[0]), nil
+			} else if valueLen == 2 {
+				return WhereNotBetween(property, valueSlice[0], valueSlice[1]), nil
+			} else {
+				return nil, gwerror.NewBadRequestErrorf("column %s requires between query but given %d values", property, valueLen)
+			}
+		case gwtypes.MultiType_In:
+			valueSlice := gconv.SliceAny(pf.Value)
+			valueLen := len(valueSlice)
+			if valueLen == 0 {
+				return nil, nil
+			} else if valueLen == 1 {
+				return WhereEq(property, valueSlice[0]), nil
+			} else {
+				return WhereIn(property, valueSlice), nil
+			}
+		case gwtypes.MultiType_NotIn:
+			valueSlice := gconv.SliceAny(pf.Value)
+			valueLen := len(valueSlice)
+			if valueLen == 0 {
+				return nil, nil
+			} else if valueLen == 1 {
+				return WhereNotEq(property, valueSlice[0]), nil
+			} else {
+				return WhereNotIn(property, valueSlice), nil
+			}
+		}
+	case gwtypes.OperatorType_NE:
+		return WhereNotEq(property, pf.Value), nil
+	case gwtypes.OperatorType_GT:
+		return WhereGT(property, pf.Value), nil
+	case gwtypes.OperatorType_GTE:
+		return WhereGTE(property, pf.Value), nil
+	case gwtypes.OperatorType_LT:
+		return WhereLT(property, pf.Value), nil
+	case gwtypes.OperatorType_LTE:
+		return WhereLTE(property, pf.Value), nil
+	case gwtypes.OperatorType_Like:
+		valueStr := gconv.String(pf.Value)
+		if g.IsEmpty(valueStr) {
+			return nil, nil
+		}
+		valueStr = decorateValueStrForWildcard(valueStr, pf.Wildcard)
+		return WhereLike(property, valueStr), nil
+	case gwtypes.OperatorType_NotLike:
+		valueStr := gconv.String(pf.Value)
+		if g.IsEmpty(valueStr) {
+			return nil, nil
+		}
+		valueStr = decorateValueStrForWildcard(valueStr, pf.Wildcard)
+		return WhereNotLike(property, valueStr), nil
+	case gwtypes.OperatorType_Null:
+		return WhereNotEq(property, pf.Value), nil
+	case gwtypes.OperatorType_NotNull:
+		return WhereNotEq(property, pf.Value), nil
+	}
+	return nil, nil
+}
+
+func ExtractFilters(ctx context.Context, req interface{}, columnMap map[string]string) (fr FilterRequest, err error) {
 	var f *PropertyFilter
 	p := reflect.TypeOf(req)
 	if p.Kind() != reflect.Ptr { // 要求传入值必须是个指针
@@ -91,12 +335,12 @@ func ExtractFilters(ctx context.Context, req interface{}, columnMap map[string]s
 			//g.Log().Debugf(ctx, "kind of element of field %s is %s", fieldName, fieldElemType.Kind().String())
 			anyValue := queryValue.Field(i).Interface().(*anypb.Any)
 			if anyValue != nil {
-				f, err = unwrapAnyFilter(columnName, field.Tag, anyValue, mType)
+				f, err = unwrapAnyFilter(columnName, field.Tag, anyValue)
 				if err != nil {
 					return
 				}
 				if f != nil {
-					fr.AddPropertyFilter(f)
+					fr.addPropertyFilter(f)
 				}
 			}
 
@@ -117,11 +361,11 @@ func ExtractFilters(ctx context.Context, req interface{}, columnMap map[string]s
 					continue
 				}
 				g.Log().Debugf(ctx, "inner field %s kind:%si, column:%s, value:%s", innerField.Name, innerField.Type.Kind().String(), columnName, fieldValue)
-				f, err = parsePropertyFilter(ctx, req, columnName, innerField.Tag, fieldValue, mType)
+				f, err = parsePropertyFilter(ctx, req, columnName, innerField.Tag, fieldValue)
 				if err != nil {
 					return
 				}
-				fr.AddPropertyFilter(f)
+				fr.addPropertyFilter(f)
 			}
 		case reflect.Interface:
 			columnName, exists := columnMap[fieldName]
@@ -132,17 +376,17 @@ func ExtractFilters(ctx context.Context, req interface{}, columnMap map[string]s
 			if fieldValue == nil {
 				continue
 			}
-			f, err = parsePropertyFilter(ctx, req, columnName, field.Tag, fieldValue, mType)
+			f, err = parsePropertyFilter(ctx, req, columnName, field.Tag, fieldValue)
 			if err != nil {
 				return
 			}
-			fr.AddPropertyFilter(f)
+			fr.addPropertyFilter(f)
 		}
 	}
 	return
 }
 
-func parsePropertyFilter(ctx context.Context, req interface{}, columnName string, tag reflect.StructTag, value interface{}, mType ModelType) (*PropertyFilter, error) {
+func parsePropertyFilter(ctx context.Context, req interface{}, columnName string, tag reflect.StructTag, value interface{}) (*PropertyFilter, error) {
 	if value == nil { // todo processing: is null/is not null
 		return nil, nil
 	}
@@ -238,7 +482,7 @@ func parsePropertyFilter(ctx context.Context, req interface{}, columnName string
 			case gwtypes.WildcardType_Contains:
 				return &PropertyFilter{
 					Property: columnName,
-					Value:    decorateValueStrForWildcard(valueString, gwtypes.WildcardType_Contains, mType),
+					Value:    decorateValueStrForWildcard(valueString, gwtypes.WildcardType_Contains),
 					Operator: gwtypes.OperatorType_Like,
 					Multi:    gwtypes.MultiType_Exact,
 					Wildcard: wildcard,
@@ -246,7 +490,7 @@ func parsePropertyFilter(ctx context.Context, req interface{}, columnName string
 			case gwtypes.WildcardType_StartsWith:
 				return &PropertyFilter{
 					Property: columnName,
-					Value:    decorateValueStrForWildcard(valueString, gwtypes.WildcardType_StartsWith, mType),
+					Value:    decorateValueStrForWildcard(valueString, gwtypes.WildcardType_StartsWith),
 					Operator: gwtypes.OperatorType_Like,
 					Multi:    gwtypes.MultiType_Exact,
 					Wildcard: wildcard,
@@ -254,7 +498,7 @@ func parsePropertyFilter(ctx context.Context, req interface{}, columnName string
 			case gwtypes.WildcardType_EndsWith:
 				return &PropertyFilter{
 					Property: columnName,
-					Value:    decorateValueStrForWildcard(valueString, gwtypes.WildcardType_EndsWith, mType),
+					Value:    decorateValueStrForWildcard(valueString, gwtypes.WildcardType_EndsWith),
 					Operator: gwtypes.OperatorType_Like,
 					Multi:    gwtypes.MultiType_Exact,
 					Wildcard: wildcard,
@@ -288,7 +532,7 @@ func parsePropertyFilter(ctx context.Context, req interface{}, columnName string
 	}
 }
 
-func unwrapAnyFilter(columnName string, tag reflect.StructTag, valueAny *anypb.Any, mType ModelType) (pf *PropertyFilter, err error) {
+func unwrapAnyFilter(columnName string, tag reflect.StructTag, valueAny *anypb.Any) (pf *PropertyFilter, err error) {
 	if valueAny == nil {
 		return nil, nil
 	}
@@ -333,7 +577,7 @@ func unwrapAnyFilter(columnName string, tag reflect.StructTag, valueAny *anypb.A
 	case *wrapperspb.StringValue:
 		return parseFieldSingleFilter(columnName, vt.Value)
 	case *gwtypes.Condition:
-		return AddConditionFilter(columnName, vt, mType)
+		return AddConditionFilter(columnName, vt)
 	default:
 		return nil, gerror.Newf("Unsupported value type: %v", vt)
 	}
@@ -423,7 +667,7 @@ func parseFieldSliceFilter[T any](columnName string, tag reflect.StructTag, valu
 	}
 }
 
-func AddConditionFilter(columnName string, condition *gwtypes.Condition, mType ModelType) (pf *PropertyFilter, err error) {
+func AddConditionFilter(columnName string, condition *gwtypes.Condition) (pf *PropertyFilter, err error) {
 	if condition == nil {
 		return nil, nil
 	}
@@ -453,23 +697,23 @@ func AddConditionFilter(columnName string, condition *gwtypes.Condition, mType M
 	case *gwtypes.StringSlice:
 		return parseFieldConditionSliceFilter(columnName, condition, v.(*gwtypes.StringSlice).Value)
 	case *wrapperspb.BoolValue:
-		return parseFieldConditionSingleFilter(columnName, condition, v.(*wrapperspb.BoolValue).Value, mType)
+		return parseFieldConditionSingleFilter(columnName, condition, v.(*wrapperspb.BoolValue).Value)
 	case *wrapperspb.BytesValue:
-		return parseFieldConditionSingleFilter(columnName, condition, v.(*wrapperspb.BytesValue).Value, mType)
+		return parseFieldConditionSingleFilter(columnName, condition, v.(*wrapperspb.BytesValue).Value)
 	case *wrapperspb.DoubleValue:
-		return parseFieldConditionSingleFilter(columnName, condition, v.(*wrapperspb.DoubleValue).Value, mType)
+		return parseFieldConditionSingleFilter(columnName, condition, v.(*wrapperspb.DoubleValue).Value)
 	case *wrapperspb.FloatValue:
-		return parseFieldConditionSingleFilter(columnName, condition, v.(*wrapperspb.FloatValue).Value, mType)
+		return parseFieldConditionSingleFilter(columnName, condition, v.(*wrapperspb.FloatValue).Value)
 	case *wrapperspb.Int32Value:
-		return parseFieldConditionSingleFilter(columnName, condition, v.(*wrapperspb.Int32Value).Value, mType)
+		return parseFieldConditionSingleFilter(columnName, condition, v.(*wrapperspb.Int32Value).Value)
 	case *wrapperspb.Int64Value:
-		return parseFieldConditionSingleFilter(columnName, condition, v.(*wrapperspb.Int64Value).Value, mType)
+		return parseFieldConditionSingleFilter(columnName, condition, v.(*wrapperspb.Int64Value).Value)
 	case *wrapperspb.UInt32Value:
-		return parseFieldConditionSingleFilter(columnName, condition, v.(*wrapperspb.UInt32Value).Value, mType)
+		return parseFieldConditionSingleFilter(columnName, condition, v.(*wrapperspb.UInt32Value).Value)
 	case *wrapperspb.UInt64Value:
-		return parseFieldConditionSingleFilter(columnName, condition, v.(*wrapperspb.UInt64Value).Value, mType)
+		return parseFieldConditionSingleFilter(columnName, condition, v.(*wrapperspb.UInt64Value).Value)
 	case *wrapperspb.StringValue:
-		return parseFieldConditionSingleFilter(columnName, condition, v.(*wrapperspb.StringValue).Value, mType)
+		return parseFieldConditionSingleFilter(columnName, condition, v.(*wrapperspb.StringValue).Value)
 	default:
 		return nil, gerror.Newf("不支持的Value类型%v", vt)
 	}
@@ -595,7 +839,7 @@ func parseFieldConditionSliceFilter[T any](columnName string, condition *gwtypes
 	return nil, nil
 }
 
-func parseFieldConditionSingleFilter(columnName string, condition *gwtypes.Condition, value interface{}, mType ModelType) (*PropertyFilter, error) {
+func parseFieldConditionSingleFilter(columnName string, condition *gwtypes.Condition, value interface{}) (*PropertyFilter, error) {
 	if value == nil && condition.Operator != gwtypes.OperatorType_Null && condition.Operator != gwtypes.OperatorType_NotNull {
 		return nil, nil
 	}
@@ -632,7 +876,7 @@ func parseFieldConditionSingleFilter(columnName string, condition *gwtypes.Condi
 		if g.IsEmpty(valueStr) {
 			return nil, nil
 		}
-		valueStr = decorateValueStrForWildcard(valueStr, condition.Wildcard, mType)
+		valueStr = decorateValueStrForWildcard(valueStr, condition.Wildcard)
 		return &PropertyFilter{
 			Property: columnName,
 			Value:    valueStr,
@@ -735,16 +979,16 @@ func ParseConditions(ctx context.Context, req interface{}, columnMap map[string]
 			}
 		}
 	}
-	return m, nil
+	return nil, nil
 }
 
 func unwrapAny(columnName string, tag reflect.StructTag, valueAny *anypb.Any, m *Model) (*Model, error) {
 	if valueAny == nil {
-		return m, nil
+		return nil, nil
 	}
 	v, err := valueAny.UnmarshalNew()
 	if err != nil {
-		return m, nil
+		return nil, nil
 	}
 
 	switch vt := v.(type) {
@@ -791,7 +1035,7 @@ func unwrapAny(columnName string, tag reflect.StructTag, valueAny *anypb.Any, m 
 
 func parseField(ctx context.Context, req interface{}, columnName string, tag reflect.StructTag, value interface{}, m *Model) (*Model, error) {
 	if value == nil {
-		return m, nil
+		return nil, nil
 	}
 	t := reflect.TypeOf(value)
 	switch t.Kind() {
@@ -810,7 +1054,7 @@ func parseField(ctx context.Context, req interface{}, columnName string, tag ref
 			}
 			switch len(valueSlice) {
 			case 0:
-				return m, nil
+				return nil, nil
 			case 1:
 				return m.Where(columnName, valueSlice[0]), nil
 			case 2:
@@ -823,7 +1067,7 @@ func parseField(ctx context.Context, req interface{}, columnName string, tag ref
 		} else {
 			switch len(valueSlice) {
 			case 0:
-				return m, nil
+				return nil, nil
 			case 1:
 				return m.Where(columnName, valueSlice[0]), nil
 			default:
@@ -832,11 +1076,11 @@ func parseField(ctx context.Context, req interface{}, columnName string, tag ref
 		}
 	case reflect.Struct, reflect.Func, reflect.Map, reflect.Chan:
 		g.Log().Warningf(ctx, "Query field type struct is not supported")
-		return m, nil
+		return nil, nil
 	case reflect.String:
 		valueString := value.(string)
 		if g.IsEmpty(valueString) {
-			return m, nil
+			return nil, nil
 		}
 		if strings.HasPrefix(valueString, ConditionQueryPrefix) && strings.HasSuffix(valueString, ConditionQuerySuffix) {
 			var condition *PropertyFilter
@@ -858,7 +1102,7 @@ func parseField(ctx context.Context, req interface{}, columnName string, tag ref
 			case gwtypes.WildcardType_Contains:
 			case gwtypes.WildcardType_StartsWith:
 			case gwtypes.WildcardType_EndsWith:
-				valueString = decorateValueStrForWildcard(valueString, wildcard, m.Type)
+				valueString = decorateValueStrForWildcard(valueString, wildcard)
 				return m.WhereLike(columnName, valueString), nil
 			default:
 				return m.Where(columnName, valueString), nil
@@ -869,12 +1113,12 @@ func parseField(ctx context.Context, req interface{}, columnName string, tag ref
 	default:
 		return m.Where(columnName, value), nil
 	}
-	return m, nil
+	return nil, nil
 }
 
 func parseFieldSlice[T any](columnName string, tag reflect.StructTag, value []T, m *Model) (*Model, error) {
 	if value == nil {
-		return m, nil
+		return nil, nil
 	}
 	if multiTag, ok := tag.Lookup(TagNameMulti); ok {
 		multi, err := gwtypes.ParseMultiType(multiTag)
@@ -883,7 +1127,7 @@ func parseFieldSlice[T any](columnName string, tag reflect.StructTag, value []T,
 		}
 		switch len(value) {
 		case 0:
-			return m, nil
+			return nil, nil
 		case 1:
 			return m.Where(columnName, value[0]), nil
 		case 2:
@@ -896,19 +1140,19 @@ func parseFieldSlice[T any](columnName string, tag reflect.StructTag, value []T,
 	} else {
 		switch len(value) {
 		case 0:
-			return m, nil
+			return nil, nil
 		case 1:
 			return m.Where(columnName, value[0]), nil
 		default:
 			return m.WhereIn(columnName, gconv.SliceAny(value)), nil
 		}
 	}
-	return m, nil
+	return nil, nil
 }
 
 func parseFieldConditionSingle(columnName string, condition *gwtypes.Condition, value interface{}, m *Model) (*Model, error) {
 	if value == nil && condition.Operator != gwtypes.OperatorType_Null && condition.Operator != gwtypes.OperatorType_NotNull {
-		return m, nil
+		return nil, nil
 	}
 	switch condition.Operator {
 	case gwtypes.OperatorType_EQ:
@@ -937,29 +1181,29 @@ func parseFieldConditionSingle(columnName string, condition *gwtypes.Condition, 
 	case gwtypes.OperatorType_Like:
 		valueStr := gconv.String(value)
 		if g.IsEmpty(valueStr) {
-			return m, nil
+			return nil, nil
 		}
-		valueStr = decorateValueStrForWildcard(valueStr, condition.Wildcard, m.Type)
+		valueStr = decorateValueStrForWildcard(valueStr, condition.Wildcard)
 		return m.WhereLike(columnName, valueStr), nil
 	case gwtypes.OperatorType_NotLike:
 		valueStr := gconv.String(value)
 		if g.IsEmpty(valueStr) {
-			return m, nil
+			return nil, nil
 		}
-		valueStr = decorateValueStrForWildcard(valueStr, condition.Wildcard, m.Type)
+		valueStr = decorateValueStrForWildcard(valueStr, condition.Wildcard)
 		return m.WhereNotLike(columnName, valueStr), nil
 	case gwtypes.OperatorType_Null:
 		return m.WhereNull(columnName), nil
 	case gwtypes.OperatorType_NotNull:
 		return m.WhereNotNull(columnName), nil
 	}
-	return m, nil
+	return nil, nil
 }
 
 func parseFieldConditionSlice[T any](columnName string, condition *gwtypes.Condition, valueSlice []T, m *Model) (*Model, error) {
 	valueLen := len(valueSlice)
 	if valueLen == 0 {
-		return m, nil
+		return nil, nil
 	}
 	switch condition.Operator {
 	case gwtypes.OperatorType_EQ:
@@ -1013,20 +1257,20 @@ func parseFieldConditionSlice[T any](columnName string, condition *gwtypes.Condi
 	default:
 		return m, gerror.Newf("不支持的Operator值，传入Value: '%s'", gwtypes.OperatorType_name[int32(condition.Operator)], gconv.String(valueSlice))
 	}
-	return m, nil
+	return nil, nil
 }
 
 func AddCondition1(columnName string, condition *gwtypes.Condition, m *Model) (*Model, error) {
 	if condition == nil {
-		return m, nil
+		return nil, nil
 	}
 	// todo 当 condition.Operator 为 Null、NotNull 时，允许 nil 的 Value
 	if condition.Value == nil {
-		return m, nil
+		return nil, nil
 	}
 	v, err := condition.Value.UnmarshalNew()
 	if err != nil {
-		return m, nil
+		return nil, nil
 	}
 	switch vt := v.(type) {
 	case *gwtypes.BoolSlice:
@@ -1070,10 +1314,10 @@ func AddCondition1(columnName string, condition *gwtypes.Condition, m *Model) (*
 
 func AddCondition(_ context.Context, columnName string, condition *PropertyFilter, m *Model) (*Model, error) {
 	if condition == nil {
-		return m, nil
+		return nil, nil
 	}
 	if condition.Value == nil {
-		return m, nil
+		return nil, nil
 	}
 	switch condition.Operator {
 	case gwtypes.OperatorType_EQ:
@@ -1084,7 +1328,7 @@ func AddCondition(_ context.Context, columnName string, condition *PropertyFilte
 			valueSlice := gconv.SliceAny(condition.Value)
 			valueLen := len(valueSlice)
 			if valueLen == 0 {
-				return m, nil
+				return nil, nil
 			} else if valueLen == 1 {
 				return m.Where(columnName, valueSlice[0]), nil
 			} else if valueLen == 2 {
@@ -1096,7 +1340,7 @@ func AddCondition(_ context.Context, columnName string, condition *PropertyFilte
 			valueSlice := gconv.SliceAny(condition.Value)
 			valueLen := len(valueSlice)
 			if valueLen == 0 {
-				return m, nil
+				return nil, nil
 			} else if valueLen == 1 {
 				return m.WhereNot(columnName, valueSlice[0]), nil
 			} else if valueLen == 2 {
@@ -1108,7 +1352,7 @@ func AddCondition(_ context.Context, columnName string, condition *PropertyFilte
 			valueSlice := gconv.SliceAny(condition.Value)
 			valueLen := len(valueSlice)
 			if valueLen == 0 {
-				return m, nil
+				return nil, nil
 			} else if valueLen == 1 {
 				return m.Where(columnName, valueSlice[0]), nil
 			} else {
@@ -1118,7 +1362,7 @@ func AddCondition(_ context.Context, columnName string, condition *PropertyFilte
 			valueSlice := gconv.SliceAny(condition.Value)
 			valueLen := len(valueSlice)
 			if valueLen == 0 {
-				return m, nil
+				return nil, nil
 			} else if valueLen == 1 {
 				return m.WhereNot(columnName, valueSlice[0]), nil
 			} else {
@@ -1138,45 +1382,33 @@ func AddCondition(_ context.Context, columnName string, condition *PropertyFilte
 	case gwtypes.OperatorType_Like:
 		valueStr := gconv.String(condition.Value)
 		if g.IsEmpty(valueStr) {
-			return m, nil
+			return nil, nil
 		}
-		valueStr = decorateValueStrForWildcard(valueStr, condition.Wildcard, m.Type)
+		valueStr = decorateValueStrForWildcard(valueStr, condition.Wildcard)
 		return m.WhereLike(columnName, valueStr), nil
 	case gwtypes.OperatorType_NotLike:
 		valueStr := gconv.String(condition.Value)
 		if g.IsEmpty(valueStr) {
-			return m, nil
+			return nil, nil
 		}
-		valueStr = decorateValueStrForWildcard(valueStr, condition.Wildcard, m.Type)
+		valueStr = decorateValueStrForWildcard(valueStr, condition.Wildcard)
 		return m.WhereNotLike(columnName, valueStr), nil
 	case gwtypes.OperatorType_Null:
 		return m.WhereNot(columnName, condition.Value), nil
 	case gwtypes.OperatorType_NotNull:
 		return m.WhereNot(columnName, condition.Value), nil
 	}
-	return m, nil
+	return nil, nil
 }
 
-func decorateValueStrForWildcard(valueStr string, wildcardType gwtypes.WildcardType, modelType ModelType) string {
+func decorateValueStrForWildcard(valueStr string, wildcardType gwtypes.WildcardType) string {
 	switch wildcardType {
 	case gwtypes.WildcardType_Contains:
-		if modelType == GF_ORM {
-			return "%" + valueStr + "%"
-		} else if modelType == MONGO {
-			return valueStr
-		}
+		return valueStr
 	case gwtypes.WildcardType_StartsWith:
-		if modelType == GF_ORM {
-			return valueStr + "%"
-		} else if modelType == MONGO {
-			return "^" + valueStr
-		}
+		return "^" + valueStr
 	case gwtypes.WildcardType_EndsWith:
-		if modelType == GF_ORM {
-			return "%" + valueStr
-		} else if modelType == MONGO {
-			return valueStr + "$"
-		}
+		return valueStr + "$"
 	}
 	return valueStr
 }
@@ -1266,14 +1498,14 @@ func ApplyPropertyFilter(_ context.Context, condition *PropertyFilter, m *Model)
 		if g.IsEmpty(valueStr) {
 			return m, nil
 		}
-		valueStr = decorateValueStrForWildcard(valueStr, condition.Wildcard, m.Type)
+		valueStr = decorateValueStrForWildcard(valueStr, condition.Wildcard)
 		return m.WhereLike(property, valueStr), nil
 	case gwtypes.OperatorType_NotLike:
 		valueStr := gconv.String(condition.Value)
 		if g.IsEmpty(valueStr) {
 			return m, nil
 		}
-		valueStr = decorateValueStrForWildcard(valueStr, condition.Wildcard, m.Type)
+		valueStr = decorateValueStrForWildcard(valueStr, condition.Wildcard)
 		return m.WhereNotLike(property, valueStr), nil
 	case gwtypes.OperatorType_Null:
 		return m.WhereNot(property, condition.Value), nil

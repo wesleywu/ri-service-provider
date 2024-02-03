@@ -34,7 +34,7 @@ func (s *CountLogic) Count(ctx context.Context, req *p.VideoCollectionCountReq) 
 		count         int64
 		err           error
 	)
-	filterRequest, err = gworm.ExtractFilters(ctx, req, mapping.VideoCollectionColumnMap, gworm.MONGO)
+	filterRequest, err = gworm.ExtractFilters(ctx, req, mapping.VideoCollectionColumnMap)
 	m := &gworm.Model{
 		Type:       gworm.MONGO,
 		MongoModel: mongodb.NewModel(s.collection),
