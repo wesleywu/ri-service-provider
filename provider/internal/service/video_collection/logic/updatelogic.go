@@ -8,10 +8,10 @@ import (
 	"github.com/wesleywu/ri-service-provider/api/errors"
 	p "github.com/wesleywu/ri-service-provider/api/video_collection/v1"
 	"github.com/wesleywu/ri-service-provider/gworm"
-	"github.com/wesleywu/ri-service-provider/gworm/mongodb"
 	"github.com/wesleywu/ri-service-provider/gwwrapper"
-	"github.com/wesleywu/ri-service-provider/provider/internal/service/video_collection/mapping"
+	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 type UpdateLogic struct {
@@ -31,7 +31,8 @@ func NewUpdateLogic(metadata *appinfo.AppMetadata, helper *log.Helper, collectio
 func (s *UpdateLogic) Update(ctx context.Context, req *p.VideoCollectionUpdateReq) (*p.VideoCollectionUpdateRes, error) {
 	var (
 		filterRequest gworm.FilterRequest
-		result        *gworm.Result
+		filters       *bson.D
+		singleResult  *mongo.SingleResult
 		err           error
 	)
 	if req.Id == "" {
@@ -45,22 +46,22 @@ func (s *UpdateLogic) Update(ctx context.Context, req *p.VideoCollectionUpdateRe
 			},
 		},
 	}
-	m := &gworm.Model{
-		Type:       gworm.MONGO,
-		MongoModel: mongodb.NewModel(s.collection),
-	}
-	m, err = gworm.ApplyFilter(ctx, filterRequest, m)
+	filters, err = filterRequest.GetFilters()
 	if err != nil {
+		// todo parameter error
 		return nil, err
 	}
-	result, err = m.Fields(p.VideoCollectionItem{}).
-		FieldsEx(mapping.VideoCollectionColumns.Id, mapping.VideoCollectionColumns.CreatedAt).
-		Update(ctx, req)
-	if err != nil {
-		return nil, err
+	update := bson.D{
+		{
+			"$set", req,
+		},
+	}
+	singleResult = s.collection.FindOneAndUpdate(ctx, filters, update, options.FindOneAndUpdate().SetUpsert(true))
+	if singleResult.Err() != nil {
+		return nil, singleResult.Err()
 	}
 	return &p.VideoCollectionUpdateRes{
-		Message:      gwwrapper.WrapString("创建记录成功"),
-		RowsAffected: gwwrapper.WrapInt64(result.RowsAffected),
+		Message:      gwwrapper.WrapString("更新记录成功"),
+		RowsAffected: gwwrapper.WrapInt64(1),
 	}, err
 }

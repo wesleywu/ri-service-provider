@@ -8,7 +8,6 @@ import (
 	p "github.com/wesleywu/ri-service-provider/api/video_collection/v1"
 	"github.com/wesleywu/ri-service-provider/gwerror"
 	"github.com/wesleywu/ri-service-provider/gworm"
-	"github.com/wesleywu/ri-service-provider/gworm/mongodb"
 	"github.com/wesleywu/ri-service-provider/gwwrapper"
 	"github.com/wesleywu/ri-service-provider/provider/internal/service/video_collection/mapping"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -35,15 +34,10 @@ func (s *CountLogic) Count(ctx context.Context, req *p.VideoCollectionCountReq) 
 		err           error
 	)
 	filterRequest, err = gworm.ExtractFilters(ctx, req, mapping.VideoCollectionColumnMap)
-	m := &gworm.Model{
-		Type:       gworm.MONGO,
-		MongoModel: mongodb.NewModel(s.collection),
-	}
-	m, err = gworm.ApplyFilter(ctx, filterRequest, m)
 	if err != nil {
 		return nil, err
 	}
-	count, err = m.MongoModel.Count(ctx)
+	count, err = s.collection.CountDocuments(ctx, filterRequest.Filters, nil)
 	if err != nil {
 		s.helper.WithContext(ctx).Error(err)
 		err = gwerror.WrapServiceErrorf(err, req, "获取数据记录总数失败")

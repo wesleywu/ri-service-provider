@@ -7,9 +7,10 @@ import (
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/wesleywu/ri-service-provider/api/errors"
 	p "github.com/wesleywu/ri-service-provider/api/video_collection/v1"
+	"github.com/wesleywu/ri-service-provider/gwerror"
 	"github.com/wesleywu/ri-service-provider/gworm"
-	"github.com/wesleywu/ri-service-provider/gworm/mongodb"
 	"github.com/wesleywu/ri-service-provider/gwwrapper"
+	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
@@ -30,8 +31,9 @@ func NewDeleteLogic(metadata *appinfo.AppMetadata, helper *log.Helper, collectio
 func (s *DeleteLogic) Delete(ctx context.Context, req *p.VideoCollectionDeleteReq) (*p.VideoCollectionDeleteRes, error) {
 	var (
 		filterRequest gworm.FilterRequest
+		filters       *bson.D
+		result        *mongo.DeleteResult
 		err           error
-		result        *gworm.Result
 	)
 	if req.Id == "" {
 		return nil, errors.ErrorIdValueMissing("主键ID字段的值为空")
@@ -44,19 +46,18 @@ func (s *DeleteLogic) Delete(ctx context.Context, req *p.VideoCollectionDeleteRe
 			},
 		},
 	}
-	m := &gworm.Model{
-		Type:       gworm.MONGO,
-		MongoModel: mongodb.NewModel(s.collection),
-	}
-	m, err = gworm.ApplyFilter(ctx, filterRequest, m)
+	filters, err = filterRequest.GetFilters()
 	if err != nil {
+		// todo parameter error
 		return nil, err
 	}
-	result, err = m.Delete(ctx)
+	result, err = s.collection.DeleteOne(ctx, filters, nil)
 	if err != nil {
+		s.helper.WithContext(ctx).Error(err)
+		err = gwerror.WrapServiceErrorf(err, req, "删除记录失败")
 		return nil, err
 	}
-	deleteCount := result.RowsAffected
+	deleteCount := result.DeletedCount
 	message := "删除记录成功"
 	if int(deleteCount) == 0 {
 		message = "找不到要删除的记录"

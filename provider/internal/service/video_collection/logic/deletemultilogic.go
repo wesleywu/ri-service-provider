@@ -8,7 +8,6 @@ import (
 	p "github.com/wesleywu/ri-service-provider/api/video_collection/v1"
 	"github.com/wesleywu/ri-service-provider/gwerror"
 	"github.com/wesleywu/ri-service-provider/gworm"
-	"github.com/wesleywu/ri-service-provider/gworm/mongodb"
 	"github.com/wesleywu/ri-service-provider/gwwrapper"
 	"github.com/wesleywu/ri-service-provider/provider/internal/service/video_collection/mapping"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -32,18 +31,15 @@ func (s *DeleteMultiLogic) DeleteMulti(ctx context.Context, req *p.VideoCollecti
 	var (
 		filterRequest gworm.FilterRequest
 		count         int64
+		deleteResult  *mongo.DeleteResult
 		err           error
 	)
-	filterRequest, err = gworm.ExtractFilters(ctx, req, mapping.VideoCollectionColumnMap, gworm.MONGO)
-	m := &gworm.Model{
-		Type:       gworm.MONGO,
-		MongoModel: mongodb.NewModel(s.collection),
-	}
-	m, err = gworm.ApplyFilter(ctx, filterRequest, m)
+	filterRequest, err = gworm.ExtractFilters(ctx, req, mapping.VideoCollectionColumnMap)
 	if err != nil {
+		// todo parameter error
 		return nil, err
 	}
-	deleteResult, err := s.collection.DeleteMany(ctx, m.MongoModel.Filter)
+	deleteResult, err = s.collection.DeleteMany(ctx, filterRequest.Filters, nil)
 	if err != nil {
 		s.helper.WithContext(ctx).Error(err)
 		err = gwerror.WrapServiceErrorf(err, req, "删除记录失败")

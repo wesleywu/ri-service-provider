@@ -7,7 +7,6 @@ import (
 	"github.com/go-kratos/kratos/v2/log"
 	p "github.com/wesleywu/ri-service-provider/api/video_collection/v1"
 	"github.com/wesleywu/ri-service-provider/gworm"
-	"github.com/wesleywu/ri-service-provider/gworm/mongodb"
 	"github.com/wesleywu/ri-service-provider/gwwrapper"
 	"github.com/wesleywu/ri-service-provider/provider/internal/service/video_collection/mapping"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -36,27 +35,24 @@ func (s *ListLogic) List(ctx context.Context, req *p.VideoCollectionListReq) (*p
 		total         int64
 		err           error
 	)
-	filterRequest, err = gworm.ExtractFilters(ctx, req, mapping.VideoCollectionColumnMap, gworm.MONGO)
-	pageRequest.AddSortByString(req.OrderBy)
-	m := &gworm.Model{
-		Type:       gworm.MONGO,
-		MongoModel: mongodb.NewModel(s.collection),
-	}
+	filterRequest, err = gworm.ExtractFilters(ctx, req, mapping.VideoCollectionColumnMap)
 	// todo: page size not set to default
-	m, err = gworm.ApplyFilter(ctx, filterRequest, m)
 	if err != nil {
 		return nil, err
 	}
+	pageRequest.AddSortByString(req.OrderBy)
 	list = []*p.VideoCollectionItem{}
-	err = m.Fields(p.VideoCollectionItem{}).
-		Page(int(pageRequest.Number), int(pageRequest.Size)).
-		Order(pageRequest.OrderString()).
-		Scan(ctx, &list)
+	// todo: 实现翻页功能
+	cursor, err := s.collection.Find(ctx, filterRequest.Filters, nil)
+	if err != nil {
+		return nil, err
+	}
+	err = cursor.All(ctx, &list)
 	if err != nil {
 		return nil, err
 	}
 	if len(list) == int(pageRequest.Size) {
-		total, err = m.MongoModel.Count(ctx)
+		total, err = s.collection.CountDocuments(ctx, filterRequest.Filters, nil)
 		if err != nil {
 			return nil, err
 		}

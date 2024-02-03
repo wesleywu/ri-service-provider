@@ -8,7 +8,6 @@ import (
 	p "github.com/wesleywu/ri-service-provider/api/video_collection/v1"
 	"github.com/wesleywu/ri-service-provider/gwerror"
 	"github.com/wesleywu/ri-service-provider/gworm"
-	"github.com/wesleywu/ri-service-provider/gworm/mongodb"
 	"github.com/wesleywu/ri-service-provider/provider/internal/service/video_collection/mapping"
 	"go.mongodb.org/mongo-driver/mongo"
 )
@@ -31,24 +30,18 @@ func (s *OneLogic) One(ctx context.Context, req *p.VideoCollectionOneReq) (*p.Vi
 	var (
 		filterRequest gworm.FilterRequest
 		pageRequest   gworm.PageRequest
+		singleResult  *mongo.SingleResult
 		item          *p.VideoCollectionItem
 		err           error
 	)
-	filterRequest, err = gworm.ExtractFilters(ctx, req, mapping.VideoCollectionColumnMap, gworm.MONGO)
+	filterRequest, err = gworm.ExtractFilters(ctx, req, mapping.VideoCollectionColumnMap)
 	pageRequest.AddSortByString(req.OrderBy)
-	m := &gworm.Model{
-		Type:       gworm.MONGO,
-		MongoModel: mongodb.NewModel(s.collection),
-	}
-	m, err = gworm.ApplyFilter(ctx, filterRequest, m)
-	if err != nil {
-		return nil, err
+	singleResult = s.collection.FindOne(ctx, filterRequest.Filters, nil)
+	if singleResult.Err() != nil {
+		return nil, singleResult.Err()
 	}
 	item = (*p.VideoCollectionItem)(nil)
-	err = m.Fields(p.VideoCollectionItem{}).
-		Order(pageRequest.OrderString()).
-		Limit(1).
-		Scan(ctx, &item)
+	err = singleResult.Decode(item)
 	if err != nil {
 		s.helper.WithContext(ctx).Error(err)
 		err = gwerror.WrapServiceErrorf(err, req, "获取单条数据记录失败")

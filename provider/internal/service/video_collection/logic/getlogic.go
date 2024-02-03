@@ -8,7 +8,7 @@ import (
 	"github.com/wesleywu/ri-service-provider/api/errors"
 	p "github.com/wesleywu/ri-service-provider/api/video_collection/v1"
 	"github.com/wesleywu/ri-service-provider/gworm"
-	"github.com/wesleywu/ri-service-provider/gworm/mongodb"
+	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
@@ -29,6 +29,7 @@ func NewGetLogic(metadata *appinfo.AppMetadata, helper *log.Helper, collection *
 func (s *GetLogic) Get(ctx context.Context, req *p.VideoCollectionGetReq) (*p.VideoCollectionGetRes, error) {
 	var (
 		filterRequest gworm.FilterRequest
+		filters       *bson.D
 		err           error
 		item          *p.VideoCollectionItem
 	)
@@ -43,15 +44,12 @@ func (s *GetLogic) Get(ctx context.Context, req *p.VideoCollectionGetReq) (*p.Vi
 			},
 		},
 	}
-	m := &gworm.Model{
-		Type:       gworm.MONGO,
-		MongoModel: mongodb.NewModel(s.collection),
-	}
-	m, err = gworm.ApplyFilter(ctx, filterRequest, m)
+	filters, err = filterRequest.GetFilters()
 	if err != nil {
+		// todo parameter error
 		return nil, err
 	}
-	singleResult := s.collection.FindOne(ctx, m.MongoModel.Filter)
+	singleResult := s.collection.FindOne(ctx, filters, nil)
 	if singleResult.Err() != nil {
 		return nil, err
 	}
