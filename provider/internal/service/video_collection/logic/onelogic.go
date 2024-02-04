@@ -41,7 +41,7 @@ func (s *OneLogic) One(ctx context.Context, req *p.VideoCollectionOneReq) (*p.Vi
 		return nil, singleResult.Err()
 	}
 	item = (*p.VideoCollectionItem)(nil)
-	err = singleResult.Decode(item)
+	err = singleResult.Decode(&item)
 	if err != nil {
 		s.helper.WithContext(ctx).Error(err)
 		err = gwerror.WrapServiceErrorf(err, req, "获取单条数据记录失败")

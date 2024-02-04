@@ -97,7 +97,7 @@ func TestList(t *testing.T) {
 		Name:        gwwrapper.AnyCondition(gwtypes.OperatorType_Like, gwtypes.MultiType_Exact, gwtypes.WildcardType_Contains, gwwrapper.AnyString("每日")),
 		ContentType: gwwrapper.AnyUInt32Slice([]uint32{1, 2}),
 		FilterType:  nil,
-		Count:       gwwrapper.AnyCondition(gwtypes.OperatorType_GT, gwtypes.MultiType_Exact, gwtypes.WildcardType_None, gwwrapper.AnyUInt32(1)),
+		Count:       gwwrapper.AnyCondition(gwtypes.OperatorType_GT, gwtypes.MultiType_Exact, gwtypes.WildcardType_None, gwwrapper.AnyUInt32(0)),
 		IsOnline:    nil,
 		CreatedAt:   nil,
 		UpdatedAt:   nil,
@@ -118,7 +118,7 @@ func BenchmarkList(b *testing.B) {
 		Name:        gwwrapper.AnyCondition(gwtypes.OperatorType_Like, gwtypes.MultiType_Exact, gwtypes.WildcardType_Contains, gwwrapper.AnyString("每日")),
 		ContentType: gwwrapper.AnyUInt32Slice([]uint32{1, 2}),
 		FilterType:  nil,
-		Count:       gwwrapper.AnyCondition(gwtypes.OperatorType_GT, gwtypes.MultiType_Exact, gwtypes.WildcardType_None, gwwrapper.AnyUInt32(1)),
+		Count:       gwwrapper.AnyCondition(gwtypes.OperatorType_GT, gwtypes.MultiType_Exact, gwtypes.WildcardType_None, gwwrapper.AnyUInt32(0)),
 		IsOnline:    nil,
 		CreatedAt:   nil,
 		UpdatedAt:   nil,
@@ -133,15 +133,16 @@ func BenchmarkList(b *testing.B) {
 }
 
 func TestCreate(t *testing.T) {
+	id := "87104859-5598"
 	_, err := videoCollectionClient.Delete(ctx, &p.VideoCollectionDeleteReq{
-		Id: gwwrapper.AnyString("87104859-5598"),
+		Id: id,
 	})
 	if err != nil {
 		panic(err)
 	}
 
 	createRes, err := videoCollectionClient.Create(ctx, &p.VideoCollectionCreateReq{
-		Id:          gwwrapper.WrapString("87104859-5598"),
+		Id:          gwwrapper.WrapString(id),
 		Name:        gwwrapper.WrapString("特别长的名称特别长的名称特别长的名称特别长的"),
 		ContentType: gwwrapper.WrapInt32(3),
 		FilterType:  gwwrapper.WrapInt32(4),
@@ -154,7 +155,7 @@ func TestCreate(t *testing.T) {
 	helper.Info(gjson.MustEncodeString(createRes))
 
 	oneRes, err := videoCollectionClient.One(ctx, &p.VideoCollectionOneReq{
-		Id: gwwrapper.AnyString("87104859-5598"),
+		Id: gwwrapper.AnyString(id),
 	})
 	if err != nil {
 		panic(err)
@@ -162,7 +163,7 @@ func TestCreate(t *testing.T) {
 	assert.Equal(t, oneRes.Found, true)
 
 	_, err = videoCollectionClient.Delete(ctx, &p.VideoCollectionDeleteReq{
-		Id: gwwrapper.AnyString("87104859-5598"),
+		Id: id,
 	})
 	if err != nil {
 		panic(err)
