@@ -10,6 +10,7 @@ import (
 	"github.com/wesleywu/ri-service-provider/gwwrapper"
 	"github.com/wesleywu/ri-service-provider/provider/internal/service/video_collection/mapping"
 	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 type ListLogic struct {
@@ -28,22 +29,27 @@ func NewListLogic(metadata *appinfo.AppMetadata, helper *log.Helper, collection 
 
 func (s *ListLogic) List(ctx context.Context, req *p.VideoCollectionListReq) (*p.VideoCollectionListRes, error) {
 	var (
-		filterRequest gworm.FilterRequest
-		pageRequest   gworm.PageRequest
-		list          []*p.VideoCollectionItem
-		pageInfo      *gworm.PageInfo
-		total         int64
-		err           error
+		filterRequest   gworm.FilterRequest
+		pageRequest     gworm.PageRequest
+		list            []*p.VideoCollectionItem
+		pageInfo        *gworm.PageInfo
+		pageRecordCount int
+		total           int64
+		err             error
 	)
 	filterRequest, err = gworm.ExtractFilters(ctx, req, mapping.VideoCollectionColumnMap)
-	// todo: page size not set to default
 	if err != nil {
 		return nil, err
 	}
-	pageRequest.AddSortByString(req.OrderBy)
+	pageRequest = pageRequest.Of(req.Page, req.PageSize, req.OrderBy)
+
+	opts := options.Find().SetLimit(pageRequest.Size).SetSkip(pageRequest.Offset)
+	if pageRequest.HasSort() {
+		opts.SetSort(pageRequest.MongoSortOption())
+	}
+
 	list = []*p.VideoCollectionItem{}
-	// todo: 实现翻页功能
-	cursor, err := s.collection.Find(ctx, filterRequest.Filters, nil)
+	cursor, err := s.collection.Find(ctx, filterRequest.Filters, opts)
 	if err != nil {
 		return nil, err
 	}
@@ -51,16 +57,18 @@ func (s *ListLogic) List(ctx context.Context, req *p.VideoCollectionListReq) (*p
 	if err != nil {
 		return nil, err
 	}
-	if len(list) == int(pageRequest.Size) {
+	pageRecordCount = len(list)
+	// 如果没有初始偏移量，并且返回记录条数 < pageSize，说明符合条件的记录已经全部返回
+	if pageRequest.Offset == 0 && pageRecordCount < int(pageRequest.Size) {
+		total = int64(len(list))
+	} else { // 否则执行 CountDocument 重新计算所有记录条数
 		total, err = s.collection.CountDocuments(ctx, filterRequest.Filters, nil)
 		if err != nil {
 			return nil, err
 		}
-	} else {
-		total = int64(len(list))
 	}
 	pageInfo = &gworm.PageInfo{}
-	pageInfo.From(pageRequest, uint32(len(list)), uint64(total))
+	pageInfo.From(pageRequest, int64(len(list)), total)
 
 	return &p.VideoCollectionListRes{
 		Total:   gwwrapper.WrapInt64(total),

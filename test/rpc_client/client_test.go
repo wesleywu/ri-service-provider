@@ -101,6 +101,8 @@ func TestList(t *testing.T) {
 		IsOnline:    nil,
 		CreatedAt:   nil,
 		UpdatedAt:   nil,
+		Page:        1,
+		PageSize:    1,
 	}
 	helper.Info(gjson.MustEncodeString(req))
 	res, err := videoCollectionClient.List(ctx, req)
@@ -108,6 +110,7 @@ func TestList(t *testing.T) {
 		panic(err)
 	}
 	assert.Equal(t, int64(2), *res.Total)
+	assert.Equal(t, 1, len(res.Items))
 	helper.Info(gjson.MustEncodeString(res))
 }
 
