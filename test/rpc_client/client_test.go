@@ -109,7 +109,7 @@ func TestList(t *testing.T) {
 	if err != nil {
 		panic(err)
 	}
-	assert.Equal(t, int64(2), *res.Total)
+	assert.Equal(t, int64(2), res.Total)
 	assert.Equal(t, 1, len(res.Items))
 	helper.Info(gjson.MustEncodeString(res))
 }
@@ -131,11 +131,11 @@ func BenchmarkList(b *testing.B) {
 	if err != nil {
 		panic(err)
 	}
-	assert.Equal(b, int64(2), *res.Total)
+	assert.Equal(b, int64(2), res.Total)
 	helper.Info(gjson.MustEncodeString(res))
 }
 
-func TestCreate(t *testing.T) {
+func TestCreateDeleteOne(t *testing.T) {
 	id := "87104859-5598"
 	_, err := videoCollectionClient.Delete(ctx, &p.VideoCollectionDeleteReq{
 		Id: id,

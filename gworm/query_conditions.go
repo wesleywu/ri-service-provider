@@ -1,20 +1,3 @@
-/*
- * Licensed to the Apache Software Foundation (ASF) under one or more
- * contributor license agreements.  See the NOTICE file distributed with
- * this work for additional information regarding copyright ownership.
- * The ASF licenses this file to You under the Apache License, Version 2.0
- * (the "License"); you may not use this file except in compliance with
- * the License.  You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 package gworm
 
 import (
@@ -33,7 +16,6 @@ import (
 	"google.golang.org/protobuf/types/known/wrapperspb"
 )
 
-// todo gworm package is deprecated
 const (
 	ConditionQueryPrefix = "condition{"
 	ConditionQuerySuffix = "}"
@@ -198,7 +180,7 @@ func (fr *FilterRequest) GetFilters() (*bson.D, error) {
 	)
 	filters = bson.D{}
 	for _, pf := range fr.PropertyFilters {
-		filter, err = pf.GetFilter()
+		filter, err = pf.getFilter()
 		if err != nil {
 			return nil, err
 		}
@@ -211,7 +193,7 @@ func (fr *FilterRequest) GetFilters() (*bson.D, error) {
 	return fr.Filters, nil
 }
 
-func (pf *PropertyFilter) GetFilter() (*bson.E, error) {
+func (pf *PropertyFilter) getFilter() (*bson.E, error) {
 	if pf == nil {
 		return nil, nil
 	}
@@ -317,9 +299,6 @@ func ExtractFilters(ctx context.Context, req interface{}, columnMap map[string]s
 	for i := 0; i < t.NumField(); i++ {
 		field := t.Field(i)
 		fieldName := field.Name
-		if fieldName == "Meta" {
-			continue
-		}
 		// Only do converting to public attributes.
 		if !field.IsExported() {
 			continue
@@ -343,7 +322,6 @@ func ExtractFilters(ctx context.Context, req interface{}, columnMap map[string]s
 					fr.addPropertyFilter(f)
 				}
 			}
-
 		case reflect.Struct:
 			structValue := queryValue.Field(i)
 			g.Log().Debugf(ctx, "value of field %s is %x", fieldName, structValue)
@@ -381,6 +359,8 @@ func ExtractFilters(ctx context.Context, req interface{}, columnMap map[string]s
 				return
 			}
 			fr.addPropertyFilter(f)
+		default:
+			continue
 		}
 	}
 	_, err = fr.GetFilters()
@@ -578,7 +558,7 @@ func unwrapAnyFilter(columnName string, tag reflect.StructTag, valueAny *anypb.A
 	case *wrapperspb.StringValue:
 		return parseFieldSingleFilter(columnName, vt.Value)
 	case *gwtypes.Condition:
-		return AddConditionFilter(columnName, vt)
+		return addConditionFilter(columnName, vt)
 	default:
 		return nil, gerror.Newf("Unsupported value type: %v", vt)
 	}
@@ -668,7 +648,7 @@ func parseFieldSliceFilter[T any](columnName string, tag reflect.StructTag, valu
 	}
 }
 
-func AddConditionFilter(columnName string, condition *gwtypes.Condition) (pf *PropertyFilter, err error) {
+func addConditionFilter(columnName string, condition *gwtypes.Condition) (pf *PropertyFilter, err error) {
 	if condition == nil {
 		return nil, nil
 	}

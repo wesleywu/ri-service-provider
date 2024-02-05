@@ -6,6 +6,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 )
 
+// todo make all struct protobuf defined
 type SortDirection uint8
 
 const (
@@ -51,23 +52,29 @@ type PageInfo struct {
 	Last             bool        // whether current page is last page
 }
 
-func (pr PageRequest) Of(page, size int64, sort ...string) PageRequest {
+func NewPageRequest(page, size int64, sort ...string) *PageRequest {
 	if page < 1 {
 		page = 1
 	}
 	if size <= 0 {
 		size = defaultPageSize
 	}
-	pr.Number = page
-	pr.Offset = (page - 1) * size
-	pr.Size = size
+	pr := &PageRequest{
+		Number: page,
+		Offset: (page - 1) * size,
+		Size:   size,
+	}
 	for _, s := range sort {
+		s = strings.TrimSpace(s)
+		if s == "" {
+			continue
+		}
 		pr.AddSortByString(s)
 	}
 	return pr
 }
 
-func (pr PageRequest) AddSortByString(sort string) PageRequest {
+func (pr *PageRequest) AddSortByString(sort string) *PageRequest {
 	props := strings.Split(sort, ",")
 	for _, prop := range props {
 		parts := strings.Split(strings.TrimSpace(prop), " ")
@@ -93,16 +100,16 @@ func (pr PageRequest) AddSortByString(sort string) PageRequest {
 	return pr
 }
 
-func (pr PageRequest) AddSort(sort SortParam) PageRequest {
+func (pr *PageRequest) AddSort(sort SortParam) *PageRequest {
 	pr.Sorts = append(pr.Sorts, sort)
 	return pr
 }
 
-func (pr PageRequest) HasSort() bool {
+func (pr *PageRequest) HasSort() bool {
 	return len(pr.Sorts) > 0
 }
 
-func (pr PageRequest) MongoSortOption() (result bson.D) {
+func (pr *PageRequest) MongoSortOption() (result bson.D) {
 	var direction int
 	for _, s := range pr.Sorts {
 		if s.Direction == SortDirection_ASC {
@@ -118,7 +125,7 @@ func (pr PageRequest) MongoSortOption() (result bson.D) {
 	return
 }
 
-func (pr PageRequest) OrderString() string {
+func (pr *PageRequest) OrderString() string {
 	sb := strings.Builder{}
 	for i, s := range pr.Sorts {
 		if i > 0 {
@@ -131,7 +138,7 @@ func (pr PageRequest) OrderString() string {
 	return sb.String()
 }
 
-func (pi *PageInfo) From(pageRequest PageRequest, numberOfElement int64, totalElements int64) {
+func (pi *PageInfo) From(pageRequest *PageRequest, numberOfElement int64, totalElements int64) {
 	pi.Offset = pageRequest.Offset
 	pi.Size = pageRequest.Size
 	pi.Sorts = pageRequest.Sorts

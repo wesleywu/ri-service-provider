@@ -7,7 +7,6 @@ import (
 	"github.com/go-kratos/kratos/v2/log"
 	p "github.com/wesleywu/ri-service-provider/api/video_collection/v1"
 	"github.com/wesleywu/ri-service-provider/gworm"
-	"github.com/wesleywu/ri-service-provider/gwwrapper"
 	"github.com/wesleywu/ri-service-provider/provider/internal/service/video_collection/mapping"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
@@ -30,7 +29,7 @@ func NewListLogic(metadata *appinfo.AppMetadata, helper *log.Helper, collection 
 func (s *ListLogic) List(ctx context.Context, req *p.VideoCollectionListReq) (*p.VideoCollectionListRes, error) {
 	var (
 		filterRequest   gworm.FilterRequest
-		pageRequest     gworm.PageRequest
+		pageRequest     *gworm.PageRequest
 		list            []*p.VideoCollectionItem
 		pageInfo        *gworm.PageInfo
 		pageRecordCount int
@@ -41,7 +40,7 @@ func (s *ListLogic) List(ctx context.Context, req *p.VideoCollectionListReq) (*p
 	if err != nil {
 		return nil, err
 	}
-	pageRequest = pageRequest.Of(req.Page, req.PageSize, req.OrderBy)
+	pageRequest = gworm.NewPageRequest(req.Page, req.PageSize, req.OrderBy)
 
 	opts := options.Find().SetLimit(pageRequest.Size).SetSkip(pageRequest.Offset)
 	if pageRequest.HasSort() {
@@ -71,8 +70,8 @@ func (s *ListLogic) List(ctx context.Context, req *p.VideoCollectionListReq) (*p
 	pageInfo.From(pageRequest, int64(len(list)), total)
 
 	return &p.VideoCollectionListRes{
-		Total:   gwwrapper.WrapInt64(total),
-		Current: gwwrapper.WrapUInt32(pageInfo.Number),
+		Total:   total,
+		Current: pageInfo.Number,
 		Items:   list,
 	}, nil
 }
