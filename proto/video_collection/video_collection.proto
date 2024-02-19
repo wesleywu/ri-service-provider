@@ -174,8 +174,14 @@ message VideoCollectionGetReq {
 }
 
 message VideoCollectionGetRes {
-  bool found = 1;
-  optional VideoCollectionItem item = 2;
+  optional string id = 1 [(tagger.tags) = "bson:\"_id\" json:\"id\""];
+  optional string name = 2 [(tagger.tags) = "bson:\"name\" json:\"name\""];
+  optional int32 contentType = 3 [(tagger.tags) = "bson:\"contentType\" json:\"contentType\""];
+  optional int32 filterType = 4 [(tagger.tags) = "bson:\"filterType\" json:\"filterType\""];
+  optional uint32 count = 5 [(tagger.tags) = "bson:\"count\" json:\"count\""];
+  optional bool isOnline = 6 [(tagger.tags) = "bson:\"isOnline\" json:\"isOnline\""];
+  optional google.protobuf.Timestamp createdAt = 7 [(tagger.tags) = "bson:\"createdAt\" json:\"createdAt\""];
+  optional google.protobuf.Timestamp updatedAt = 8 [(tagger.tags) = "bson:\"updatedAt\" json:\"updatedAt\""];
 }
 
 message VideoCollectionCreateReq {

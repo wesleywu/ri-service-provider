@@ -102,6 +102,22 @@ func TestListByCondition(t *testing.T) {
 	assert.Equal(t, 1, respJson.Get("total").Int())
 }
 
+func TestGet(t *testing.T) {
+	TestDelete(t)
+	url := fmt.Sprintf("http://localhost:8080/v1/video-collection/%s", id)
+	getResp, err := client.DoGetWithHeaders(ctx, url, commonHeaders, 0)
+	assert.NoError(t, err)
+	assert.Equal(t, 404, getResp.StatusCode)
+
+	TestCreate(t)
+	getResp, err = client.DoGetWithHeaders(ctx, url, commonHeaders, 0)
+	assert.NoError(t, err)
+	assert.Equal(t, 200, getResp.StatusCode)
+	respJson, _ := gjson.DecodeToJson(getResp.Body)
+	assert.Equal(t, uint32(1234), respJson.Get("count").Uint32())
+	assert.Equal(t, false, respJson.Get("isOnline").Bool())
+}
+
 func TestCreate(t *testing.T) {
 	TestDelete(t)
 	url := "http://localhost:8080/v1/video-collection"
@@ -152,10 +168,10 @@ func TestUpsert(t *testing.T) {
 
 	getResp, err := client.DoGetWithHeaders(ctx, url, commonHeaders, 0)
 	assert.NoError(t, err)
-	assert.NotNil(t, resp)
+	assert.NotNil(t, getResp)
 	respJson, _ := gjson.DecodeToJson(getResp.Body)
-	assert.Equal(t, uint32(1234), respJson.GetJson("item").Get("count").Uint32())
-	assert.Equal(t, true, respJson.GetJson("item").Get("isOnline").Bool())
+	assert.Equal(t, uint32(1234), respJson.Get("count").Uint32())
+	assert.Equal(t, true, respJson.Get("isOnline").Bool())
 
 	// upsert again when record exists
 	data = `{
@@ -173,10 +189,10 @@ func TestUpsert(t *testing.T) {
 
 	getResp, err = client.DoGetWithHeaders(ctx, url, commonHeaders, 0)
 	assert.NoError(t, err)
-	assert.NotNil(t, resp)
+	assert.NotNil(t, getResp)
 	respJson, _ = gjson.DecodeToJson(getResp.Body)
-	assert.Equal(t, uint32(1235), respJson.GetJson("item").Get("count").Uint32())
-	assert.Equal(t, false, respJson.GetJson("item").Get("isOnline").Bool())
+	assert.Equal(t, uint32(1235), respJson.Get("count").Uint32())
+	assert.Equal(t, false, respJson.Get("isOnline").Bool())
 
 }
 

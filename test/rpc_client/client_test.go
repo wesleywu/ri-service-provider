@@ -91,7 +91,6 @@ func TestCount(t *testing.T) {
 }
 
 func TestList(t *testing.T) {
-
 	req := &p.VideoCollectionListReq{
 		Id:          nil,
 		Name:        gwwrapper.AnyCondition(gwtypes.OperatorType_Like, gwtypes.MultiType_Exact, gwtypes.WildcardType_Contains, gwwrapper.AnyString("每日")),

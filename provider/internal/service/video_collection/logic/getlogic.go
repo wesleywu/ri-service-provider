@@ -2,10 +2,11 @@ package logic
 
 import (
 	"context"
+	"errors"
 
 	"github.com/castbox/go-guru/pkg/util/appinfo"
 	"github.com/go-kratos/kratos/v2/log"
-	"github.com/wesleywu/ri-service-provider/api/errors"
+	apiErrors "github.com/wesleywu/ri-service-provider/api/errors"
 	p "github.com/wesleywu/ri-service-provider/api/video_collection/v1"
 	"github.com/wesleywu/ri-service-provider/gworm"
 	"go.mongodb.org/mongo-driver/bson"
@@ -31,10 +32,10 @@ func (s *GetLogic) Get(ctx context.Context, req *p.VideoCollectionGetReq) (*p.Vi
 		filterRequest gworm.FilterRequest
 		filters       *bson.D
 		err           error
-		item          *p.VideoCollectionItem
+		item          *p.VideoCollectionGetRes
 	)
 	if req.Id == "" {
-		return nil, errors.ErrorIdValueMissing("主键ID字段的值为空")
+		return nil, apiErrors.ErrorIdValueMissing("主键ID字段的值为空")
 	}
 	filterRequest = gworm.FilterRequest{
 		PropertyFilters: []*gworm.PropertyFilter{
@@ -51,15 +52,15 @@ func (s *GetLogic) Get(ctx context.Context, req *p.VideoCollectionGetReq) (*p.Vi
 	}
 	singleResult := s.collection.FindOne(ctx, filters, nil)
 	if singleResult.Err() != nil {
+		if errors.Is(singleResult.Err(), mongo.ErrNoDocuments) {
+			return nil, apiErrors.ErrorRecordNotFound("找不到ID为 %s 的记录", req.Id)
+		}
 		return nil, err
 	}
-	item = (*p.VideoCollectionItem)(nil)
+	item = (*p.VideoCollectionGetRes)(nil)
 	err = singleResult.Decode(&item)
 	if err != nil {
 		return nil, err
 	}
-	return &p.VideoCollectionGetRes{
-		Found: true,
-		Item:  item,
-	}, nil
+	return item, nil
 }
