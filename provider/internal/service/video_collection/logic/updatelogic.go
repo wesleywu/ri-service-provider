@@ -11,7 +11,6 @@ import (
 	"github.com/wesleywu/ri-service-provider/gwwrapper"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
-	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 type UpdateLogic struct {
@@ -32,7 +31,7 @@ func (s *UpdateLogic) Update(ctx context.Context, req *p.VideoCollectionUpdateRe
 	var (
 		filterRequest gworm.FilterRequest
 		filters       *bson.D
-		singleResult  *mongo.SingleResult
+		updateResult  *mongo.UpdateResult
 		err           error
 	)
 	if req.Id == "" {
@@ -56,12 +55,12 @@ func (s *UpdateLogic) Update(ctx context.Context, req *p.VideoCollectionUpdateRe
 			"$set", req,
 		},
 	}
-	singleResult = s.collection.FindOneAndUpdate(ctx, filters, update, options.FindOneAndUpdate().SetUpsert(true))
-	if singleResult.Err() != nil {
-		return nil, singleResult.Err()
+	updateResult, err = s.collection.UpdateOne(ctx, filters, update, nil)
+	if err != nil {
+		return nil, err
 	}
 	return &p.VideoCollectionUpdateRes{
 		Message:      gwwrapper.WrapString("更新记录成功"),
-		RowsAffected: gwwrapper.WrapInt64(1),
+		RowsAffected: gwwrapper.WrapInt64(updateResult.ModifiedCount),
 	}, err
 }

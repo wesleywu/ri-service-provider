@@ -11,6 +11,7 @@ import (
 	"github.com/wesleywu/ri-service-provider/gwwrapper"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 type UpsertLogic struct {
@@ -31,7 +32,7 @@ func (s *UpsertLogic) Upsert(ctx context.Context, req *p.VideoCollectionUpsertRe
 	var (
 		filterRequest gworm.FilterRequest
 		filters       *bson.D
-		singleResult  *mongo.SingleResult
+		updateResult  *mongo.UpdateResult
 		err           error
 	)
 	if req.Id == "" {
@@ -55,12 +56,13 @@ func (s *UpsertLogic) Upsert(ctx context.Context, req *p.VideoCollectionUpsertRe
 			"$set", req,
 		},
 	}
-	singleResult = s.collection.FindOneAndUpdate(ctx, filters, update, nil)
-	if singleResult.Err() != nil {
-		return nil, singleResult.Err()
+	opts := options.Update().SetUpsert(true)
+	updateResult, err = s.collection.UpdateOne(ctx, filters, update, opts)
+	if err != nil {
+		return nil, err
 	}
 	return &p.VideoCollectionUpsertRes{
 		Message:      gwwrapper.WrapString("更新记录成功"),
-		RowsAffected: gwwrapper.WrapInt64(1),
+		RowsAffected: gwwrapper.WrapInt64(updateResult.UpsertedCount),
 	}, err
 }

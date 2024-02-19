@@ -21,6 +21,8 @@ var (
 	}
 )
 
+const id = "01186883-7700"
+
 func TestListBySingleValue(t *testing.T) {
 	url := "http://localhost:8080/v1/video-collection/list"
 	data := `{
@@ -68,6 +70,7 @@ func TestListBySliceValue(t *testing.T) {
 }
 
 func TestListByCondition(t *testing.T) {
+	TestCreate(t)
 	url := "http://localhost:8080/v1/video-collection/list"
 	data := `{
 				"name": {
@@ -100,15 +103,16 @@ func TestListByCondition(t *testing.T) {
 }
 
 func TestCreate(t *testing.T) {
+	TestDelete(t)
 	url := "http://localhost:8080/v1/video-collection"
-	data := `{
-			"id": "01186883-7700",
+	data := fmt.Sprintf(`{
+			"id": "%s",
 			"name": "44444",
 			"contentType": 9,
 			"filterType": 9,
 			"count": 1234,
 			"isOnline": false
-		}`
+		}`, id)
 	resp, err := client.DoPostWithHeaders(ctx, url, commonHeaders, data, 0)
 	assert.NoError(t, err)
 	assert.NotNil(t, resp)
@@ -117,7 +121,7 @@ func TestCreate(t *testing.T) {
 }
 
 func TestUpdate(t *testing.T) {
-	url := "http://localhost:8080/v1/video-collection/id/01186883-7700"
+	url := fmt.Sprintf("http://localhost:8080/v1/video-collection/%s", id)
 	data := `{
 				"name": "每日推荐视频集合",
 				"isOnline": true
@@ -131,7 +135,7 @@ func TestUpdate(t *testing.T) {
 
 func TestUpsert(t *testing.T) {
 	TestDelete(t)
-	url := "http://localhost:8080/v1/video-collection/id/01186883-7700"
+	url := fmt.Sprintf("http://localhost:8080/v1/video-collection/%s", id)
 	data := `{
 				"name": "每日推荐视频集合",
 				"contentType": 9,
@@ -147,7 +151,7 @@ func TestUpsert(t *testing.T) {
 }
 
 func TestDelete(t *testing.T) {
-	url := "http://localhost:8080/v1/video-collection/id/01186883-7700"
+	url := fmt.Sprintf("http://localhost:8080/v1/video-collection/%s", id)
 	resp, err := client.DoDeleteWithHeaders(ctx, url, commonHeaders, "", 0)
 	assert.NoError(t, err)
 	assert.NotNil(t, resp)

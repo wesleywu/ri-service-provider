@@ -46,11 +46,11 @@ func RegisterVideoCollectionHTTPServer(s *http.Server, srv VideoCollectionHTTPSe
 	r.POST("/v1/video-collection/count", _VideoCollection_Count0_HTTP_Handler(srv))
 	r.POST("/v1/video-collection/one", _VideoCollection_One0_HTTP_Handler(srv))
 	r.POST("/v1/video-collection/list", _VideoCollection_List0_HTTP_Handler(srv))
-	r.GET("/v1/video-collection/id/{id}", _VideoCollection_Get0_HTTP_Handler(srv))
+	r.GET("/v1/video-collection/{id}", _VideoCollection_Get0_HTTP_Handler(srv))
 	r.POST("/v1/video-collection", _VideoCollection_Create0_HTTP_Handler(srv))
-	r.PATCH("/v1/video-collection/id/{id}", _VideoCollection_Update0_HTTP_Handler(srv))
-	r.PUT("/v1/video-collection/id/{id}", _VideoCollection_Upsert0_HTTP_Handler(srv))
-	r.DELETE("/v1/video-collection/id/{id}", _VideoCollection_Delete0_HTTP_Handler(srv))
+	r.PATCH("/v1/video-collection/{id}", _VideoCollection_Update0_HTTP_Handler(srv))
+	r.PUT("/v1/video-collection/{id}", _VideoCollection_Upsert0_HTTP_Handler(srv))
+	r.DELETE("/v1/video-collection/{id}", _VideoCollection_Delete0_HTTP_Handler(srv))
 	r.POST("/v1/video-collection/delete", _VideoCollection_DeleteMulti0_HTTP_Handler(srv))
 }
 
@@ -312,7 +312,7 @@ func (c *VideoCollectionHTTPClientImpl) Create(ctx context.Context, in *VideoCol
 
 func (c *VideoCollectionHTTPClientImpl) Delete(ctx context.Context, in *VideoCollectionDeleteReq, opts ...http.CallOption) (*VideoCollectionDeleteRes, error) {
 	var out VideoCollectionDeleteRes
-	pattern := "/v1/video-collection/id/{id}"
+	pattern := "/v1/video-collection/{id}"
 	path := binding.EncodeURL(pattern, in, false)
 	opts = append(opts, http.Operation(OperationVideoCollectionDelete))
 	opts = append(opts, http.PathTemplate(pattern))
@@ -338,7 +338,7 @@ func (c *VideoCollectionHTTPClientImpl) DeleteMulti(ctx context.Context, in *Vid
 
 func (c *VideoCollectionHTTPClientImpl) Get(ctx context.Context, in *VideoCollectionGetReq, opts ...http.CallOption) (*VideoCollectionGetRes, error) {
 	var out VideoCollectionGetRes
-	pattern := "/v1/video-collection/id/{id}"
+	pattern := "/v1/video-collection/{id}"
 	path := binding.EncodeURL(pattern, in, false)
 	opts = append(opts, http.Operation(OperationVideoCollectionGet))
 	opts = append(opts, http.PathTemplate(pattern))
@@ -377,7 +377,7 @@ func (c *VideoCollectionHTTPClientImpl) One(ctx context.Context, in *VideoCollec
 
 func (c *VideoCollectionHTTPClientImpl) Update(ctx context.Context, in *VideoCollectionUpdateReq, opts ...http.CallOption) (*VideoCollectionUpdateRes, error) {
 	var out VideoCollectionUpdateRes
-	pattern := "/v1/video-collection/id/{id}"
+	pattern := "/v1/video-collection/{id}"
 	path := binding.EncodeURL(pattern, in, false)
 	opts = append(opts, http.Operation(OperationVideoCollectionUpdate))
 	opts = append(opts, http.PathTemplate(pattern))
@@ -390,7 +390,7 @@ func (c *VideoCollectionHTTPClientImpl) Update(ctx context.Context, in *VideoCol
 
 func (c *VideoCollectionHTTPClientImpl) Upsert(ctx context.Context, in *VideoCollectionUpsertReq, opts ...http.CallOption) (*VideoCollectionUpsertRes, error) {
 	var out VideoCollectionUpsertRes
-	pattern := "/v1/video-collection/id/{id}"
+	pattern := "/v1/video-collection/{id}"
 	path := binding.EncodeURL(pattern, in, false)
 	opts = append(opts, http.Operation(OperationVideoCollectionUpsert))
 	opts = append(opts, http.PathTemplate(pattern))

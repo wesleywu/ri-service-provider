@@ -52,7 +52,7 @@ service VideoCollection {
   }
   rpc Get (VideoCollectionGetReq) returns (VideoCollectionGetRes){
     option (google.api.http) = {
-      get: "/v1/video-collection/id/{id}",
+      get: "/v1/video-collection/{id}",
       body: "*",
     };
     option (guru.service.annotations.cache) = {
@@ -70,7 +70,7 @@ service VideoCollection {
   }
   rpc Update (VideoCollectionUpdateReq) returns (VideoCollectionUpdateRes){
     option (google.api.http) = {
-      patch: "/v1/video-collection/id/{id}",
+      patch: "/v1/video-collection/{id}",
       body: "*",
     };
     option (guru.service.annotations.cache) = {
@@ -79,7 +79,7 @@ service VideoCollection {
   }
   rpc Upsert (VideoCollectionUpsertReq) returns (VideoCollectionUpsertRes){
     option (google.api.http) = {
-      put: "/v1/video-collection/id/{id}",
+      put: "/v1/video-collection/{id}",
       body: "*",
     };
     option (guru.service.annotations.cache) = {
@@ -88,7 +88,7 @@ service VideoCollection {
   }
   rpc Delete (VideoCollectionDeleteReq) returns (VideoCollectionDeleteRes){
     option (google.api.http) = {
-      delete: "/v1/video-collection/id/{id}",
+      delete: "/v1/video-collection/{id}",
       body: "*",
     };
     option (guru.service.annotations.cache) = {
