@@ -136,6 +136,7 @@ func TestUpdate(t *testing.T) {
 func TestUpsert(t *testing.T) {
 	TestDelete(t)
 	url := fmt.Sprintf("http://localhost:8080/v1/video-collection/%s", id)
+	// upsert when no record exists
 	data := `{
 				"name": "每日推荐视频集合",
 				"contentType": 9,
@@ -148,6 +149,35 @@ func TestUpsert(t *testing.T) {
 	assert.NotNil(t, resp)
 	fmt.Println(resp.Body)
 	assert.Equal(t, 200, resp.StatusCode)
+
+	getResp, err := client.DoGetWithHeaders(ctx, url, commonHeaders, 0)
+	assert.NoError(t, err)
+	assert.NotNil(t, resp)
+	respJson, _ := gjson.DecodeToJson(getResp.Body)
+	assert.Equal(t, uint32(1234), respJson.GetJson("item").Get("count").Uint32())
+	assert.Equal(t, true, respJson.GetJson("item").Get("isOnline").Bool())
+
+	// upsert again when record exists
+	data = `{
+				"name": "每日推荐视频集合",
+				"contentType": 10,
+				"filterType": 10,
+				"count": 1235,
+				"isOnline": false
+			}`
+	resp, err = client.DoPutWithHeaders(ctx, url, commonHeaders, data, 0)
+	assert.NoError(t, err)
+	assert.NotNil(t, resp)
+	fmt.Println(resp.Body)
+	assert.Equal(t, 200, resp.StatusCode)
+
+	getResp, err = client.DoGetWithHeaders(ctx, url, commonHeaders, 0)
+	assert.NoError(t, err)
+	assert.NotNil(t, resp)
+	respJson, _ = gjson.DecodeToJson(getResp.Body)
+	assert.Equal(t, uint32(1235), respJson.GetJson("item").Get("count").Uint32())
+	assert.Equal(t, false, respJson.GetJson("item").Get("isOnline").Bool())
+
 }
 
 func TestDelete(t *testing.T) {

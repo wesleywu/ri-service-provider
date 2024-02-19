@@ -54,7 +54,7 @@ func (s *GetLogic) Get(ctx context.Context, req *p.VideoCollectionGetReq) (*p.Vi
 		return nil, err
 	}
 	item = (*p.VideoCollectionItem)(nil)
-	err = singleResult.Decode(item)
+	err = singleResult.Decode(&item)
 	if err != nil {
 		return nil, err
 	}
