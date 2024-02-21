@@ -3,9 +3,9 @@ package logic
 import (
 	"context"
 
+	apiErrors "github.com/castbox/go-guru/pkg/goguru/error"
 	"github.com/castbox/go-guru/pkg/util/appinfo"
 	"github.com/go-kratos/kratos/v2/log"
-	"github.com/wesleywu/ri-service-provider/api/errors"
 	p "github.com/wesleywu/ri-service-provider/api/video_collection/v1"
 	"github.com/wesleywu/ri-service-provider/gwerror"
 	"github.com/wesleywu/ri-service-provider/gworm"
@@ -36,7 +36,7 @@ func (s *DeleteLogic) Delete(ctx context.Context, req *p.VideoCollectionDeleteRe
 		err           error
 	)
 	if req.Id == "" {
-		return nil, errors.ErrorIdValueMissing("主键ID字段的值为空")
+		return nil, apiErrors.ErrorIdValueMissing("主键ID字段的值为空")
 	}
 	filterRequest = gworm.FilterRequest{
 		PropertyFilters: []*gworm.PropertyFilter{

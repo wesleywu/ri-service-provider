@@ -23,6 +23,18 @@ var (
 
 const id = "01186883-7700"
 
+func TestList(t *testing.T) {
+	url := "http://localhost:8080/v1/video-collection/list"
+	resp, err := client.DoPostWithHeaders(ctx, url, commonHeaders, "{}", 0)
+	assert.NoError(t, err)
+	assert.NotNil(t, resp)
+	assert.Equal(t, 200, resp.StatusCode)
+	respJson, err := gjson.DecodeToJson(resp.Body)
+	assert.NoError(t, err)
+	fmt.Println(resp.Body)
+	assert.Equal(t, 3, respJson.Get("total").Int())
+}
+
 func TestListBySingleValue(t *testing.T) {
 	url := "http://localhost:8080/v1/video-collection/list"
 	data := `{
@@ -50,11 +62,11 @@ func TestListBySliceValue(t *testing.T) {
 	url := "http://localhost:8080/v1/video-collection/list"
 	data := `{
 				"name": {
-					"@type":"gwtypes.StringSlice",
+					"@type":"goguru.types.StringSlice",
 					"value":["每日推荐视频","日常推荐视频"]
 				},
 				"isOnline": {
-					"@type":"gwtypes.BoolSlice",
+					"@type":"goguru.types.BoolSlice",
 					"value":[true, false]
 				}
 			}`
@@ -74,7 +86,7 @@ func TestListByCondition(t *testing.T) {
 	url := "http://localhost:8080/v1/video-collection/list"
 	data := `{
 				"name": {
-					"@type":"gwtypes.Condition",
+					"@type":"goguru.types.Condition",
 					"operator": "Like",
 					"wildcard": "StartsWith",
 					"value": {
@@ -83,7 +95,7 @@ func TestListByCondition(t *testing.T) {
 					}
 				},
 				"count": {
-					"@type":"gwtypes.Condition",
+					"@type":"goguru.types.Condition",
 					"operator": "GT",
 					"value": {
 						"@type":"google.protobuf.Int32Value",
@@ -210,7 +222,7 @@ func TestDeleteMulti(t *testing.T) {
 	url := "http://localhost:8080/v1/video-collection/delete"
 	data := `{
 				"name": {
-					"@type":"gwtypes.Condition",
+					"@type":"goguru.types.Condition",
 					"operator": "Equals",
 					"value": {
 						"@type":"google.protobuf.StringValue",

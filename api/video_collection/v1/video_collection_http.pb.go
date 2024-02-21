@@ -294,7 +294,7 @@ func (c *VideoCollectionHTTPClientImpl) Count(ctx context.Context, in *VideoColl
 	if err != nil {
 		return nil, err
 	}
-	return &out, err
+	return &out, nil
 }
 
 func (c *VideoCollectionHTTPClientImpl) Create(ctx context.Context, in *VideoCollectionCreateReq, opts ...http.CallOption) (*VideoCollectionCreateRes, error) {
@@ -307,7 +307,7 @@ func (c *VideoCollectionHTTPClientImpl) Create(ctx context.Context, in *VideoCol
 	if err != nil {
 		return nil, err
 	}
-	return &out, err
+	return &out, nil
 }
 
 func (c *VideoCollectionHTTPClientImpl) Delete(ctx context.Context, in *VideoCollectionDeleteReq, opts ...http.CallOption) (*VideoCollectionDeleteRes, error) {
@@ -320,7 +320,7 @@ func (c *VideoCollectionHTTPClientImpl) Delete(ctx context.Context, in *VideoCol
 	if err != nil {
 		return nil, err
 	}
-	return &out, err
+	return &out, nil
 }
 
 func (c *VideoCollectionHTTPClientImpl) DeleteMulti(ctx context.Context, in *VideoCollectionDeleteMultiReq, opts ...http.CallOption) (*VideoCollectionDeleteMultiRes, error) {
@@ -333,7 +333,7 @@ func (c *VideoCollectionHTTPClientImpl) DeleteMulti(ctx context.Context, in *Vid
 	if err != nil {
 		return nil, err
 	}
-	return &out, err
+	return &out, nil
 }
 
 func (c *VideoCollectionHTTPClientImpl) Get(ctx context.Context, in *VideoCollectionGetReq, opts ...http.CallOption) (*VideoCollectionGetRes, error) {
@@ -346,7 +346,7 @@ func (c *VideoCollectionHTTPClientImpl) Get(ctx context.Context, in *VideoCollec
 	if err != nil {
 		return nil, err
 	}
-	return &out, err
+	return &out, nil
 }
 
 func (c *VideoCollectionHTTPClientImpl) List(ctx context.Context, in *VideoCollectionListReq, opts ...http.CallOption) (*VideoCollectionListRes, error) {
@@ -359,7 +359,7 @@ func (c *VideoCollectionHTTPClientImpl) List(ctx context.Context, in *VideoColle
 	if err != nil {
 		return nil, err
 	}
-	return &out, err
+	return &out, nil
 }
 
 func (c *VideoCollectionHTTPClientImpl) One(ctx context.Context, in *VideoCollectionOneReq, opts ...http.CallOption) (*VideoCollectionOneRes, error) {
@@ -372,7 +372,7 @@ func (c *VideoCollectionHTTPClientImpl) One(ctx context.Context, in *VideoCollec
 	if err != nil {
 		return nil, err
 	}
-	return &out, err
+	return &out, nil
 }
 
 func (c *VideoCollectionHTTPClientImpl) Update(ctx context.Context, in *VideoCollectionUpdateReq, opts ...http.CallOption) (*VideoCollectionUpdateRes, error) {
@@ -385,7 +385,7 @@ func (c *VideoCollectionHTTPClientImpl) Update(ctx context.Context, in *VideoCol
 	if err != nil {
 		return nil, err
 	}
-	return &out, err
+	return &out, nil
 }
 
 func (c *VideoCollectionHTTPClientImpl) Upsert(ctx context.Context, in *VideoCollectionUpsertReq, opts ...http.CallOption) (*VideoCollectionUpsertRes, error) {
@@ -398,5 +398,5 @@ func (c *VideoCollectionHTTPClientImpl) Upsert(ctx context.Context, in *VideoCol
 	if err != nil {
 		return nil, err
 	}
-	return &out, err
+	return &out, nil
 }

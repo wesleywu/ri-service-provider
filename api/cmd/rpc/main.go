@@ -5,7 +5,7 @@ import (
 	"flag"
 	"os"
 
-	"github.com/castbox/go-guru/pkg/guru/service/conf"
+	"github.com/castbox/go-guru/pkg/goguru/conf"
 	"github.com/castbox/go-guru/pkg/util/appinfo"
 	"github.com/go-kratos/kratos/v2"
 	"github.com/go-kratos/kratos/v2/config"

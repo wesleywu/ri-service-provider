@@ -3,7 +3,7 @@ package data
 import (
 	"context"
 
-	"github.com/castbox/go-guru/pkg/guru/service/conf"
+	"github.com/castbox/go-guru/pkg/goguru/conf"
 	"github.com/castbox/go-guru/pkg/util/redis"
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/google/wire"

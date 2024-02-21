@@ -7,7 +7,7 @@
 package video_collection
 
 import (
-	"github.com/castbox/go-guru/pkg/guru/service/annotations"
+	"github.com/castbox/go-guru/pkg/goguru/annotations"
 	"github.com/castbox/go-guru/pkg/server"
 )
 

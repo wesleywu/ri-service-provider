@@ -3,7 +3,7 @@ deps:
   - buf.build/googleapis/googleapis
   - buf.build/srikrsna/protoc-gen-gotag
   - buf.build/wesleywu/gowing
-  - buf.build/castbox/guru-service
+  - buf.build/castbox/goguru
   - buf.build/kratos/apis
 breaking:
   use:

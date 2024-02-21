@@ -5,11 +5,11 @@ import (
 	"reflect"
 	"strings"
 
+	goguruTypes "github.com/castbox/go-guru/pkg/goguru/types"
 	"github.com/gogf/gf/v2/encoding/gjson"
 	"github.com/gogf/gf/v2/errors/gerror"
 	"github.com/gogf/gf/v2/frame/g"
 	"github.com/gogf/gf/v2/util/gconv"
-	"github.com/wesleywu/gowing/protobuf/gwtypes"
 	"github.com/wesleywu/ri-service-provider/gwerror"
 	"go.mongodb.org/mongo-driver/bson"
 	"google.golang.org/protobuf/types/known/anypb"
@@ -29,11 +29,11 @@ type FilterRequest struct {
 }
 
 type PropertyFilter struct {
-	Property string               `json:"property"`
-	Value    interface{}          `json:"value"`
-	Operator gwtypes.OperatorType `json:"operator"`
-	Multi    gwtypes.MultiType    `json:"multi"`
-	Wildcard gwtypes.WildcardType `json:"wildcard"`
+	Property string                   `json:"property"`
+	Value    interface{}              `json:"value"`
+	Operator goguruTypes.OperatorType `json:"operator"`
+	Multi    goguruTypes.MultiType    `json:"multi"`
+	Wildcard goguruTypes.WildcardType `json:"wildcard"`
 }
 
 func WhereEq(key string, value interface{}) *bson.E {
@@ -202,11 +202,11 @@ func (pf *PropertyFilter) getFilter() (*bson.E, error) {
 	}
 	property := pf.Property
 	switch pf.Operator {
-	case gwtypes.OperatorType_EQ:
+	case goguruTypes.OperatorType_EQ:
 		switch pf.Multi {
-		case gwtypes.MultiType_Exact:
+		case goguruTypes.MultiType_Exact:
 			return WhereEq(property, pf.Value), nil
-		case gwtypes.MultiType_Between:
+		case goguruTypes.MultiType_Between:
 			valueSlice := gconv.SliceAny(pf.Value)
 			valueLen := len(valueSlice)
 			if valueLen == 0 {
@@ -218,7 +218,7 @@ func (pf *PropertyFilter) getFilter() (*bson.E, error) {
 			} else {
 				return nil, gwerror.NewBadRequestErrorf("column %s requires between query but given %d values", property, valueLen)
 			}
-		case gwtypes.MultiType_NotBetween:
+		case goguruTypes.MultiType_NotBetween:
 			valueSlice := gconv.SliceAny(pf.Value)
 			valueLen := len(valueSlice)
 			if valueLen == 0 {
@@ -230,7 +230,7 @@ func (pf *PropertyFilter) getFilter() (*bson.E, error) {
 			} else {
 				return nil, gwerror.NewBadRequestErrorf("column %s requires between query but given %d values", property, valueLen)
 			}
-		case gwtypes.MultiType_In:
+		case goguruTypes.MultiType_In:
 			valueSlice := gconv.SliceAny(pf.Value)
 			valueLen := len(valueSlice)
 			if valueLen == 0 {
@@ -240,7 +240,7 @@ func (pf *PropertyFilter) getFilter() (*bson.E, error) {
 			} else {
 				return WhereIn(property, valueSlice), nil
 			}
-		case gwtypes.MultiType_NotIn:
+		case goguruTypes.MultiType_NotIn:
 			valueSlice := gconv.SliceAny(pf.Value)
 			valueLen := len(valueSlice)
 			if valueLen == 0 {
@@ -251,33 +251,33 @@ func (pf *PropertyFilter) getFilter() (*bson.E, error) {
 				return WhereNotIn(property, valueSlice), nil
 			}
 		}
-	case gwtypes.OperatorType_NE:
+	case goguruTypes.OperatorType_NE:
 		return WhereNotEq(property, pf.Value), nil
-	case gwtypes.OperatorType_GT:
+	case goguruTypes.OperatorType_GT:
 		return WhereGT(property, pf.Value), nil
-	case gwtypes.OperatorType_GTE:
+	case goguruTypes.OperatorType_GTE:
 		return WhereGTE(property, pf.Value), nil
-	case gwtypes.OperatorType_LT:
+	case goguruTypes.OperatorType_LT:
 		return WhereLT(property, pf.Value), nil
-	case gwtypes.OperatorType_LTE:
+	case goguruTypes.OperatorType_LTE:
 		return WhereLTE(property, pf.Value), nil
-	case gwtypes.OperatorType_Like:
+	case goguruTypes.OperatorType_Like:
 		valueStr := gconv.String(pf.Value)
 		if g.IsEmpty(valueStr) {
 			return nil, nil
 		}
 		valueStr = decorateValueStrForWildcard(valueStr, pf.Wildcard)
 		return WhereLike(property, valueStr), nil
-	case gwtypes.OperatorType_NotLike:
+	case goguruTypes.OperatorType_NotLike:
 		valueStr := gconv.String(pf.Value)
 		if g.IsEmpty(valueStr) {
 			return nil, nil
 		}
 		valueStr = decorateValueStrForWildcard(valueStr, pf.Wildcard)
 		return WhereNotLike(property, valueStr), nil
-	case gwtypes.OperatorType_Null:
+	case goguruTypes.OperatorType_Null:
 		return WhereNotEq(property, pf.Value), nil
-	case gwtypes.OperatorType_NotNull:
+	case goguruTypes.OperatorType_NotNull:
 		return WhereNotEq(property, pf.Value), nil
 	}
 	return nil, nil
@@ -382,15 +382,15 @@ func parsePropertyFilter(ctx context.Context, req interface{}, columnName string
 		return &PropertyFilter{
 			Property: columnName,
 			Value:    value,
-			Operator: gwtypes.OperatorType_EQ,
-			Multi:    gwtypes.MultiType_Exact,
-			Wildcard: gwtypes.WildcardType_None,
+			Operator: goguruTypes.OperatorType_EQ,
+			Multi:    goguruTypes.MultiType_Exact,
+			Wildcard: goguruTypes.WildcardType_None,
 		}, nil
 	case reflect.Slice, reflect.Array:
 		valueSlice := gconv.SliceAny(value)
 		multiTag, ok := tag.Lookup(TagNameMulti)
 		if ok {
-			multi, err := gwtypes.ParseMultiType(multiTag)
+			multi, err := goguruTypes.ParseMultiType(multiTag)
 			if err != nil {
 				return nil, err
 			}
@@ -401,17 +401,17 @@ func parsePropertyFilter(ctx context.Context, req interface{}, columnName string
 				return &PropertyFilter{
 					Property: columnName,
 					Value:    valueSlice[0],
-					Operator: gwtypes.OperatorType_EQ,
-					Multi:    gwtypes.MultiType_Exact,
-					Wildcard: gwtypes.WildcardType_None,
+					Operator: goguruTypes.OperatorType_EQ,
+					Multi:    goguruTypes.MultiType_Exact,
+					Wildcard: goguruTypes.WildcardType_None,
 				}, nil
 			default:
 				return &PropertyFilter{
 					Property: columnName,
 					Value:    valueSlice,
-					Operator: gwtypes.OperatorType_EQ,
+					Operator: goguruTypes.OperatorType_EQ,
 					Multi:    multi,
-					Wildcard: gwtypes.WildcardType_None,
+					Wildcard: goguruTypes.WildcardType_None,
 				}, nil
 			}
 		} else {
@@ -422,17 +422,17 @@ func parsePropertyFilter(ctx context.Context, req interface{}, columnName string
 				return &PropertyFilter{
 					Property: columnName,
 					Value:    valueSlice[0],
-					Operator: gwtypes.OperatorType_EQ,
-					Multi:    gwtypes.MultiType_Exact,
-					Wildcard: gwtypes.WildcardType_None,
+					Operator: goguruTypes.OperatorType_EQ,
+					Multi:    goguruTypes.MultiType_Exact,
+					Wildcard: goguruTypes.WildcardType_None,
 				}, nil
 			default:
 				return &PropertyFilter{
 					Property: columnName,
 					Value:    valueSlice,
-					Operator: gwtypes.OperatorType_EQ,
-					Multi:    gwtypes.MultiType_In,
-					Wildcard: gwtypes.WildcardType_None,
+					Operator: goguruTypes.OperatorType_EQ,
+					Multi:    goguruTypes.MultiType_In,
+					Wildcard: goguruTypes.WildcardType_None,
 				}, nil
 			}
 		}
@@ -455,41 +455,41 @@ func parsePropertyFilter(ctx context.Context, req interface{}, columnName string
 		}
 		wildcardString, ok := tag.Lookup(TagNameWildcard)
 		if ok {
-			wildcard, err := gwtypes.ParseWildcardType(wildcardString)
+			wildcard, err := goguruTypes.ParseWildcardType(wildcardString)
 			if err != nil {
 				return nil, err
 			}
 			switch wildcard {
-			case gwtypes.WildcardType_Contains:
+			case goguruTypes.WildcardType_Contains:
 				return &PropertyFilter{
 					Property: columnName,
-					Value:    decorateValueStrForWildcard(valueString, gwtypes.WildcardType_Contains),
-					Operator: gwtypes.OperatorType_Like,
-					Multi:    gwtypes.MultiType_Exact,
+					Value:    decorateValueStrForWildcard(valueString, goguruTypes.WildcardType_Contains),
+					Operator: goguruTypes.OperatorType_Like,
+					Multi:    goguruTypes.MultiType_Exact,
 					Wildcard: wildcard,
 				}, nil
-			case gwtypes.WildcardType_StartsWith:
+			case goguruTypes.WildcardType_StartsWith:
 				return &PropertyFilter{
 					Property: columnName,
-					Value:    decorateValueStrForWildcard(valueString, gwtypes.WildcardType_StartsWith),
-					Operator: gwtypes.OperatorType_Like,
-					Multi:    gwtypes.MultiType_Exact,
+					Value:    decorateValueStrForWildcard(valueString, goguruTypes.WildcardType_StartsWith),
+					Operator: goguruTypes.OperatorType_Like,
+					Multi:    goguruTypes.MultiType_Exact,
 					Wildcard: wildcard,
 				}, nil
-			case gwtypes.WildcardType_EndsWith:
+			case goguruTypes.WildcardType_EndsWith:
 				return &PropertyFilter{
 					Property: columnName,
-					Value:    decorateValueStrForWildcard(valueString, gwtypes.WildcardType_EndsWith),
-					Operator: gwtypes.OperatorType_Like,
-					Multi:    gwtypes.MultiType_Exact,
+					Value:    decorateValueStrForWildcard(valueString, goguruTypes.WildcardType_EndsWith),
+					Operator: goguruTypes.OperatorType_Like,
+					Multi:    goguruTypes.MultiType_Exact,
 					Wildcard: wildcard,
 				}, nil
 			default:
 				return &PropertyFilter{
 					Property: columnName,
 					Value:    valueString,
-					Operator: gwtypes.OperatorType_EQ,
-					Multi:    gwtypes.MultiType_Exact,
+					Operator: goguruTypes.OperatorType_EQ,
+					Multi:    goguruTypes.MultiType_Exact,
 					Wildcard: wildcard,
 				}, nil
 			}
@@ -497,18 +497,18 @@ func parsePropertyFilter(ctx context.Context, req interface{}, columnName string
 			return &PropertyFilter{
 				Property: columnName,
 				Value:    valueString,
-				Operator: gwtypes.OperatorType_EQ,
-				Multi:    gwtypes.MultiType_Exact,
-				Wildcard: gwtypes.WildcardType_None,
+				Operator: goguruTypes.OperatorType_EQ,
+				Multi:    goguruTypes.MultiType_Exact,
+				Wildcard: goguruTypes.WildcardType_None,
 			}, nil
 		}
 	default:
 		return &PropertyFilter{
 			Property: columnName,
 			Value:    value,
-			Operator: gwtypes.OperatorType_EQ,
-			Multi:    gwtypes.MultiType_Exact,
-			Wildcard: gwtypes.WildcardType_None,
+			Operator: goguruTypes.OperatorType_EQ,
+			Multi:    goguruTypes.MultiType_Exact,
+			Wildcard: goguruTypes.WildcardType_None,
 		}, nil
 	}
 }
@@ -523,21 +523,21 @@ func unwrapAnyFilter(columnName string, tag reflect.StructTag, valueAny *anypb.A
 	}
 
 	switch vt := v.(type) {
-	case *gwtypes.BoolSlice:
+	case *goguruTypes.BoolSlice:
 		return parseFieldSliceFilter(columnName, tag, vt.Value)
-	case *gwtypes.DoubleSlice:
+	case *goguruTypes.DoubleSlice:
 		return parseFieldSliceFilter(columnName, tag, vt.Value)
-	case *gwtypes.FloatSlice:
+	case *goguruTypes.FloatSlice:
 		return parseFieldSliceFilter(columnName, tag, vt.Value)
-	case *gwtypes.UInt32Slice:
+	case *goguruTypes.UInt32Slice:
 		return parseFieldSliceFilter(columnName, tag, vt.Value)
-	case *gwtypes.UInt64Slice:
+	case *goguruTypes.UInt64Slice:
 		return parseFieldSliceFilter(columnName, tag, vt.Value)
-	case *gwtypes.Int32Slice:
+	case *goguruTypes.Int32Slice:
 		return parseFieldSliceFilter(columnName, tag, vt.Value)
-	case *gwtypes.Int64Slice:
+	case *goguruTypes.Int64Slice:
 		return parseFieldSliceFilter(columnName, tag, vt.Value)
-	case *gwtypes.StringSlice:
+	case *goguruTypes.StringSlice:
 		return parseFieldSliceFilter(columnName, tag, vt.Value)
 	case *wrapperspb.BoolValue:
 		return parseFieldSingleFilter(columnName, vt.Value)
@@ -557,7 +557,7 @@ func unwrapAnyFilter(columnName string, tag reflect.StructTag, valueAny *anypb.A
 		return parseFieldSingleFilter(columnName, vt.Value)
 	case *wrapperspb.StringValue:
 		return parseFieldSingleFilter(columnName, vt.Value)
-	case *gwtypes.Condition:
+	case *goguruTypes.Condition:
 		return addConditionFilter(columnName, vt)
 	default:
 		return nil, gerror.Newf("Unsupported value type: %v", vt)
@@ -571,9 +571,9 @@ func parseFieldSingleFilter(columnName string, value interface{}) (pf *PropertyF
 	return &PropertyFilter{
 		Property: columnName,
 		Value:    value,
-		Operator: gwtypes.OperatorType_EQ,
-		Multi:    gwtypes.MultiType_Exact,
-		Wildcard: gwtypes.WildcardType_None,
+		Operator: goguruTypes.OperatorType_EQ,
+		Multi:    goguruTypes.MultiType_Exact,
+		Wildcard: goguruTypes.WildcardType_None,
 	}, nil
 }
 
@@ -582,7 +582,7 @@ func parseFieldSliceFilter[T any](columnName string, tag reflect.StructTag, valu
 		return nil, nil
 	}
 	if multiTag, ok := tag.Lookup(TagNameMulti); ok {
-		multi, err := gwtypes.ParseMultiType(multiTag)
+		multi, err := goguruTypes.ParseMultiType(multiTag)
 		if err != nil {
 			return nil, err
 		}
@@ -593,35 +593,35 @@ func parseFieldSliceFilter[T any](columnName string, tag reflect.StructTag, valu
 			return &PropertyFilter{
 				Property: columnName,
 				Value:    value[0],
-				Operator: gwtypes.OperatorType_EQ,
-				Multi:    gwtypes.MultiType_Exact,
-				Wildcard: gwtypes.WildcardType_None,
+				Operator: goguruTypes.OperatorType_EQ,
+				Multi:    goguruTypes.MultiType_Exact,
+				Wildcard: goguruTypes.WildcardType_None,
 			}, nil
 		case 2:
-			if multi == gwtypes.MultiType_Between {
+			if multi == goguruTypes.MultiType_Between {
 				return &PropertyFilter{
 					Property: columnName,
 					Value:    value,
-					Operator: gwtypes.OperatorType_EQ,
-					Multi:    gwtypes.MultiType_Between,
-					Wildcard: gwtypes.WildcardType_None,
+					Operator: goguruTypes.OperatorType_EQ,
+					Multi:    goguruTypes.MultiType_Between,
+					Wildcard: goguruTypes.WildcardType_None,
 				}, nil
 			} else {
 				return &PropertyFilter{
 					Property: columnName,
 					Value:    value,
-					Operator: gwtypes.OperatorType_EQ,
-					Multi:    gwtypes.MultiType_In,
-					Wildcard: gwtypes.WildcardType_None,
+					Operator: goguruTypes.OperatorType_EQ,
+					Multi:    goguruTypes.MultiType_In,
+					Wildcard: goguruTypes.WildcardType_None,
 				}, nil
 			}
 		default:
 			return &PropertyFilter{
 				Property: columnName,
 				Value:    value,
-				Operator: gwtypes.OperatorType_EQ,
-				Multi:    gwtypes.MultiType_In,
-				Wildcard: gwtypes.WildcardType_None,
+				Operator: goguruTypes.OperatorType_EQ,
+				Multi:    goguruTypes.MultiType_In,
+				Wildcard: goguruTypes.WildcardType_None,
 			}, nil
 		}
 	} else {
@@ -632,23 +632,23 @@ func parseFieldSliceFilter[T any](columnName string, tag reflect.StructTag, valu
 			return &PropertyFilter{
 				Property: columnName,
 				Value:    value[0],
-				Operator: gwtypes.OperatorType_EQ,
-				Multi:    gwtypes.MultiType_Exact,
-				Wildcard: gwtypes.WildcardType_None,
+				Operator: goguruTypes.OperatorType_EQ,
+				Multi:    goguruTypes.MultiType_Exact,
+				Wildcard: goguruTypes.WildcardType_None,
 			}, nil
 		default:
 			return &PropertyFilter{
 				Property: columnName,
 				Value:    value,
-				Operator: gwtypes.OperatorType_EQ,
-				Multi:    gwtypes.MultiType_In,
-				Wildcard: gwtypes.WildcardType_None,
+				Operator: goguruTypes.OperatorType_EQ,
+				Multi:    goguruTypes.MultiType_In,
+				Wildcard: goguruTypes.WildcardType_None,
 			}, nil
 		}
 	}
 }
 
-func addConditionFilter(columnName string, condition *gwtypes.Condition) (pf *PropertyFilter, err error) {
+func addConditionFilter(columnName string, condition *goguruTypes.Condition) (pf *PropertyFilter, err error) {
 	if condition == nil {
 		return nil, nil
 	}
@@ -661,22 +661,22 @@ func addConditionFilter(columnName string, condition *gwtypes.Condition) (pf *Pr
 		return nil, nil
 	}
 	switch vt := v.(type) {
-	case *gwtypes.BoolSlice:
-		return parseFieldConditionSliceFilter(columnName, condition, v.(*gwtypes.BoolSlice).Value)
-	case *gwtypes.DoubleSlice:
-		return parseFieldConditionSliceFilter(columnName, condition, v.(*gwtypes.DoubleSlice).Value)
-	case *gwtypes.FloatSlice:
-		return parseFieldConditionSliceFilter(columnName, condition, v.(*gwtypes.FloatSlice).Value)
-	case *gwtypes.UInt32Slice:
-		return parseFieldConditionSliceFilter(columnName, condition, v.(*gwtypes.UInt32Slice).Value)
-	case *gwtypes.UInt64Slice:
-		return parseFieldConditionSliceFilter(columnName, condition, v.(*gwtypes.UInt64Slice).Value)
-	case *gwtypes.Int32Slice:
-		return parseFieldConditionSliceFilter(columnName, condition, v.(*gwtypes.Int32Slice).Value)
-	case *gwtypes.Int64Slice:
-		return parseFieldConditionSliceFilter(columnName, condition, v.(*gwtypes.Int64Slice).Value)
-	case *gwtypes.StringSlice:
-		return parseFieldConditionSliceFilter(columnName, condition, v.(*gwtypes.StringSlice).Value)
+	case *goguruTypes.BoolSlice:
+		return parseFieldConditionSliceFilter(columnName, condition, v.(*goguruTypes.BoolSlice).Value)
+	case *goguruTypes.DoubleSlice:
+		return parseFieldConditionSliceFilter(columnName, condition, v.(*goguruTypes.DoubleSlice).Value)
+	case *goguruTypes.FloatSlice:
+		return parseFieldConditionSliceFilter(columnName, condition, v.(*goguruTypes.FloatSlice).Value)
+	case *goguruTypes.UInt32Slice:
+		return parseFieldConditionSliceFilter(columnName, condition, v.(*goguruTypes.UInt32Slice).Value)
+	case *goguruTypes.UInt64Slice:
+		return parseFieldConditionSliceFilter(columnName, condition, v.(*goguruTypes.UInt64Slice).Value)
+	case *goguruTypes.Int32Slice:
+		return parseFieldConditionSliceFilter(columnName, condition, v.(*goguruTypes.Int32Slice).Value)
+	case *goguruTypes.Int64Slice:
+		return parseFieldConditionSliceFilter(columnName, condition, v.(*goguruTypes.Int64Slice).Value)
+	case *goguruTypes.StringSlice:
+		return parseFieldConditionSliceFilter(columnName, condition, v.(*goguruTypes.StringSlice).Value)
 	case *wrapperspb.BoolValue:
 		return parseFieldConditionSingleFilter(columnName, condition, v.(*wrapperspb.BoolValue).Value)
 	case *wrapperspb.BytesValue:
@@ -700,159 +700,159 @@ func addConditionFilter(columnName string, condition *gwtypes.Condition) (pf *Pr
 	}
 }
 
-func parseFieldConditionSliceFilter[T any](columnName string, condition *gwtypes.Condition, valueSlice []T) (*PropertyFilter, error) {
+func parseFieldConditionSliceFilter[T any](columnName string, condition *goguruTypes.Condition, valueSlice []T) (*PropertyFilter, error) {
 	valueLen := len(valueSlice)
 	if valueLen == 0 {
 		return nil, nil
 	}
 	switch condition.Operator {
-	case gwtypes.OperatorType_EQ:
+	case goguruTypes.OperatorType_EQ:
 		switch condition.Multi {
-		case gwtypes.MultiType_Exact:
+		case goguruTypes.MultiType_Exact:
 			if valueLen == 1 {
 				return &PropertyFilter{
 					Property: columnName,
 					Value:    valueSlice[0],
-					Operator: gwtypes.OperatorType_EQ,
-					Multi:    gwtypes.MultiType_Exact,
-					Wildcard: gwtypes.WildcardType_None,
+					Operator: goguruTypes.OperatorType_EQ,
+					Multi:    goguruTypes.MultiType_Exact,
+					Wildcard: goguruTypes.WildcardType_None,
 				}, nil
 			} else {
 				return &PropertyFilter{
 					Property: columnName,
 					Value:    valueSlice,
-					Operator: gwtypes.OperatorType_EQ,
-					Multi:    gwtypes.MultiType_In,
-					Wildcard: gwtypes.WildcardType_None,
+					Operator: goguruTypes.OperatorType_EQ,
+					Multi:    goguruTypes.MultiType_In,
+					Wildcard: goguruTypes.WildcardType_None,
 				}, nil
 			}
-		case gwtypes.MultiType_Between:
+		case goguruTypes.MultiType_Between:
 			if valueLen == 1 {
 				return &PropertyFilter{
 					Property: columnName,
 					Value:    valueSlice[0],
-					Operator: gwtypes.OperatorType_EQ,
-					Multi:    gwtypes.MultiType_Exact,
-					Wildcard: gwtypes.WildcardType_None,
+					Operator: goguruTypes.OperatorType_EQ,
+					Multi:    goguruTypes.MultiType_Exact,
+					Wildcard: goguruTypes.WildcardType_None,
 				}, nil
 			} else if valueLen == 2 {
 				return &PropertyFilter{
 					Property: columnName,
 					Value:    valueSlice,
-					Operator: gwtypes.OperatorType_EQ,
-					Multi:    gwtypes.MultiType_Between,
-					Wildcard: gwtypes.WildcardType_None,
+					Operator: goguruTypes.OperatorType_EQ,
+					Multi:    goguruTypes.MultiType_Between,
+					Wildcard: goguruTypes.WildcardType_None,
 				}, nil
 			} else {
 				return nil, gwerror.NewBadRequestErrorf("column %s requires between query but given %d values", columnName, valueLen)
 			}
-		case gwtypes.MultiType_NotBetween:
+		case goguruTypes.MultiType_NotBetween:
 			if valueLen == 1 {
 				return &PropertyFilter{
 					Property: columnName,
 					Value:    valueSlice[0],
-					Operator: gwtypes.OperatorType_NE,
-					Multi:    gwtypes.MultiType_Exact,
-					Wildcard: gwtypes.WildcardType_None,
+					Operator: goguruTypes.OperatorType_NE,
+					Multi:    goguruTypes.MultiType_Exact,
+					Wildcard: goguruTypes.WildcardType_None,
 				}, nil
 			} else if valueLen == 2 {
 				return &PropertyFilter{
 					Property: columnName,
 					Value:    valueSlice,
-					Operator: gwtypes.OperatorType_EQ,
-					Multi:    gwtypes.MultiType_NotBetween,
-					Wildcard: gwtypes.WildcardType_None,
+					Operator: goguruTypes.OperatorType_EQ,
+					Multi:    goguruTypes.MultiType_NotBetween,
+					Wildcard: goguruTypes.WildcardType_None,
 				}, nil
 			} else {
 				return nil, gwerror.NewBadRequestErrorf("column %s requires between query but given %d values", columnName, valueLen)
 			}
-		case gwtypes.MultiType_In:
+		case goguruTypes.MultiType_In:
 			if valueLen == 1 {
 				return &PropertyFilter{
 					Property: columnName,
 					Value:    valueSlice[0],
-					Operator: gwtypes.OperatorType_EQ,
-					Multi:    gwtypes.MultiType_Exact,
-					Wildcard: gwtypes.WildcardType_None,
+					Operator: goguruTypes.OperatorType_EQ,
+					Multi:    goguruTypes.MultiType_Exact,
+					Wildcard: goguruTypes.WildcardType_None,
 				}, nil
 			} else {
 				return &PropertyFilter{
 					Property: columnName,
 					Value:    valueSlice,
-					Operator: gwtypes.OperatorType_EQ,
-					Multi:    gwtypes.MultiType_In,
-					Wildcard: gwtypes.WildcardType_None,
+					Operator: goguruTypes.OperatorType_EQ,
+					Multi:    goguruTypes.MultiType_In,
+					Wildcard: goguruTypes.WildcardType_None,
 				}, nil
 			}
-		case gwtypes.MultiType_NotIn:
+		case goguruTypes.MultiType_NotIn:
 			if valueLen == 1 {
 				return &PropertyFilter{
 					Property: columnName,
 					Value:    valueSlice[0],
-					Operator: gwtypes.OperatorType_NE,
-					Multi:    gwtypes.MultiType_Exact,
-					Wildcard: gwtypes.WildcardType_None,
+					Operator: goguruTypes.OperatorType_NE,
+					Multi:    goguruTypes.MultiType_Exact,
+					Wildcard: goguruTypes.WildcardType_None,
 				}, nil
 			} else {
 				return &PropertyFilter{
 					Property: columnName,
 					Value:    valueSlice,
-					Operator: gwtypes.OperatorType_EQ,
-					Multi:    gwtypes.MultiType_NotIn,
-					Wildcard: gwtypes.WildcardType_None,
+					Operator: goguruTypes.OperatorType_EQ,
+					Multi:    goguruTypes.MultiType_NotIn,
+					Wildcard: goguruTypes.WildcardType_None,
 				}, nil
 			}
 		}
-	case gwtypes.OperatorType_NE:
-	case gwtypes.OperatorType_GT:
-	case gwtypes.OperatorType_GTE:
-	case gwtypes.OperatorType_LT:
-	case gwtypes.OperatorType_LTE:
-	case gwtypes.OperatorType_Like:
-	case gwtypes.OperatorType_NotLike:
-		return nil, gerror.Newf("Operator值为'%s'，但传入的Value: '%s'不应该是数组", gwtypes.OperatorType_name[int32(condition.Operator)], gconv.String(valueSlice))
-	case gwtypes.OperatorType_Null:
-	case gwtypes.OperatorType_NotNull:
-		return nil, gerror.Newf("Operator值为'%s'，但传入的Value: '%s'应该为nil", gwtypes.OperatorType_name[int32(condition.Operator)], gconv.String(valueSlice))
+	case goguruTypes.OperatorType_NE:
+	case goguruTypes.OperatorType_GT:
+	case goguruTypes.OperatorType_GTE:
+	case goguruTypes.OperatorType_LT:
+	case goguruTypes.OperatorType_LTE:
+	case goguruTypes.OperatorType_Like:
+	case goguruTypes.OperatorType_NotLike:
+		return nil, gerror.Newf("Operator值为'%s'，但传入的Value: '%s'不应该是数组", goguruTypes.OperatorType_name[int32(condition.Operator)], gconv.String(valueSlice))
+	case goguruTypes.OperatorType_Null:
+	case goguruTypes.OperatorType_NotNull:
+		return nil, gerror.Newf("Operator值为'%s'，但传入的Value: '%s'应该为nil", goguruTypes.OperatorType_name[int32(condition.Operator)], gconv.String(valueSlice))
 	default:
-		return nil, gerror.Newf("不支持的Operator值，传入Value: '%s'", gwtypes.OperatorType_name[int32(condition.Operator)], gconv.String(valueSlice))
+		return nil, gerror.Newf("不支持的Operator值，传入Value: '%s'", goguruTypes.OperatorType_name[int32(condition.Operator)], gconv.String(valueSlice))
 	}
 	return nil, nil
 }
 
-func parseFieldConditionSingleFilter(columnName string, condition *gwtypes.Condition, value interface{}) (*PropertyFilter, error) {
-	if value == nil && condition.Operator != gwtypes.OperatorType_Null && condition.Operator != gwtypes.OperatorType_NotNull {
+func parseFieldConditionSingleFilter(columnName string, condition *goguruTypes.Condition, value interface{}) (*PropertyFilter, error) {
+	if value == nil && condition.Operator != goguruTypes.OperatorType_Null && condition.Operator != goguruTypes.OperatorType_NotNull {
 		return nil, nil
 	}
 	switch condition.Operator {
-	case gwtypes.OperatorType_EQ:
+	case goguruTypes.OperatorType_EQ:
 		switch condition.Multi {
-		case gwtypes.MultiType_Exact:
+		case goguruTypes.MultiType_Exact:
 			return &PropertyFilter{
 				Property: columnName,
 				Value:    value,
-				Operator: gwtypes.OperatorType_EQ,
-				Multi:    gwtypes.MultiType_Exact,
-				Wildcard: gwtypes.WildcardType_None,
+				Operator: goguruTypes.OperatorType_EQ,
+				Multi:    goguruTypes.MultiType_Exact,
+				Wildcard: goguruTypes.WildcardType_None,
 			}, nil
-		case gwtypes.MultiType_Between:
-			return nil, gerror.Newf("Multi值为'%s'，但传入的Value: '%s'并非数组", gwtypes.MultiType_name[int32(gwtypes.MultiType_Between)], gconv.String(value))
-		case gwtypes.MultiType_NotBetween:
-			return nil, gerror.Newf("Multi值为'%s'，但传入的Value: '%s'并非数组", gwtypes.MultiType_name[int32(gwtypes.MultiType_NotBetween)], gconv.String(value))
-		case gwtypes.MultiType_In:
-			return nil, gerror.Newf("Multi值为'%s'，但传入的Value: '%s'并非数组", gwtypes.MultiType_name[int32(gwtypes.MultiType_In)], gconv.String(value))
-		case gwtypes.MultiType_NotIn:
-			return nil, gerror.Newf("Multi值为'%s'，但传入的Value: '%s'并非数组", gwtypes.MultiType_name[int32(gwtypes.MultiType_NotIn)], gconv.String(value))
+		case goguruTypes.MultiType_Between:
+			return nil, gerror.Newf("Multi值为'%s'，但传入的Value: '%s'并非数组", goguruTypes.MultiType_name[int32(goguruTypes.MultiType_Between)], gconv.String(value))
+		case goguruTypes.MultiType_NotBetween:
+			return nil, gerror.Newf("Multi值为'%s'，但传入的Value: '%s'并非数组", goguruTypes.MultiType_name[int32(goguruTypes.MultiType_NotBetween)], gconv.String(value))
+		case goguruTypes.MultiType_In:
+			return nil, gerror.Newf("Multi值为'%s'，但传入的Value: '%s'并非数组", goguruTypes.MultiType_name[int32(goguruTypes.MultiType_In)], gconv.String(value))
+		case goguruTypes.MultiType_NotIn:
+			return nil, gerror.Newf("Multi值为'%s'，但传入的Value: '%s'并非数组", goguruTypes.MultiType_name[int32(goguruTypes.MultiType_NotIn)], gconv.String(value))
 		}
-	case gwtypes.OperatorType_NE, gwtypes.OperatorType_GT, gwtypes.OperatorType_GTE, gwtypes.OperatorType_LT, gwtypes.OperatorType_LTE:
+	case goguruTypes.OperatorType_NE, goguruTypes.OperatorType_GT, goguruTypes.OperatorType_GTE, goguruTypes.OperatorType_LT, goguruTypes.OperatorType_LTE:
 		return &PropertyFilter{
 			Property: columnName,
 			Value:    value,
 			Operator: condition.Operator,
-			Multi:    gwtypes.MultiType_Exact,
-			Wildcard: gwtypes.WildcardType_None,
+			Multi:    goguruTypes.MultiType_Exact,
+			Wildcard: goguruTypes.WildcardType_None,
 		}, nil
-	case gwtypes.OperatorType_Like, gwtypes.OperatorType_NotLike:
+	case goguruTypes.OperatorType_Like, goguruTypes.OperatorType_NotLike:
 		valueStr := gconv.String(value)
 		if g.IsEmpty(valueStr) {
 			return nil, nil
@@ -862,28 +862,28 @@ func parseFieldConditionSingleFilter(columnName string, condition *gwtypes.Condi
 			Property: columnName,
 			Value:    valueStr,
 			Operator: condition.Operator,
-			Multi:    gwtypes.MultiType_Exact,
+			Multi:    goguruTypes.MultiType_Exact,
 			Wildcard: condition.Wildcard,
 		}, nil
-	case gwtypes.OperatorType_Null, gwtypes.OperatorType_NotNull:
+	case goguruTypes.OperatorType_Null, goguruTypes.OperatorType_NotNull:
 		return &PropertyFilter{
 			Property: columnName,
 			Value:    nil,
 			Operator: condition.Operator,
-			Multi:    gwtypes.MultiType_Exact,
-			Wildcard: gwtypes.WildcardType_None,
+			Multi:    goguruTypes.MultiType_Exact,
+			Wildcard: goguruTypes.WildcardType_None,
 		}, nil
 	}
 	return nil, nil
 }
 
-func decorateValueStrForWildcard(valueStr string, wildcardType gwtypes.WildcardType) string {
+func decorateValueStrForWildcard(valueStr string, wildcardType goguruTypes.WildcardType) string {
 	switch wildcardType {
-	case gwtypes.WildcardType_Contains:
+	case goguruTypes.WildcardType_Contains:
 		return valueStr
-	case gwtypes.WildcardType_StartsWith:
+	case goguruTypes.WildcardType_StartsWith:
 		return "^" + valueStr
-	case gwtypes.WildcardType_EndsWith:
+	case goguruTypes.WildcardType_EndsWith:
 		return valueStr + "$"
 	}
 	return valueStr

@@ -6,14 +6,14 @@ import (
 	"os"
 	"testing"
 
-	"github.com/castbox/go-guru/pkg/guru/service/conf"
+	"github.com/castbox/go-guru/pkg/goguru/conf"
+	goguruTypes "github.com/castbox/go-guru/pkg/goguru/types"
 	"github.com/go-kratos/kratos/v2/config"
 	"github.com/go-kratos/kratos/v2/config/env"
 	"github.com/go-kratos/kratos/v2/config/file"
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/gogf/gf/v2/encoding/gjson"
 	"github.com/stretchr/testify/assert"
-	"github.com/wesleywu/gowing/protobuf/gwtypes"
 	p "github.com/wesleywu/ri-service-provider/api/video_collection/v1"
 	"github.com/wesleywu/ri-service-provider/gwwrapper"
 )
@@ -93,10 +93,10 @@ func TestCount(t *testing.T) {
 func TestList(t *testing.T) {
 	req := &p.VideoCollectionListReq{
 		Id:          nil,
-		Name:        gwwrapper.AnyCondition(gwtypes.OperatorType_Like, gwtypes.MultiType_Exact, gwtypes.WildcardType_Contains, gwwrapper.AnyString("每日")),
+		Name:        gwwrapper.AnyCondition(goguruTypes.OperatorType_Like, goguruTypes.MultiType_Exact, goguruTypes.WildcardType_Contains, gwwrapper.AnyString("每日")),
 		ContentType: gwwrapper.AnyUInt32Slice([]uint32{1, 2}),
 		FilterType:  nil,
-		Count:       gwwrapper.AnyCondition(gwtypes.OperatorType_GT, gwtypes.MultiType_Exact, gwtypes.WildcardType_None, gwwrapper.AnyUInt32(0)),
+		Count:       gwwrapper.AnyCondition(goguruTypes.OperatorType_GT, goguruTypes.MultiType_Exact, goguruTypes.WildcardType_None, gwwrapper.AnyUInt32(0)),
 		IsOnline:    nil,
 		CreatedAt:   nil,
 		UpdatedAt:   nil,
@@ -117,10 +117,10 @@ func BenchmarkList(b *testing.B) {
 
 	req := &p.VideoCollectionListReq{
 		Id:          nil,
-		Name:        gwwrapper.AnyCondition(gwtypes.OperatorType_Like, gwtypes.MultiType_Exact, gwtypes.WildcardType_Contains, gwwrapper.AnyString("每日")),
+		Name:        gwwrapper.AnyCondition(goguruTypes.OperatorType_Like, goguruTypes.MultiType_Exact, goguruTypes.WildcardType_Contains, gwwrapper.AnyString("每日")),
 		ContentType: gwwrapper.AnyUInt32Slice([]uint32{1, 2}),
 		FilterType:  nil,
-		Count:       gwwrapper.AnyCondition(gwtypes.OperatorType_GT, gwtypes.MultiType_Exact, gwtypes.WildcardType_None, gwwrapper.AnyUInt32(0)),
+		Count:       gwwrapper.AnyCondition(goguruTypes.OperatorType_GT, goguruTypes.MultiType_Exact, goguruTypes.WildcardType_None, gwwrapper.AnyUInt32(0)),
 		IsOnline:    nil,
 		CreatedAt:   nil,
 		UpdatedAt:   nil,

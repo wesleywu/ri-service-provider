@@ -11,7 +11,7 @@ import "google/api/annotations.proto";
 import "google/protobuf/timestamp.proto";
 import "google/protobuf/any.proto";
 import "tagger/tagger.proto";
-import "guru/service/annotations/annotations.proto";
+import "goguru/annotations/annotations.proto";
 
 service VideoCollection {
   rpc Count (VideoCollectionCountReq) returns (VideoCollectionCountRes){
@@ -19,7 +19,7 @@ service VideoCollection {
       post: "/v1/video-collection/count",
       body: "*",
     };
-    option (guru.service.annotations.cache) = {
+    option (goguru.annotations.cache) = {
       cachable: false,
       name: "VideoCollection",
       ttl: "30s",
@@ -31,7 +31,7 @@ service VideoCollection {
       post: "/v1/video-collection/one",
       body: "*",
     };
-    option (guru.service.annotations.cache) = {
+    option (goguru.annotations.cache) = {
       cachable: false,
       name: "VideoCollection",
       ttl: "30s",
@@ -43,7 +43,7 @@ service VideoCollection {
       post: "/v1/video-collection/list",
       body: "*",
     };
-    option (guru.service.annotations.cache) = {
+    option (goguru.annotations.cache) = {
       cachable: false,
       name: "VideoCollection",
       ttl: "30s",
@@ -55,7 +55,7 @@ service VideoCollection {
       get: "/v1/video-collection/{id}",
       body: "*",
     };
-    option (guru.service.annotations.cache) = {
+    option (goguru.annotations.cache) = {
       cachable: false,
     };
   }
@@ -64,7 +64,7 @@ service VideoCollection {
       post: "/v1/video-collection",
       body: "*",
     };
-    option (guru.service.annotations.cache) = {
+    option (goguru.annotations.cache) = {
       cachable: false,
     };
   }
@@ -73,7 +73,7 @@ service VideoCollection {
       patch: "/v1/video-collection/{id}",
       body: "*",
     };
-    option (guru.service.annotations.cache) = {
+    option (goguru.annotations.cache) = {
       cachable: false,
     };
   }
@@ -82,7 +82,7 @@ service VideoCollection {
       put: "/v1/video-collection/{id}",
       body: "*",
     };
-    option (guru.service.annotations.cache) = {
+    option (goguru.annotations.cache) = {
       cachable: false,
     };
   }
@@ -91,7 +91,7 @@ service VideoCollection {
       delete: "/v1/video-collection/{id}",
       body: "*",
     };
-    option (guru.service.annotations.cache) = {
+    option (goguru.annotations.cache) = {
       cachable: false,
     };
   }
@@ -100,7 +100,7 @@ service VideoCollection {
       post: "/v1/video-collection/delete",
       body: "*",
     };
-    option (guru.service.annotations.cache) = {
+    option (goguru.annotations.cache) = {
       cachable: false,
     };
   }

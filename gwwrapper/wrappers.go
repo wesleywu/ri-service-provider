@@ -6,11 +6,11 @@ import (
 	"strings"
 	"time"
 
+	goguruTypes "github.com/castbox/go-guru/pkg/goguru/types"
 	"github.com/gogf/gf/v2/encoding/gjson"
 	"github.com/gogf/gf/v2/frame/g"
 	"github.com/gogf/gf/v2/os/gtime"
 	"github.com/gogf/gf/v2/util/gconv"
-	"github.com/wesleywu/gowing/protobuf/gwtypes"
 	"google.golang.org/protobuf/types/known/anypb"
 	"google.golang.org/protobuf/types/known/timestamppb"
 	"google.golang.org/protobuf/types/known/wrapperspb"
@@ -196,13 +196,13 @@ func AnyString(v string) *anypb.Any {
 }
 
 func AnyDoubleSlice(v []float64) *anypb.Any {
-	valueAny := &gwtypes.DoubleSlice{Value: v}
+	valueAny := &goguruTypes.DoubleSlice{Value: v}
 	result, _ := anypb.New(valueAny)
 	return result
 }
 
 func AnyFloatSlice(v []float32) *anypb.Any {
-	valueAny := &gwtypes.FloatSlice{Value: v}
+	valueAny := &goguruTypes.FloatSlice{Value: v}
 	result, _ := anypb.New(valueAny)
 	return result
 }
@@ -224,43 +224,43 @@ func AnyUIntSlice(v []uint) *anypb.Any {
 }
 
 func AnyInt64Slice(v []int64) *anypb.Any {
-	valueAny := &gwtypes.Int64Slice{Value: v}
+	valueAny := &goguruTypes.Int64Slice{Value: v}
 	result, _ := anypb.New(valueAny)
 	return result
 }
 
 func AnyUInt64Slice(v []uint64) *anypb.Any {
-	valueAny := &gwtypes.UInt64Slice{Value: v}
+	valueAny := &goguruTypes.UInt64Slice{Value: v}
 	result, _ := anypb.New(valueAny)
 	return result
 }
 
 func AnyInt32Slice(v []int32) *anypb.Any {
-	valueAny := &gwtypes.Int32Slice{Value: v}
+	valueAny := &goguruTypes.Int32Slice{Value: v}
 	result, _ := anypb.New(valueAny)
 	return result
 }
 
 func AnyUInt32Slice(v []uint32) *anypb.Any {
-	valueAny := &gwtypes.UInt32Slice{Value: v}
+	valueAny := &goguruTypes.UInt32Slice{Value: v}
 	result, _ := anypb.New(valueAny)
 	return result
 }
 
 func AnyBoolSlice(v []bool) *anypb.Any {
-	valueAny := &gwtypes.BoolSlice{Value: v}
+	valueAny := &goguruTypes.BoolSlice{Value: v}
 	result, _ := anypb.New(valueAny)
 	return result
 }
 
 func AnyStringSlice(v []string) *anypb.Any {
-	valueAny := &gwtypes.StringSlice{Value: v}
+	valueAny := &goguruTypes.StringSlice{Value: v}
 	result, _ := anypb.New(valueAny)
 	return result
 }
 
-func AnyCondition(operator gwtypes.OperatorType, multi gwtypes.MultiType, wildcard gwtypes.WildcardType, value *anypb.Any) *anypb.Any {
-	valueCondition := &gwtypes.Condition{
+func AnyCondition(operator goguruTypes.OperatorType, multi goguruTypes.MultiType, wildcard goguruTypes.WildcardType, value *anypb.Any) *anypb.Any {
+	valueCondition := &goguruTypes.Condition{
 		Operator: operator,
 		Multi:    multi,
 		Wildcard: wildcard,
@@ -344,9 +344,9 @@ func AnySlice(ctx context.Context, any interface{}, tag reflect.StructTag) *anyp
 }
 
 func AnySliceCondition(ctx context.Context, any interface{}, tag reflect.StructTag) *anypb.Any {
-	operator := gwtypes.MustParseOperatorType(tag.Get(TagNameOperator), gwtypes.OperatorType_EQ)
-	multi := gwtypes.MustParseMultiType(tag.Get(TagNameMulti), gwtypes.MultiType_In)
-	wildcard := gwtypes.MustParseWildcardType(tag.Get(TagNameWildcard), gwtypes.WildcardType_None)
+	operator := goguruTypes.MustParseOperatorType(tag.Get(TagNameOperator), goguruTypes.OperatorType_EQ)
+	multi := goguruTypes.MustParseMultiType(tag.Get(TagNameMulti), goguruTypes.MultiType_In)
+	wildcard := goguruTypes.MustParseWildcardType(tag.Get(TagNameWildcard), goguruTypes.WildcardType_None)
 	switch value := any.(type) {
 	case []interface{}:
 		array := make([]string, len(value))
@@ -384,9 +384,9 @@ func AnySliceCondition(ctx context.Context, any interface{}, tag reflect.StructT
 }
 
 func AnyInterfaceCondition(ctx context.Context, any interface{}, tag reflect.StructTag) *anypb.Any {
-	operator := gwtypes.MustParseOperatorType(tag.Get(TagNameOperator), gwtypes.OperatorType_EQ)
-	multi := gwtypes.MustParseMultiType(tag.Get(TagNameMulti), gwtypes.MultiType_Exact)
-	wildcard := gwtypes.MustParseWildcardType(tag.Get(TagNameWildcard), gwtypes.WildcardType_None)
+	operator := goguruTypes.MustParseOperatorType(tag.Get(TagNameOperator), goguruTypes.OperatorType_EQ)
+	multi := goguruTypes.MustParseMultiType(tag.Get(TagNameMulti), goguruTypes.MultiType_Exact)
+	wildcard := goguruTypes.MustParseWildcardType(tag.Get(TagNameWildcard), goguruTypes.WildcardType_None)
 	switch value := any.(type) {
 	case nil:
 		return nil
@@ -415,20 +415,20 @@ func AnyInterfaceCondition(ctx context.Context, any interface{}, tag reflect.Str
 		if strings.HasPrefix(value, ConditionQueryPrefix) && strings.HasSuffix(value, ConditionQuerySuffix) {
 			conditionJson, err := gjson.DecodeToJson(value[9:])
 			if err != nil {
-				g.Log().Warningf(ctx, "Cannot decode %s to gwtypes.Condition", value)
+				g.Log().Warningf(ctx, "Cannot decode %s to goguruTypes.Condition", value)
 				return nil
 			}
-			operatorValue := gwtypes.MustParseOperatorType(conditionJson.Get(FieldNameOperator).String(), gwtypes.OperatorType_EQ)
-			multiValue := gwtypes.MustParseMultiType(conditionJson.Get(FieldNameMulti).String(), gwtypes.MultiType_Exact)
-			wildcardValue := gwtypes.MustParseWildcardType(conditionJson.Get(FieldNameWildcard).String(), gwtypes.WildcardType_None)
+			operatorValue := goguruTypes.MustParseOperatorType(conditionJson.Get(FieldNameOperator).String(), goguruTypes.OperatorType_EQ)
+			multiValue := goguruTypes.MustParseMultiType(conditionJson.Get(FieldNameMulti).String(), goguruTypes.MultiType_Exact)
+			wildcardValue := goguruTypes.MustParseWildcardType(conditionJson.Get(FieldNameWildcard).String(), goguruTypes.WildcardType_None)
 			return AnyCondition(operatorValue, multiValue, wildcardValue, AnyInterface(ctx, conditionJson.Get(FieldNameValue).Interface(), tag))
 		}
 		switch wildcard {
-		case gwtypes.WildcardType_Contains:
+		case goguruTypes.WildcardType_Contains:
 			return AnyCondition(operator, multi, wildcard, AnyString("%"+value+"%"))
-		case gwtypes.WildcardType_StartsWith:
+		case goguruTypes.WildcardType_StartsWith:
 			return AnyCondition(operator, multi, wildcard, AnyString(value+"%"))
-		case gwtypes.WildcardType_EndsWith:
+		case goguruTypes.WildcardType_EndsWith:
 			return AnyCondition(operator, multi, wildcard, AnyString("%"+value))
 		default:
 			return AnyCondition(operator, multi, wildcard, AnyString(value))

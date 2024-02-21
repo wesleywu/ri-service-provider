@@ -9,7 +9,7 @@ package rpc_client
 import (
 	"context"
 	"github.com/castbox/go-guru/pkg/client"
-	"github.com/castbox/go-guru/pkg/guru/service/conf"
+	"github.com/castbox/go-guru/pkg/goguru/conf"
 	"github.com/castbox/go-guru/pkg/util/logger"
 )
 

@@ -3,14 +3,14 @@ version: v1
 deps:
   - remote: buf.build
     owner: castbox
-    repository: guru-service
-    commit: 93239fd5435e4be8b666224bcb27e957
-    digest: shake256:3a2d81060a905c30f78f89e44d9d6cd90b632703a036baddd5f4aff8ab27dd1b1158a85e06d4e498a6145f71df50b4aeec427dc2aa5b2512c6a098a7e86f969c
+    repository: goguru
+    commit: 881e5a483506458196be7761c9b3ccc9
+    digest: shake256:c2449d08cf11f4677be683fcfe2c58311c3d85baf4447de7ec83db0fa7fdf700dff75bba8a970a402d6a6af0db5bb874f74a6bfd1fd815e7484a58fd606c78c4
   - remote: buf.build
     owner: googleapis
     repository: googleapis
-    commit: a86849a25cc04f4dbe9b15ddddfbc488
-    digest: shake256:e19143328f8cbfe13fc226aeee5e63773ca494693a72740a7560664270039a380d94a1344234b88c7691311460df9a9b1c2982190d0a2612eae80368718e1943
+    commit: 7e6f6e774e29406da95bd61cdcdbc8bc
+    digest: shake256:fe43dd2265ea0c07d76bd925eeba612667cf4c948d2ce53d6e367e1b4b3cb5fa69a51e6acb1a6a50d32f894f054a35e6c0406f6808a483f2752e10c866ffbf73
   - remote: buf.build
     owner: kratos
     repository: apis

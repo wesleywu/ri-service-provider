@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"reflect"
 
-	"github.com/wesleywu/gowing/protobuf/gwtypes"
+	goguruTypes "github.com/castbox/go-guru/pkg/goguru/types"
 	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/reflect/protoregistry"
@@ -23,18 +23,46 @@ var (
 
 func init() {
 	types := &protoregistry.Types{}
-	s1 := wrapperspb.StringValue{}
-	_ = types.RegisterMessage(s1.ProtoReflect().Type())
-	b1 := wrapperspb.BoolValue{}
-	_ = types.RegisterMessage(b1.ProtoReflect().Type())
-	i1 := wrapperspb.Int32Value{}
-	_ = types.RegisterMessage(i1.ProtoReflect().Type())
-	s := &gwtypes.StringSlice{}
-	_ = types.RegisterMessage(s.ProtoReflect().Type())
-	b := &gwtypes.BoolSlice{}
-	_ = types.RegisterMessage(b.ProtoReflect().Type())
-	c := &gwtypes.Condition{}
-	_ = types.RegisterMessage(c.ProtoReflect().Type())
+	// register types from wrapperspb package
+	doubleValue := wrapperspb.DoubleValue{}
+	_ = types.RegisterMessage(doubleValue.ProtoReflect().Type())
+	floatValue := wrapperspb.FloatValue{}
+	_ = types.RegisterMessage(floatValue.ProtoReflect().Type())
+	int64Value := wrapperspb.Int64Value{}
+	_ = types.RegisterMessage(int64Value.ProtoReflect().Type())
+	uint64Value := wrapperspb.UInt64Value{}
+	_ = types.RegisterMessage(uint64Value.ProtoReflect().Type())
+	int32Value := wrapperspb.Int32Value{}
+	_ = types.RegisterMessage(int32Value.ProtoReflect().Type())
+	uint32Value := wrapperspb.UInt32Value{}
+	_ = types.RegisterMessage(uint32Value.ProtoReflect().Type())
+	boolValue := wrapperspb.BoolValue{}
+	_ = types.RegisterMessage(boolValue.ProtoReflect().Type())
+	stringValue := wrapperspb.StringValue{}
+	_ = types.RegisterMessage(stringValue.ProtoReflect().Type())
+	bytesValue := wrapperspb.BytesValue{}
+	_ = types.RegisterMessage(bytesValue.ProtoReflect().Type())
+
+	// register types from goguruTypes package
+	doubleSlice := goguruTypes.DoubleSlice{}
+	_ = types.RegisterMessage(doubleSlice.ProtoReflect().Type())
+	floatSlice := goguruTypes.FloatSlice{}
+	_ = types.RegisterMessage(floatSlice.ProtoReflect().Type())
+	int64Slice := goguruTypes.Int64Slice{}
+	_ = types.RegisterMessage(int64Slice.ProtoReflect().Type())
+	uint64Slice := goguruTypes.UInt64Slice{}
+	_ = types.RegisterMessage(uint64Slice.ProtoReflect().Type())
+	int32Slice := goguruTypes.Int32Slice{}
+	_ = types.RegisterMessage(int32Slice.ProtoReflect().Type())
+	uint32Slice := goguruTypes.UInt32Slice{}
+	_ = types.RegisterMessage(uint32Slice.ProtoReflect().Type())
+	boolSlice := goguruTypes.BoolSlice{}
+	_ = types.RegisterMessage(boolSlice.ProtoReflect().Type())
+	stringSlice := goguruTypes.StringSlice{}
+	_ = types.RegisterMessage(stringSlice.ProtoReflect().Type())
+	condition := goguruTypes.Condition{}
+	_ = types.RegisterMessage(condition.ProtoReflect().Type())
+
 	UnmarshalOptions = protojson.UnmarshalOptions{
 		DiscardUnknown: true,
 		Resolver:       types,

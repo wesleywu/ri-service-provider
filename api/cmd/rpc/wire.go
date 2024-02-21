@@ -6,7 +6,7 @@ package main
 import (
 	"context"
 
-	"github.com/castbox/go-guru/pkg/guru/service/conf"
+	conf "github.com/castbox/go-guru/pkg/goguru/conf"
 	"github.com/go-kratos/kratos/v2"
 	"github.com/google/wire"
 	"github.com/wesleywu/ri-service-provider/api/internal/client"

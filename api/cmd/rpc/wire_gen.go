@@ -9,7 +9,7 @@ package main
 import (
 	"context"
 	"github.com/castbox/go-guru/pkg/client"
-	"github.com/castbox/go-guru/pkg/guru/service/conf"
+	"github.com/castbox/go-guru/pkg/goguru/conf"
 	"github.com/castbox/go-guru/pkg/server"
 	"github.com/castbox/go-guru/pkg/util/logger"
 	"github.com/castbox/go-guru/pkg/util/otlp"

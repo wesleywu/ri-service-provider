@@ -4,9 +4,9 @@ import (
 	"context"
 	"errors"
 
+	apiErrors "github.com/castbox/go-guru/pkg/goguru/error"
 	"github.com/castbox/go-guru/pkg/util/appinfo"
 	"github.com/go-kratos/kratos/v2/log"
-	apiErrors "github.com/wesleywu/ri-service-provider/api/errors"
 	p "github.com/wesleywu/ri-service-provider/api/video_collection/v1"
 	"github.com/wesleywu/ri-service-provider/gworm"
 	"go.mongodb.org/mongo-driver/bson"
