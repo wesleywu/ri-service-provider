@@ -10,6 +10,7 @@ import (
 	"github.com/gogf/gf/v2/errors/gerror"
 	"github.com/gogf/gf/v2/frame/g"
 	"github.com/gogf/gf/v2/util/gconv"
+	"github.com/wesleywu/gcontainer/utils/empty"
 	"github.com/wesleywu/ri-service-provider/gwerror"
 	"go.mongodb.org/mongo-driver/bson"
 	"google.golang.org/protobuf/types/known/anypb"
@@ -263,14 +264,14 @@ func (pf *PropertyFilter) getFilter() (*bson.E, error) {
 		return WhereLTE(property, pf.Value), nil
 	case goguruTypes.OperatorType_Like:
 		valueStr := gconv.String(pf.Value)
-		if g.IsEmpty(valueStr) {
+		if empty.IsEmpty(valueStr) {
 			return nil, nil
 		}
 		valueStr = decorateValueStrForWildcard(valueStr, pf.Wildcard)
 		return WhereLike(property, valueStr), nil
 	case goguruTypes.OperatorType_NotLike:
 		valueStr := gconv.String(pf.Value)
-		if g.IsEmpty(valueStr) {
+		if empty.IsEmpty(valueStr) {
 			return nil, nil
 		}
 		valueStr = decorateValueStrForWildcard(valueStr, pf.Wildcard)
@@ -440,7 +441,7 @@ func parsePropertyFilter(ctx context.Context, req interface{}, columnName string
 		return nil, gerror.Newf("Query field kind %s is not supported", t.Kind())
 	case reflect.String:
 		valueString := value.(string)
-		if g.IsEmpty(valueString) {
+		if empty.IsEmpty(valueString) {
 			return nil, nil
 		}
 		if strings.HasPrefix(valueString, ConditionQueryPrefix) && strings.HasSuffix(valueString, ConditionQuerySuffix) {
@@ -538,6 +539,8 @@ func unwrapAnyFilter(columnName string, tag reflect.StructTag, valueAny *anypb.A
 	case *goguruTypes.Int64Slice:
 		return parseFieldSliceFilter(columnName, tag, vt.Value)
 	case *goguruTypes.StringSlice:
+		return parseFieldSliceFilter(columnName, tag, vt.Value)
+	case *goguruTypes.TimestampSlice:
 		return parseFieldSliceFilter(columnName, tag, vt.Value)
 	case *wrapperspb.BoolValue:
 		return parseFieldSingleFilter(columnName, vt.Value)
@@ -677,6 +680,8 @@ func addConditionFilter(columnName string, condition *goguruTypes.Condition) (pf
 		return parseFieldConditionSliceFilter(columnName, condition, v.(*goguruTypes.Int64Slice).Value)
 	case *goguruTypes.StringSlice:
 		return parseFieldConditionSliceFilter(columnName, condition, v.(*goguruTypes.StringSlice).Value)
+	case *goguruTypes.TimestampSlice:
+		return parseFieldConditionSliceFilter(columnName, condition, v.(*goguruTypes.TimestampSlice).Value)
 	case *wrapperspb.BoolValue:
 		return parseFieldConditionSingleFilter(columnName, condition, v.(*wrapperspb.BoolValue).Value)
 	case *wrapperspb.BytesValue:
@@ -854,7 +859,7 @@ func parseFieldConditionSingleFilter(columnName string, condition *goguruTypes.C
 		}, nil
 	case goguruTypes.OperatorType_Like, goguruTypes.OperatorType_NotLike:
 		valueStr := gconv.String(value)
-		if g.IsEmpty(valueStr) {
+		if empty.IsEmpty(valueStr) {
 			return nil, nil
 		}
 		valueStr = decorateValueStrForWildcard(valueStr, condition.Wildcard)

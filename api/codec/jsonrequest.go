@@ -60,6 +60,8 @@ func init() {
 	_ = types.RegisterMessage(boolSlice.ProtoReflect().Type())
 	stringSlice := goguruTypes.StringSlice{}
 	_ = types.RegisterMessage(stringSlice.ProtoReflect().Type())
+	timestampSlice := goguruTypes.TimestampSlice{}
+	_ = types.RegisterMessage(timestampSlice.ProtoReflect().Type())
 	condition := goguruTypes.Condition{}
 	_ = types.RegisterMessage(condition.ProtoReflect().Type())
 
