@@ -93,10 +93,10 @@ func TestCount(t *testing.T) {
 func TestList(t *testing.T) {
 	req := &p.VideoCollectionListReq{
 		Id:          nil,
-		Name:        gwwrapper.AnyCondition(goguruTypes.OperatorType_Like, goguruTypes.MultiType_Exact, goguruTypes.WildcardType_Contains, gwwrapper.AnyString("每日")),
+		Name:        gwwrapper.AnyCondition(goguruTypes.OperatorType_Like, goguruTypes.MultiType_NoMulti, goguruTypes.WildcardType_Contains, gwwrapper.AnyString("每日")),
 		ContentType: gwwrapper.AnyUInt32Slice([]uint32{1, 2}),
 		FilterType:  nil,
-		Count:       gwwrapper.AnyCondition(goguruTypes.OperatorType_GT, goguruTypes.MultiType_Exact, goguruTypes.WildcardType_None, gwwrapper.AnyUInt32(0)),
+		Count:       gwwrapper.AnyCondition(goguruTypes.OperatorType_GT, goguruTypes.MultiType_NoMulti, goguruTypes.WildcardType_NoWildcard, gwwrapper.AnyUInt32(0)),
 		IsOnline:    nil,
 		CreatedAt:   nil,
 		UpdatedAt:   nil,
@@ -117,10 +117,10 @@ func BenchmarkList(b *testing.B) {
 
 	req := &p.VideoCollectionListReq{
 		Id:          nil,
-		Name:        gwwrapper.AnyCondition(goguruTypes.OperatorType_Like, goguruTypes.MultiType_Exact, goguruTypes.WildcardType_Contains, gwwrapper.AnyString("每日")),
+		Name:        gwwrapper.AnyCondition(goguruTypes.OperatorType_Like, goguruTypes.MultiType_NoMulti, goguruTypes.WildcardType_Contains, gwwrapper.AnyString("每日")),
 		ContentType: gwwrapper.AnyUInt32Slice([]uint32{1, 2}),
 		FilterType:  nil,
-		Count:       gwwrapper.AnyCondition(goguruTypes.OperatorType_GT, goguruTypes.MultiType_Exact, goguruTypes.WildcardType_None, gwwrapper.AnyUInt32(0)),
+		Count:       gwwrapper.AnyCondition(goguruTypes.OperatorType_GT, goguruTypes.MultiType_NoMulti, goguruTypes.WildcardType_NoWildcard, gwwrapper.AnyUInt32(0)),
 		IsOnline:    nil,
 		CreatedAt:   nil,
 		UpdatedAt:   nil,

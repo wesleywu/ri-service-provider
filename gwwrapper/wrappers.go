@@ -346,7 +346,7 @@ func AnySlice(ctx context.Context, any interface{}, tag reflect.StructTag) *anyp
 func AnySliceCondition(ctx context.Context, any interface{}, tag reflect.StructTag) *anypb.Any {
 	operator := goguruTypes.MustParseOperatorType(tag.Get(TagNameOperator), goguruTypes.OperatorType_EQ)
 	multi := goguruTypes.MustParseMultiType(tag.Get(TagNameMulti), goguruTypes.MultiType_In)
-	wildcard := goguruTypes.MustParseWildcardType(tag.Get(TagNameWildcard), goguruTypes.WildcardType_None)
+	wildcard := goguruTypes.MustParseWildcardType(tag.Get(TagNameWildcard), goguruTypes.WildcardType_NoWildcard)
 	switch value := any.(type) {
 	case []interface{}:
 		array := make([]string, len(value))
@@ -385,8 +385,8 @@ func AnySliceCondition(ctx context.Context, any interface{}, tag reflect.StructT
 
 func AnyInterfaceCondition(ctx context.Context, any interface{}, tag reflect.StructTag) *anypb.Any {
 	operator := goguruTypes.MustParseOperatorType(tag.Get(TagNameOperator), goguruTypes.OperatorType_EQ)
-	multi := goguruTypes.MustParseMultiType(tag.Get(TagNameMulti), goguruTypes.MultiType_Exact)
-	wildcard := goguruTypes.MustParseWildcardType(tag.Get(TagNameWildcard), goguruTypes.WildcardType_None)
+	multi := goguruTypes.MustParseMultiType(tag.Get(TagNameMulti), goguruTypes.MultiType_NoMulti)
+	wildcard := goguruTypes.MustParseWildcardType(tag.Get(TagNameWildcard), goguruTypes.WildcardType_NoWildcard)
 	switch value := any.(type) {
 	case nil:
 		return nil
@@ -419,8 +419,8 @@ func AnyInterfaceCondition(ctx context.Context, any interface{}, tag reflect.Str
 				return nil
 			}
 			operatorValue := goguruTypes.MustParseOperatorType(conditionJson.Get(FieldNameOperator).String(), goguruTypes.OperatorType_EQ)
-			multiValue := goguruTypes.MustParseMultiType(conditionJson.Get(FieldNameMulti).String(), goguruTypes.MultiType_Exact)
-			wildcardValue := goguruTypes.MustParseWildcardType(conditionJson.Get(FieldNameWildcard).String(), goguruTypes.WildcardType_None)
+			multiValue := goguruTypes.MustParseMultiType(conditionJson.Get(FieldNameMulti).String(), goguruTypes.MultiType_NoMulti)
+			wildcardValue := goguruTypes.MustParseWildcardType(conditionJson.Get(FieldNameWildcard).String(), goguruTypes.WildcardType_NoWildcard)
 			return AnyCondition(operatorValue, multiValue, wildcardValue, AnyInterface(ctx, conditionJson.Get(FieldNameValue).Interface(), tag))
 		}
 		switch wildcard {
