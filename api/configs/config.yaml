@@ -3,6 +3,7 @@ server:
     address: "${HTTP_ADDRESS:0.0.0.0:8080}"
     timeout: "${HTTP_TIMEOUT:300s}"
     middlewares:
+      logging: true
       trace: true
       prometheus: true
       recover: true
@@ -14,6 +15,7 @@ client:
     server_endpoint: "${GRPC_SERVER_ENDPOINT:127.0.0.1:20000}"
     timeout: "${GRPC_TIMEOUT:5s}"
     middlewares:
+      logging: true
       trace: true
       prometheus: true
       recover: true
