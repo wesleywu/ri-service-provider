@@ -123,9 +123,6 @@ func _VideoCollection_List0_HTTP_Handler(srv VideoCollectionHTTPServer) func(ctx
 func _VideoCollection_Get0_HTTP_Handler(srv VideoCollectionHTTPServer) func(ctx http.Context) error {
 	return func(ctx http.Context) error {
 		var in VideoCollectionGetReq
-		if err := ctx.Bind(&in); err != nil {
-			return err
-		}
 		if err := ctx.BindQuery(&in); err != nil {
 			return err
 		}
@@ -220,9 +217,6 @@ func _VideoCollection_Upsert0_HTTP_Handler(srv VideoCollectionHTTPServer) func(c
 func _VideoCollection_Delete0_HTTP_Handler(srv VideoCollectionHTTPServer) func(ctx http.Context) error {
 	return func(ctx http.Context) error {
 		var in VideoCollectionDeleteReq
-		if err := ctx.Bind(&in); err != nil {
-			return err
-		}
 		if err := ctx.BindQuery(&in); err != nil {
 			return err
 		}
@@ -313,10 +307,10 @@ func (c *VideoCollectionHTTPClientImpl) Create(ctx context.Context, in *VideoCol
 func (c *VideoCollectionHTTPClientImpl) Delete(ctx context.Context, in *VideoCollectionDeleteReq, opts ...http.CallOption) (*VideoCollectionDeleteRes, error) {
 	var out VideoCollectionDeleteRes
 	pattern := "/v1/video-collection/{id}"
-	path := binding.EncodeURL(pattern, in, false)
+	path := binding.EncodeURL(pattern, in, true)
 	opts = append(opts, http.Operation(OperationVideoCollectionDelete))
 	opts = append(opts, http.PathTemplate(pattern))
-	err := c.cc.Invoke(ctx, "DELETE", path, in, &out, opts...)
+	err := c.cc.Invoke(ctx, "DELETE", path, nil, &out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -339,10 +333,10 @@ func (c *VideoCollectionHTTPClientImpl) DeleteMulti(ctx context.Context, in *Vid
 func (c *VideoCollectionHTTPClientImpl) Get(ctx context.Context, in *VideoCollectionGetReq, opts ...http.CallOption) (*VideoCollectionGetRes, error) {
 	var out VideoCollectionGetRes
 	pattern := "/v1/video-collection/{id}"
-	path := binding.EncodeURL(pattern, in, false)
+	path := binding.EncodeURL(pattern, in, true)
 	opts = append(opts, http.Operation(OperationVideoCollectionGet))
 	opts = append(opts, http.PathTemplate(pattern))
-	err := c.cc.Invoke(ctx, "GET", path, in, &out, opts...)
+	err := c.cc.Invoke(ctx, "GET", path, nil, &out, opts...)
 	if err != nil {
 		return nil, err
 	}

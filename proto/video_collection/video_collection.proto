@@ -53,7 +53,6 @@ service VideoCollection {
   rpc Get (VideoCollectionGetReq) returns (VideoCollectionGetRes){
     option (google.api.http) = {
       get: "/v1/video-collection/{id}",
-      body: "*",
     };
     option (goguru.annotations.cache) = {
       cachable: false,
@@ -89,7 +88,6 @@ service VideoCollection {
   rpc Delete (VideoCollectionDeleteReq) returns (VideoCollectionDeleteRes){
     option (google.api.http) = {
       delete: "/v1/video-collection/{id}",
-      body: "*",
     };
     option (goguru.annotations.cache) = {
       cachable: false,
