@@ -1,0 +1,25 @@
+server:
+  http:
+    address: "${HTTP_ADDRESS:0.0.0.0:8200}"
+    timeout: "${HTTP_TIMEOUT:300s}"
+    middlewares:
+      logging: true
+      trace: true
+      prometheus: true
+  #      recover: true
+  service_cache:
+    provider: redis
+data:
+  database:
+    type: mongo
+    link: mongodb://gowing:gowing@127.0.0.1:27017/gowing
+    database_name: gowing
+
+log:
+  level: debug
+#  path: logs
+otlp:
+  #  grpc_endpoint: "${OTLP_GRPC_ENDPOINT:localhost:4319}"
+  http_endpoint: "${OTLP_HTTP_ENDPOINT:34.120.15.175}"
+  http_basic_auth_token: "${OTLP_HTTP_AUTH_TOKEN:bWVuZ3llLnd1QGNhc3Rib3guZm06VUxGV3BnQ3ZJNUdDWDhCTA==}"
+  insecure: true

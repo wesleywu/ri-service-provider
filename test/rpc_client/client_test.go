@@ -7,21 +7,24 @@ import (
 	"testing"
 
 	"github.com/castbox/go-guru/pkg/goguru/conf"
+	"github.com/castbox/go-guru/pkg/goguru/query"
 	goguruTypes "github.com/castbox/go-guru/pkg/goguru/types"
+	"github.com/castbox/go-guru/pkg/util/gjson"
 	"github.com/go-kratos/kratos/v2/config"
 	"github.com/go-kratos/kratos/v2/config/env"
 	"github.com/go-kratos/kratos/v2/config/file"
 	"github.com/go-kratos/kratos/v2/log"
-	"github.com/gogf/gf/v2/encoding/gjson"
 	"github.com/stretchr/testify/assert"
-	p "github.com/wesleywu/ri-service-provider/api/video_collection/v1"
-	"github.com/wesleywu/ri-service-provider/gwwrapper"
+	"github.com/stretchr/testify/require"
+	v1 "github.com/wesleywu/ri-service-provider/api/videocollection/service/v1"
+	"github.com/wesleywu/ri-service-provider/app/videocollection/service/enum"
+	p "github.com/wesleywu/ri-service-provider/app/videocollection/service/proto"
 )
 
 var (
 	ctx                   = context.Background()
 	flagconf              string
-	videoCollectionClient p.VideoCollectionClient
+	videoCollectionClient v1.VideoCollectionClient
 	helper                *log.Helper
 )
 
@@ -73,8 +76,8 @@ func TestCount(t *testing.T) {
 
 	req := &p.VideoCollectionCountReq{
 		Id:          nil,
-		Name:        gwwrapper.AnyString("每日推荐视频"),
-		ContentType: gwwrapper.AnyInt32Slice([]int32{1, 2}),
+		Name:        goguruTypes.AnyString("每日推荐视频"),
+		ContentType: goguruTypes.AnyInt32Slice([]int32{1, 2}),
 		FilterType:  nil,
 		Count:       nil,
 		IsOnline:    nil,
@@ -87,28 +90,33 @@ func TestCount(t *testing.T) {
 		panic(err)
 	}
 	helper.Info(gjson.MustEncodeString(res))
-	assert.Equal(t, int64(2), *res.Total)
+	assert.Equal(t, int64(2), res.TotalElements)
 }
 
 func TestList(t *testing.T) {
 	req := &p.VideoCollectionListReq{
-		Id:          nil,
-		Name:        gwwrapper.AnyCondition(goguruTypes.OperatorType_Like, goguruTypes.MultiType_NoMulti, goguruTypes.WildcardType_Contains, gwwrapper.AnyString("每日")),
-		ContentType: gwwrapper.AnyUInt32Slice([]uint32{1, 2}),
+		Id: nil,
+		Name: goguruTypes.AnyCondition(query.NewCondition(
+			goguruTypes.AnyString("每日"), query.WithOperator(query.OperatorType_Like), query.WithWildcard(query.WildcardType_Contains))),
+		ContentType: goguruTypes.AnyUInt32Slice([]uint32{1, 2}),
 		FilterType:  nil,
-		Count:       gwwrapper.AnyCondition(goguruTypes.OperatorType_GT, goguruTypes.MultiType_NoMulti, goguruTypes.WildcardType_NoWildcard, gwwrapper.AnyUInt32(0)),
-		IsOnline:    nil,
-		CreatedAt:   nil,
-		UpdatedAt:   nil,
-		Page:        1,
-		PageSize:    1,
+		Count: goguruTypes.AnyCondition(query.NewCondition(
+			goguruTypes.AnyUInt32(0), query.WithOperator(query.OperatorType_GT))),
+		IsOnline:  nil,
+		CreatedAt: nil,
+		UpdatedAt: nil,
+		PageRequest: &query.PageRequest{
+			Number: 1,
+			Size:   1,
+			Sorts:  nil,
+		},
 	}
 	helper.Info(gjson.MustEncodeString(req))
 	res, err := videoCollectionClient.List(ctx, req)
 	if err != nil {
 		panic(err)
 	}
-	assert.Equal(t, int64(2), res.Total)
+	assert.Equal(t, int64(2), res.PageInfo.TotalElements)
 	assert.Equal(t, 1, len(res.Items))
 	helper.Info(gjson.MustEncodeString(res))
 }
@@ -116,58 +124,65 @@ func TestList(t *testing.T) {
 func BenchmarkList(b *testing.B) {
 
 	req := &p.VideoCollectionListReq{
-		Id:          nil,
-		Name:        gwwrapper.AnyCondition(goguruTypes.OperatorType_Like, goguruTypes.MultiType_NoMulti, goguruTypes.WildcardType_Contains, gwwrapper.AnyString("每日")),
-		ContentType: gwwrapper.AnyUInt32Slice([]uint32{1, 2}),
+		Id: nil,
+		Name: goguruTypes.AnyCondition(query.NewCondition(
+			goguruTypes.AnyString("每日"), query.WithOperator(query.OperatorType_Like), query.WithWildcard(query.WildcardType_Contains))),
+		ContentType: goguruTypes.AnyUInt32Slice([]uint32{1, 2}),
 		FilterType:  nil,
-		Count:       gwwrapper.AnyCondition(goguruTypes.OperatorType_GT, goguruTypes.MultiType_NoMulti, goguruTypes.WildcardType_NoWildcard, gwwrapper.AnyUInt32(0)),
-		IsOnline:    nil,
-		CreatedAt:   nil,
-		UpdatedAt:   nil,
+		Count: goguruTypes.AnyCondition(query.NewCondition(
+			goguruTypes.AnyUInt32(0), query.WithOperator(query.OperatorType_GT))),
+		IsOnline:  nil,
+		CreatedAt: nil,
+		UpdatedAt: nil,
 	}
 	helper.Info(gjson.MustEncodeString(req))
 	res, err := videoCollectionClient.List(ctx, req)
 	if err != nil {
 		panic(err)
 	}
-	assert.Equal(b, int64(2), res.Total)
+	assert.Equal(b, int64(2), res.PageInfo.TotalElements)
 	helper.Info(gjson.MustEncodeString(res))
 }
 
 func TestCreateDeleteOne(t *testing.T) {
-	id := "87104859-5598"
-	_, err := videoCollectionClient.Delete(ctx, &p.VideoCollectionDeleteReq{
-		Id: id,
-	})
-	if err != nil {
-		panic(err)
-	}
-
 	createRes, err := videoCollectionClient.Create(ctx, &p.VideoCollectionCreateReq{
-		Id:          gwwrapper.WrapString(id),
-		Name:        gwwrapper.WrapString("特别长的名称特别长的名称特别长的名称特别长的"),
-		ContentType: gwwrapper.WrapInt32(3),
-		FilterType:  gwwrapper.WrapInt32(4),
-		Count:       gwwrapper.WrapUInt32(401),
-		IsOnline:    gwwrapper.WrapBool(true),
+		Name:        goguruTypes.WrapString("特别长的名称特别长的名称特别长的名称特别长的"),
+		ContentType: goguruTypes.Wrap(enum.ContentType_PortraitVideo),
+		FilterType:  goguruTypes.Wrap(enum.FilterType_Manual),
+		Count:       goguruTypes.WrapUInt32(401),
+		IsOnline:    goguruTypes.WrapBool(true),
 	})
-	if err != nil {
-		panic(err)
-	}
+	require.NoError(t, err)
+	require.Equal(t, int64(1), createRes.InsertedCount)
 	helper.Info(gjson.MustEncodeString(createRes))
+	require.NotNil(t, createRes.InsertedID)
+	id := *createRes.InsertedID
+	helper.Info(id)
 
 	oneRes, err := videoCollectionClient.One(ctx, &p.VideoCollectionOneReq{
-		Id: gwwrapper.AnyString(id),
+		Id: goguruTypes.AnyObjectID(id),
 	})
 	if err != nil {
 		panic(err)
 	}
-	assert.Equal(t, oneRes.Found, true)
+	require.Equal(t, true, oneRes.Found)
+	require.NotNil(t, oneRes.Item)
+	require.NotNil(t, oneRes.Item.Name)
+	require.NotNil(t, oneRes.Item.ContentType)
+	require.NotNil(t, oneRes.Item.FilterType)
+	require.NotNil(t, oneRes.Item.Count)
+	require.NotNil(t, oneRes.Item.IsOnline)
+	require.NotNil(t, oneRes.Item.CreatedAt)
+	require.NotNil(t, oneRes.Item.UpdatedAt)
+	require.Equal(t, "特别长的名称特别长的名称特别长的名称特别长的", *oneRes.Item.Name)
+	require.Equal(t, enum.ContentType_PortraitVideo, *oneRes.Item.ContentType)
+	require.Equal(t, enum.FilterType_Manual, *oneRes.Item.FilterType)
+	require.Equal(t, uint32(401), *oneRes.Item.Count)
+	require.Equal(t, true, *oneRes.Item.IsOnline)
 
-	_, err = videoCollectionClient.Delete(ctx, &p.VideoCollectionDeleteReq{
+	deleteRes, err := videoCollectionClient.Delete(ctx, &p.VideoCollectionDeleteReq{
 		Id: id,
 	})
-	if err != nil {
-		panic(err)
-	}
+	require.NoError(t, err)
+	require.Equal(t, int64(1), deleteRes.DeletedCount)
 }

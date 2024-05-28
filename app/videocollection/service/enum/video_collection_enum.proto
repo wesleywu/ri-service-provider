@@ -1,0 +1,18 @@
+syntax = "proto3";
+
+package proto;
+
+option go_package = "github.com/wesleywu/ri-service-provider/app/videocollection/service/enum;enum";
+
+enum ContentType {
+  TextImage      = 0;  // 图文
+  LandscapeVideo = 1;  // 竖版短视频
+  PortraitVideo  = 2;  // 横版短视频
+}
+
+enum FilterType {
+  Ruled  = 0; // 规则晒喜欢
+  Manual = 1; // 人工
+}
+
+

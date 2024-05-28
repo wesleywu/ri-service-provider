@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"reflect"
 
+	"github.com/castbox/go-guru/pkg/goguru/query"
 	goguruTypes "github.com/castbox/go-guru/pkg/goguru/types"
 	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/proto"
@@ -62,8 +63,12 @@ func init() {
 	_ = types.RegisterMessage(stringSlice.ProtoReflect().Type())
 	timestampSlice := goguruTypes.TimestampSlice{}
 	_ = types.RegisterMessage(timestampSlice.ProtoReflect().Type())
-	condition := goguruTypes.Condition{}
+	condition := query.Condition{}
 	_ = types.RegisterMessage(condition.ProtoReflect().Type())
+	objectID := goguruTypes.ObjectID{}
+	_ = types.RegisterMessage(objectID.ProtoReflect().Type())
+	objectIDSlice := goguruTypes.ObjectIDSlice{}
+	_ = types.RegisterMessage(objectIDSlice.ProtoReflect().Type())
 
 	UnmarshalOptions = protojson.UnmarshalOptions{
 		DiscardUnknown: true,
@@ -83,7 +88,7 @@ func (JsonCodec) Marshal(v interface{}) ([]byte, error) {
 	case json.Marshaler:
 		return m.MarshalJSON()
 	case proto.Message:
-		return MarshalOptions.Marshal(m)
+		return json.Marshal(m)
 	default:
 		return json.Marshal(m)
 	}

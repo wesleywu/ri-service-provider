@@ -6,7 +6,7 @@ server:
       logging: true
       trace: true
       prometheus: true
-      recover: true
+#      recover: true
   service_cache:
     enabled: false
     provider: memory
@@ -18,7 +18,7 @@ client:
       logging: true
       trace: true
       prometheus: true
-      recover: true
+#      recover: true
 data:
   redis:
     address: "127.0.0.1:6379"

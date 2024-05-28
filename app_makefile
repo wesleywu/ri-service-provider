@@ -1,0 +1,90 @@
+GOPATH:=$(shell go env GOPATH)
+VERSION=$(shell git describe --tags --always)
+APP_RELATIVE_PATH=$(shell a=`basename $$PWD` && cd .. && b=`basename $$PWD` && echo $$b/$$a)
+INTERNAL_PROTO_FILES=$(shell find internal -name *.proto)
+API_PROTO_FILES=$(shell cd ../../../api/$(APP_RELATIVE_PATH) && find . -name *.proto)
+KRATOS_VERSION=$(shell go mod graph |grep go-kratos/kratos/v2 |head -n 1 |awk -F '@' '{print $$2}')
+KRATOS=$(GOPATH)/pkg/mod/github.com/go-kratos/kratos/v2@$(KRATOS_VERSION)
+APP_NAME=$(shell echo $(APP_RELATIVE_PATH) | sed -En "s/\//-/p")
+
+.PHONY: init
+# init env
+init:
+	go install google.golang.org/protobuf/cmd/protoc-gen-go@latest
+	go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@latest
+	go install github.com/go-kratos/kratos/cmd/protoc-gen-go-http/v2@latest
+	go install github.com/go-kratos/kratos/cmd/protoc-gen-go-errors/v2@latest
+	go install github.com/google/wire/cmd/wire@latest
+	go install github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-openapiv2@latest
+	go install github.com/bufbuild/buf/cmd/buf@latest
+	go install github.com/srikrsna/protoc-gen-gotag@latest
+
+
+.PHONY: api
+api:
+	cd ../../.. && buf mod update && \
+	buf generate --template app/$(APP_RELATIVE_PATH)/buf.gen-api.yaml --path api/$(APP_RELATIVE_PATH)
+
+.PHONY: internal
+internal:
+	cd ../../.. && buf mod update && \
+	buf generate --template app/$(APP_RELATIVE_PATH)/buf.gen-model.yaml --path app/$(APP_RELATIVE_PATH) && \
+    buf generate --template app/$(APP_RELATIVE_PATH)/buf.gen-tag.yaml --path app/$(APP_RELATIVE_PATH)
+
+.PHONY: generate
+generate:
+	GOWORK=off go generate ./...
+
+.PHONY: build
+# build
+build:
+	mkdir -p bin/ && go build -ldflags "-X main.Version=$(VERSION) -X main.Version=$(TAG)" -o ./bin/ ./...
+
+.PHONY: test
+# test
+test:
+	go test -v ./... -cover
+
+.PHONY: run
+run:
+	go run -ldflags="-X main.Name=$(APP_NAME) -X main.Version=$(TAG)" ./cmd/server/...
+
+.PHONY: ent
+ent:
+	cd internal/data/ && ent generate ./ent/schema
+
+.PHONY: docker
+docker:
+	cd ../../../ && docker build -f deploy/Dockerfile --build-arg APP_NAME=$(APP_NAME) --build-arg TAG=$(TAG) --build-arg APP_RELATIVE_PATH=$(APP_RELATIVE_PATH) -t $(IMAGE):$(TAG) . && docker push $(IMAGE):$(TAG)
+
+.PHONY: deploy
+deploy:
+	IMAGE=${IMAGE} TAG=${TAG} APP_ENV=${APP_ENV} NAMESPACE=${NAMESPACE} PROJECT=$(PROJECT)  APP_NAME=$(APP_NAME) envsubst  < ../../../deploy/k8s/${APP_NAME}-deployment.yaml | kubectl apply -f -
+
+.PHONY: configmap
+configmap:
+	kubectl create configmap ${PROJECT}-${APP_NAME}-config --from-file=configs/config.${APP_ENV}.yaml -n ${NAMESPACE} --dry-run=client -o yaml | kubectl apply -f -
+
+
+.PHONY: all
+# generate all
+all: api generate build test
+
+# show help
+help:
+	@echo ''
+	@echo 'Usage:'
+	@echo ' make [target]'
+	@echo ''
+	@echo 'Targets:'
+	@awk '/^[a-zA-Z\-\_0-9]+:/ { \
+	helpMessage = match(lastLine, /^# (.*)/); \
+		if (helpMessage) { \
+			helpCommand = substr($$1, 0, index($$1, ":")-1); \
+			helpMessage = substr(lastLine, RSTART + 2, RLENGTH); \
+			printf "\033[36m%-22s\033[0m %s\n", helpCommand,helpMessage; \
+		} \
+	} \
+	{ lastLine = $$0 }' $(MAKEFILE_LIST)
+
+.DEFAULT_GOAL := help
