@@ -9,6 +9,7 @@ import (
 	"github.com/castbox/go-guru/pkg/middleware/servicecache"
 	"github.com/castbox/go-guru/pkg/server"
 	"github.com/castbox/go-guru/pkg/util/appinfo"
+	"github.com/castbox/go-guru/pkg/util/codec"
 	"github.com/castbox/go-guru/pkg/util/logger"
 	"github.com/castbox/go-guru/pkg/util/mongodb"
 	"github.com/castbox/go-guru/pkg/util/otlp"
@@ -23,7 +24,6 @@ import (
 	"github.com/go-kratos/kratos/v2/transport/http"
 	"github.com/google/wire"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
-	"github.com/wesleywu/ri-service-provider/api/codec"
 	"github.com/wesleywu/ri-service-provider/app/videocollection/service/internal/service"
 )
 

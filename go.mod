@@ -9,7 +9,7 @@ require (
 	github.com/pkg/errors v0.9.1
 	github.com/prometheus/client_golang v1.19.1
 	github.com/rs/zerolog v1.32.0
-	github.com/srikrsna/protoc-gen-gotag v0.6.2
+	github.com/srikrsna/protoc-gen-gotag v1.0.0
 	github.com/stretchr/testify v1.9.0
 	go.mongodb.org/mongo-driver v1.15.0
 	google.golang.org/genproto/googleapis/api v0.0.0-20240415180920-8c6c420018be
@@ -17,9 +17,7 @@ require (
 	google.golang.org/protobuf v1.34.1
 )
 
-replace (
-	github.com/castbox/go-guru => ../go-guru
-)
+replace github.com/castbox/go-guru => ../go-guru
 
 require (
 	github.com/beorn7/perks v1.0.1 // indirect
