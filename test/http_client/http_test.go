@@ -8,10 +8,12 @@ import (
 	"time"
 
 	"github.com/castbox/go-guru/pkg/goguru/conf"
+	"github.com/castbox/go-guru/pkg/goguru/types"
 	"github.com/castbox/go-guru/pkg/server"
 	"github.com/castbox/go-guru/pkg/util/gjson"
 	"github.com/castbox/go-guru/pkg/util/httpclient"
 	"github.com/castbox/go-guru/pkg/util/logger"
+	"github.com/castbox/go-guru/pkg/util/sqids"
 	"github.com/rs/zerolog"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -102,7 +104,7 @@ func TestListByCondition(t *testing.T) {
 	url := baseUrl + "/list"
 	data := `{
 				"name": {
-					"@type":"goguru.types.Condition",
+					"@type":"goguru.query.Condition",
 					"operator": "Like",
 					"wildcard": "StartsWith",
 					"value": {
@@ -111,7 +113,7 @@ func TestListByCondition(t *testing.T) {
 					}
 				},
 				"count": {
-					"@type":"goguru.types.Condition",
+					"@type":"goguru.query.Condition",
 					"operator": "GT",
 					"value": {
 						"@type":"google.protobuf.Int32Value",
@@ -168,7 +170,7 @@ func TestCreate(t *testing.T) {
 	require.Equal(t, int64(1), createRes.Data.InsertedCount)
 	insertedID := *createRes.Data.InsertedID
 
-	url = fmt.Sprintf("%s/%s", baseUrl, insertedID)
+	url = fmt.Sprintf("%s/%s", baseUrl, insertedID.Value)
 	httpRes, err = client.DeleteWithHeaders(url, commonHeaders, "", 0)
 	require.NoError(t, err)
 	require.NotNil(t, httpRes)
@@ -254,7 +256,7 @@ func TestDeleteMulti(t *testing.T) {
 	url := baseUrl + "/delete"
 	data := `{
 				"name": {
-					"@type":"goguru.types.Condition",
+					"@type":"goguru.query.Condition",
 					"operator": "Equals",
 					"value": {
 						"@type":"google.protobuf.StringValue",
@@ -279,10 +281,12 @@ func TestVideoCollection_Create_One_Count_List_DeleteMulti(t *testing.T) {
 		countRes    *proto.VideoCollectionCountRes
 		listRes     *proto.VideoCollectionListRes
 		deleteRes   *proto.VideoCollectionDeleteMultiRes
-		insertedID1 string
-		insertedID2 string
+		insertedID1 types.ObjectID
+		insertedID2 types.ObjectID
 		err         error
 	)
+	dateStarted := time.Now()
+
 	// test Create twice
 	url = baseUrl
 	data = fmt.Sprintf(`{
@@ -323,7 +327,7 @@ func TestVideoCollection_Create_One_Count_List_DeleteMulti(t *testing.T) {
 
 	// test One 第1次，命中1条记录
 	url = baseUrl + "/one"
-	data = `{
+	data = fmt.Sprintf(`{
 				"name": {
 					"@type":"google.protobuf.StringValue",
 					"value":"测试视频集01"
@@ -335,8 +339,16 @@ func TestVideoCollection_Create_One_Count_List_DeleteMulti(t *testing.T) {
 				"isOnline": {
 					"@type":"goguru.types.BoolSlice",
 					"value":[true, false]
+				},
+				"createdAt": {
+					"@type":"goguru.query.Condition",
+					"operator": "GTE",
+					"value": {
+						"@type":"google.protobuf.Timestamp",
+						"value":"%s"
+					}
 				}
-			}`
+			}`, dateStarted.Format(time.RFC3339Nano))
 	httpRes, err = client.PostWithHeaders(url, commonHeaders, data, 0)
 	assert.NoError(t, err)
 	assert.NotNil(t, httpRes)
@@ -348,7 +360,7 @@ func TestVideoCollection_Create_One_Count_List_DeleteMulti(t *testing.T) {
 	assert.Equal(t, uint32(1234), *oneRes.Item.Count)
 
 	// test One 第2次，无命中记录
-	data = `{
+	data = fmt.Sprintf(`{
 				"name": {
 					"@type":"google.protobuf.StringValue",
 					"value":"测试视频集01"
@@ -360,8 +372,16 @@ func TestVideoCollection_Create_One_Count_List_DeleteMulti(t *testing.T) {
 				"isOnline": {
 					"@type":"goguru.types.BoolSlice",
 					"value":[true, false]
+				},
+				"createdAt": {
+					"@type":"goguru.query.Condition",
+					"operator": "GTE",
+					"value": {
+						"@type":"google.protobuf.Timestamp",
+						"value":"%s"
+					}
 				}
-			}`
+			}`, dateStarted.Format(time.RFC3339Nano))
 	httpRes, err = client.PostWithHeaders(url, commonHeaders, data, 0)
 	assert.NoError(t, err)
 	assert.NotNil(t, httpRes)
@@ -373,7 +393,7 @@ func TestVideoCollection_Create_One_Count_List_DeleteMulti(t *testing.T) {
 
 	// test Count 第1次，共2条满足条件的记录
 	url = baseUrl + "/count"
-	data = `{
+	data = fmt.Sprintf(`{
 				"contentType": {
 					"@type":"goguru.types.StringSlice",
 					"value":["LandscapeVideo", "PortraitVideo"]
@@ -381,8 +401,16 @@ func TestVideoCollection_Create_One_Count_List_DeleteMulti(t *testing.T) {
 				"isOnline": {
 					"@type":"goguru.types.BoolSlice",
 					"value":[true, false]
+				},
+				"createdAt": {
+					"@type":"goguru.query.Condition",
+					"operator": "GTE",
+					"value": {
+						"@type":"google.protobuf.Timestamp",
+						"value":"%s"
+					}
 				}
-			}`
+			}`, dateStarted.Format(time.RFC3339Nano))
 	httpRes, err = client.PostWithHeaders(url, commonHeaders, data, 0)
 	assert.NoError(t, err)
 	assert.NotNil(t, httpRes)
@@ -394,12 +422,20 @@ func TestVideoCollection_Create_One_Count_List_DeleteMulti(t *testing.T) {
 
 	// test Count 第2次，共1条满足条件的记录
 	url = baseUrl + "/count"
-	data = `{
+	data = fmt.Sprintf(`{
 				"name": {
 					"@type":"google.protobuf.StringValue",
 					"value":"测试视频集01"
+				},
+				"createdAt": {
+					"@type":"goguru.query.Condition",
+					"operator": "GTE",
+					"value": {
+						"@type":"google.protobuf.Timestamp",
+						"value":"%s"
+					}
 				}
-			}`
+			}`, dateStarted.Format(time.RFC3339Nano))
 	httpRes, err = client.PostWithHeaders(url, commonHeaders, data, 0)
 	assert.NoError(t, err)
 	assert.NotNil(t, httpRes)
@@ -411,7 +447,7 @@ func TestVideoCollection_Create_One_Count_List_DeleteMulti(t *testing.T) {
 
 	// test List 第1次，返回第2页，每页1条记录，当页有1条记录，为满足条件的第2条记录，其 Name 为 "TemplateName456"
 	url = baseUrl + "/list"
-	data = `{
+	data = fmt.Sprintf(`{
 				"contentType": {
 					"@type":"goguru.types.StringSlice",
 					"value":["LandscapeVideo", "PortraitVideo"]
@@ -419,6 +455,14 @@ func TestVideoCollection_Create_One_Count_List_DeleteMulti(t *testing.T) {
 				"isOnline": {
 					"@type":"goguru.types.BoolSlice",
 					"value":[true, false]
+				},
+				"createdAt": {
+					"@type":"goguru.query.Condition",
+					"operator": "GTE",
+					"value": {
+						"@type":"google.protobuf.Timestamp",
+						"value":"%s"
+					}
 				},
 				"pageRequest": {
 					"number": 2,
@@ -428,7 +472,7 @@ func TestVideoCollection_Create_One_Count_List_DeleteMulti(t *testing.T) {
 						"direction": "Asc"
 					}]
 				}
-			}`
+			}`, dateStarted.Format(time.RFC3339Nano))
 	httpRes, err = client.PostWithHeaders(url, commonHeaders, data, 0)
 	assert.NoError(t, err)
 	assert.NotNil(t, httpRes)
@@ -535,16 +579,9 @@ func TestVideoCollection_Create_One_Count_List_DeleteMulti(t *testing.T) {
 	data = fmt.Sprintf(`{
 				"id": {
 					"@type":"goguru.types.ObjectIDSlice",
-					"value": [
-						{
-							"value": "%s"
-						},
-						{
-							"value": "%s"
-						}
-					]
+					"value": ["%s","%s"]
 				}
-			}`, insertedID1, insertedID2)
+			}`, sqids.EncodeObjectID(insertedID1.Value), sqids.EncodeObjectID(insertedID2.Value))
 	httpRes, err = client.PostWithHeaders(url, commonHeaders, data, 0)
 	require.NoError(t, err)
 	require.NotNil(t, httpRes)
@@ -555,7 +592,7 @@ func TestVideoCollection_Create_One_Count_List_DeleteMulti(t *testing.T) {
 	assert.Equal(t, int64(2), deleteRes.DeletedCount)
 
 	// test Delete 删除0条记录，因为之前的 deleteMulti 已经删除过了
-	url = baseUrl + "/" + insertedID1
+	url = baseUrl + "/" + insertedID1.Value
 	//data = fmt.Sprintf(`{
 	//			"id": {
 	//				"@type":"goguru.types.ObjectID",

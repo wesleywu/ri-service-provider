@@ -6,6 +6,7 @@ import (
 	"time"
 
 	guruErrors "github.com/castbox/go-guru/pkg/goguru/error"
+	"github.com/castbox/go-guru/pkg/goguru/types"
 	"github.com/castbox/go-guru/pkg/util/mongodb/filters"
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/pkg/errors"
@@ -33,7 +34,7 @@ func (s *UpsertLogic) Upsert(ctx context.Context, req *p.VideoCollectionUpsertRe
 	var (
 		filter       *bson.D
 		updateResult *mongo.UpdateResult
-		upsertedId   *string
+		upsertedId   *types.ObjectID
 		err          error
 	)
 	if req.Id == "" {
@@ -65,7 +66,9 @@ func (s *UpsertLogic) Upsert(ctx context.Context, req *p.VideoCollectionUpsertRe
 	message := "更新记录成功"
 	if updateResult.UpsertedID != nil {
 		upsertedIdHex := updateResult.UpsertedID.(primitive.ObjectID).Hex()
-		upsertedId = &upsertedIdHex
+		upsertedId = &types.ObjectID{
+			Value: upsertedIdHex,
+		}
 		message = "插入记录成功"
 	}
 	return &p.VideoCollectionUpsertRes{

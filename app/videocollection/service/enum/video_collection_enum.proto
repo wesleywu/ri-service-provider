@@ -11,7 +11,7 @@ enum ContentType {
 }
 
 enum FilterType {
-  Ruled  = 0; // 规则晒喜欢
+  Ruled  = 0; // 规则筛选
   Manual = 1; // 人工
 }
 

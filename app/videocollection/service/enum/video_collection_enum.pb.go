@@ -72,7 +72,7 @@ func (ContentType) EnumDescriptor() ([]byte, []int) {
 type FilterType int32
 
 const (
-	FilterType_Ruled  FilterType = 0 // 规则晒喜欢
+	FilterType_Ruled  FilterType = 0 // 规则筛选
 	FilterType_Manual FilterType = 1 // 人工
 )
 

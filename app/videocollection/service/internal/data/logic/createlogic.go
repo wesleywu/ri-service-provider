@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/castbox/go-guru/pkg/goguru/types"
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/pkg/errors"
 	p "github.com/wesleywu/ri-service-provider/app/videocollection/service/proto"
@@ -34,10 +35,12 @@ func (s *CreateLogic) Create(ctx context.Context, req *p.VideoCollectionCreateRe
 		err = errors.Wrap(err, fmt.Sprintf("创建记录失败: %v", req))
 		return nil, err
 	}
-	var insertedID *string
+	var insertedID *types.ObjectID
 	if res.InsertedID != nil {
 		insertedIdHex := res.InsertedID.(primitive.ObjectID).Hex()
-		insertedID = &insertedIdHex
+		insertedID = &types.ObjectID{
+			Value: insertedIdHex,
+		}
 	}
 	return &p.VideoCollectionCreateRes{
 		Message:       "创建记录成功",
