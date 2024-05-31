@@ -466,7 +466,7 @@
           "type": "string"
         },
         "insertedID": {
-          "$ref": "#/definitions/typesObjectID"
+          "type": "string"
         },
         "insertedCount": {
           "type": "string",
@@ -538,7 +538,7 @@
       "type": "object",
       "properties": {
         "id": {
-          "$ref": "#/definitions/typesObjectID"
+          "type": "string"
         },
         "name": {
           "type": "string"
@@ -570,7 +570,7 @@
       "type": "object",
       "properties": {
         "id": {
-          "$ref": "#/definitions/typesObjectID"
+          "type": "string"
         },
         "name": {
           "type": "string"
@@ -724,7 +724,7 @@
           "type": "string"
         },
         "upsertedID": {
-          "$ref": "#/definitions/typesObjectID"
+          "type": "string"
         },
         "matchedCount": {
           "type": "string",
@@ -934,14 +934,6 @@
             "type": "object",
             "$ref": "#/definitions/protobufAny"
           }
-        }
-      }
-    },
-    "typesObjectID": {
-      "type": "object",
-      "properties": {
-        "value": {
-          "type": "string"
         }
       }
     }

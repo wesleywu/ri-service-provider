@@ -7,7 +7,9 @@ import (
 
 	guruErrors "github.com/castbox/go-guru/pkg/goguru/error"
 	"github.com/castbox/go-guru/pkg/goguru/types"
+	"github.com/castbox/go-guru/pkg/util/mongodb/codecs"
 	"github.com/castbox/go-guru/pkg/util/mongodb/filters"
+	"github.com/castbox/go-guru/pkg/util/sqids"
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/pkg/errors"
 	p "github.com/wesleywu/ri-service-provider/app/videocollection/service/proto"
@@ -34,7 +36,7 @@ func (s *UpsertLogic) Upsert(ctx context.Context, req *p.VideoCollectionUpsertRe
 	var (
 		filter       *bson.D
 		updateResult *mongo.UpdateResult
-		upsertedId   *types.ObjectID
+		upsertedId   string
 		err          error
 	)
 	if req.Id == "" {
@@ -65,15 +67,15 @@ func (s *UpsertLogic) Upsert(ctx context.Context, req *p.VideoCollectionUpsertRe
 
 	message := "更新记录成功"
 	if updateResult.UpsertedID != nil {
-		upsertedIdHex := updateResult.UpsertedID.(primitive.ObjectID).Hex()
-		upsertedId = &types.ObjectID{
-			Value: upsertedIdHex,
+		upsertedId = updateResult.UpsertedID.(primitive.ObjectID).Hex()
+		if codecs.UseObjectIDObfuscated {
+			upsertedId = sqids.EncodeObjectID(upsertedId)
 		}
 		message = "插入记录成功"
 	}
 	return &p.VideoCollectionUpsertRes{
 		Message:       message,
-		UpsertedID:    upsertedId,
+		UpsertedID:    types.Wrap(upsertedId),
 		MatchedCount:  updateResult.MatchedCount,
 		ModifiedCount: updateResult.ModifiedCount,
 		UpsertedCount: updateResult.UpsertedCount,

@@ -8,12 +8,11 @@ import (
 	"time"
 
 	"github.com/castbox/go-guru/pkg/goguru/conf"
-	"github.com/castbox/go-guru/pkg/goguru/types"
 	"github.com/castbox/go-guru/pkg/server"
-	"github.com/castbox/go-guru/pkg/util/gjson"
+	"github.com/castbox/go-guru/pkg/util/codec"
 	"github.com/castbox/go-guru/pkg/util/httpclient"
 	"github.com/castbox/go-guru/pkg/util/logger"
-	"github.com/castbox/go-guru/pkg/util/sqids"
+	"github.com/go-kratos/kratos/v2/encoding"
 	"github.com/rs/zerolog"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -36,6 +35,7 @@ var (
 		"x-dubbo-http1.1-dubbo-version": []string{"1.0.0"},
 		"x-dubbo-service-protocol":      []string{"triple"},
 	}
+	jsonCodec = encoding.GetCodec(codec.Name)
 )
 
 const id = "01186883-7700"
@@ -47,7 +47,7 @@ func TestList(t *testing.T) {
 	require.NotNil(t, resp)
 	require.Equal(t, 200, resp.StatusCode)
 	res := (*proto.VideoCollectionListRes)(nil)
-	err = gjson.DecodeTo(resp.Body, res)
+	err = jsonCodec.Unmarshal(resp.Body, res)
 	require.NoError(t, err)
 	require.Equal(t, int64(3), res.PageInfo.TotalElements)
 }
@@ -70,7 +70,7 @@ func TestListBySingleValue(t *testing.T) {
 	require.NotNil(t, resp)
 	require.Equal(t, 200, resp.StatusCode)
 	res := (*proto.VideoCollectionListRes)(nil)
-	err = gjson.DecodeTo(resp.Body, res)
+	err = jsonCodec.Unmarshal(resp.Body, res)
 	require.NoError(t, err)
 	require.Equal(t, int64(1), res.PageInfo.TotalElements)
 }
@@ -93,7 +93,7 @@ func TestListBySliceValue(t *testing.T) {
 	require.Equal(t, 200, resp.StatusCode)
 	require.NoError(t, err)
 	res := (*proto.VideoCollectionListRes)(nil)
-	err = gjson.DecodeTo(resp.Body, res)
+	err = jsonCodec.Unmarshal(resp.Body, res)
 	require.NoError(t, err)
 	require.Equal(t, int64(2), res.PageInfo.TotalElements)
 
@@ -127,7 +127,7 @@ func TestListByCondition(t *testing.T) {
 	require.Equal(t, 200, resp.StatusCode)
 	require.NoError(t, err)
 	res := (*proto.VideoCollectionCountRes)(nil)
-	err = gjson.DecodeTo(resp.Body, &res)
+	err = jsonCodec.Unmarshal(resp.Body, &res)
 	require.NoError(t, err)
 	fmt.Println(resp.Body)
 	require.Equal(t, int64(1), res.TotalElements)
@@ -145,7 +145,7 @@ func TestGet(t *testing.T) {
 	require.NoError(t, err)
 	require.Equal(t, 200, getResp.StatusCode)
 	res := (*proto.VideoCollectionGetRes)(nil)
-	err = gjson.DecodeTo(getResp.Body, &res)
+	err = jsonCodec.Unmarshal(getResp.Body, &res)
 	require.Equal(t, uint32(1234), *res.Count)
 	require.Equal(t, false, *res.IsOnline)
 }
@@ -164,19 +164,19 @@ func TestCreate(t *testing.T) {
 	require.NotNil(t, httpRes)
 	require.Equal(t, 200, httpRes.StatusCode)
 	createRes := (*server.ResponseWrapper[proto.VideoCollectionCreateRes])(nil)
-	err = gjson.DecodeTo(httpRes.Body, &createRes)
+	err = jsonCodec.Unmarshal(httpRes.Body, &createRes)
 	require.NoError(t, err)
 	require.NotNil(t, createRes.Data.InsertedID)
 	require.Equal(t, int64(1), createRes.Data.InsertedCount)
 	insertedID := *createRes.Data.InsertedID
 
-	url = fmt.Sprintf("%s/%s", baseUrl, insertedID.Value)
+	url = fmt.Sprintf("%s/%s", baseUrl, insertedID)
 	httpRes, err = client.DeleteWithHeaders(url, commonHeaders, "", 0)
 	require.NoError(t, err)
 	require.NotNil(t, httpRes)
 	require.Equal(t, 200, httpRes.StatusCode)
 	deleteRes := (*server.ResponseWrapper[proto.VideoCollectionDeleteRes])(nil)
-	err = gjson.DecodeTo(httpRes.Body, &deleteRes)
+	err = jsonCodec.Unmarshal(httpRes.Body, &deleteRes)
 	require.NoError(t, err)
 	require.Equal(t, int64(1), deleteRes.Data.DeletedCount)
 }
@@ -215,7 +215,7 @@ func TestUpsert(t *testing.T) {
 	require.NoError(t, err)
 	require.NotNil(t, getResp)
 	res := (*proto.VideoCollectionGetRes)(nil)
-	err = gjson.DecodeTo(getResp.Body, &res)
+	err = jsonCodec.Unmarshal(getResp.Body, &res)
 	require.Equal(t, uint32(1234), *res.Count)
 	require.Equal(t, true, *res.IsOnline)
 
@@ -236,7 +236,7 @@ func TestUpsert(t *testing.T) {
 	getResp, err = client.GetWithHeaders(url, commonHeaders, 0)
 	require.NoError(t, err)
 	require.NotNil(t, getResp)
-	err = gjson.DecodeTo(getResp.Body, &res)
+	err = jsonCodec.Unmarshal(getResp.Body, &res)
 	require.Equal(t, uint32(1235), *res.Count)
 	require.Equal(t, false, *res.IsOnline)
 
@@ -281,8 +281,8 @@ func TestVideoCollection_Create_One_Count_List_DeleteMulti(t *testing.T) {
 		countRes    *proto.VideoCollectionCountRes
 		listRes     *proto.VideoCollectionListRes
 		deleteRes   *proto.VideoCollectionDeleteMultiRes
-		insertedID1 types.ObjectID
-		insertedID2 types.ObjectID
+		insertedID1 string
+		insertedID2 string
 		err         error
 	)
 	dateStarted := time.Now()
@@ -301,7 +301,8 @@ func TestVideoCollection_Create_One_Count_List_DeleteMulti(t *testing.T) {
 	assert.NotNil(t, httpRes)
 	assert.Equal(t, 200, httpRes.StatusCode)
 	createRes = (*proto.VideoCollectionCreateRes)(nil)
-	err = gjson.DecodeTo(httpRes.Body, &createRes)
+	err = jsonCodec.Unmarshal(httpRes.Body, &createRes)
+	//err = jsonCodec.Unmarshal(httpRes.Body, &createRes)
 	assert.NoError(t, err)
 	assert.NotNil(t, createRes.InsertedID)
 	assert.Equal(t, int64(1), createRes.InsertedCount)
@@ -319,7 +320,7 @@ func TestVideoCollection_Create_One_Count_List_DeleteMulti(t *testing.T) {
 	assert.NotNil(t, httpRes)
 	assert.Equal(t, 200, httpRes.StatusCode)
 	createRes = (*proto.VideoCollectionCreateRes)(nil)
-	err = gjson.DecodeTo(httpRes.Body, &createRes)
+	err = jsonCodec.Unmarshal(httpRes.Body, &createRes)
 	assert.NoError(t, err)
 	assert.NotNil(t, createRes.InsertedID)
 	assert.Equal(t, int64(1), createRes.InsertedCount)
@@ -354,7 +355,7 @@ func TestVideoCollection_Create_One_Count_List_DeleteMulti(t *testing.T) {
 	assert.NotNil(t, httpRes)
 	assert.Equal(t, 200, httpRes.StatusCode)
 	oneRes = (*proto.VideoCollectionOneRes)(nil)
-	err = gjson.DecodeTo(httpRes.Body, &oneRes)
+	err = jsonCodec.Unmarshal(httpRes.Body, &oneRes)
 	assert.NoError(t, err)
 	assert.Equal(t, true, oneRes.Found)
 	assert.Equal(t, uint32(1234), *oneRes.Item.Count)
@@ -387,7 +388,7 @@ func TestVideoCollection_Create_One_Count_List_DeleteMulti(t *testing.T) {
 	assert.NotNil(t, httpRes)
 	assert.Equal(t, 200, httpRes.StatusCode)
 	oneRes = (*proto.VideoCollectionOneRes)(nil)
-	err = gjson.DecodeTo(httpRes.Body, &oneRes)
+	err = jsonCodec.Unmarshal(httpRes.Body, &oneRes)
 	assert.NoError(t, err)
 	assert.Equal(t, false, oneRes.Found)
 
@@ -416,7 +417,7 @@ func TestVideoCollection_Create_One_Count_List_DeleteMulti(t *testing.T) {
 	assert.NotNil(t, httpRes)
 	assert.Equal(t, 200, httpRes.StatusCode)
 	countRes = (*proto.VideoCollectionCountRes)(nil)
-	err = gjson.DecodeTo(httpRes.Body, &countRes)
+	err = jsonCodec.Unmarshal(httpRes.Body, &countRes)
 	assert.NoError(t, err)
 	assert.Equal(t, int64(2), countRes.TotalElements)
 
@@ -441,7 +442,7 @@ func TestVideoCollection_Create_One_Count_List_DeleteMulti(t *testing.T) {
 	assert.NotNil(t, httpRes)
 	assert.Equal(t, 200, httpRes.StatusCode)
 	countRes = (*proto.VideoCollectionCountRes)(nil)
-	err = gjson.DecodeTo(httpRes.Body, &countRes)
+	err = jsonCodec.Unmarshal(httpRes.Body, &countRes)
 	assert.NoError(t, err)
 	assert.Equal(t, int64(1), countRes.TotalElements)
 
@@ -478,7 +479,7 @@ func TestVideoCollection_Create_One_Count_List_DeleteMulti(t *testing.T) {
 	assert.NotNil(t, httpRes)
 	assert.Equal(t, 200, httpRes.StatusCode)
 	listRes = (*proto.VideoCollectionListRes)(nil)
-	err = gjson.DecodeTo(httpRes.Body, &listRes)
+	err = jsonCodec.Unmarshal(httpRes.Body, &listRes)
 	assert.NoError(t, err)
 	assert.Equal(t, int64(2), listRes.PageInfo.Number)
 	assert.Equal(t, int64(2), listRes.PageInfo.TotalElements)
@@ -581,18 +582,18 @@ func TestVideoCollection_Create_One_Count_List_DeleteMulti(t *testing.T) {
 					"@type":"goguru.types.ObjectIDSlice",
 					"value": ["%s","%s"]
 				}
-			}`, sqids.EncodeObjectID(insertedID1.Value), sqids.EncodeObjectID(insertedID2.Value))
+			}`, insertedID1, insertedID2)
 	httpRes, err = client.PostWithHeaders(url, commonHeaders, data, 0)
 	require.NoError(t, err)
 	require.NotNil(t, httpRes)
 	require.Equal(t, 200, httpRes.StatusCode)
 	deleteRes = (*proto.VideoCollectionDeleteMultiRes)(nil)
-	err = gjson.DecodeTo(httpRes.Body, &deleteRes)
+	err = jsonCodec.Unmarshal(httpRes.Body, &deleteRes)
 	assert.NoError(t, err)
 	assert.Equal(t, int64(2), deleteRes.DeletedCount)
 
 	// test Delete 删除0条记录，因为之前的 deleteMulti 已经删除过了
-	url = baseUrl + "/" + insertedID1.Value
+	url = baseUrl + "/" + insertedID1
 	//data = fmt.Sprintf(`{
 	//			"id": {
 	//				"@type":"goguru.types.ObjectID",
@@ -606,7 +607,7 @@ func TestVideoCollection_Create_One_Count_List_DeleteMulti(t *testing.T) {
 	require.NotNil(t, httpRes)
 	require.Equal(t, 200, httpRes.StatusCode)
 	deleteRes = (*proto.VideoCollectionDeleteMultiRes)(nil)
-	err = gjson.DecodeTo(httpRes.Body, &deleteRes)
+	err = jsonCodec.Unmarshal(httpRes.Body, &deleteRes)
 	assert.NoError(t, err)
 	assert.Equal(t, int64(0), deleteRes.DeletedCount)
 

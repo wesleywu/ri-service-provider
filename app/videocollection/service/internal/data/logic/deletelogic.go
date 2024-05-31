@@ -5,7 +5,9 @@ import (
 	"fmt"
 
 	guruErrors "github.com/castbox/go-guru/pkg/goguru/error"
+	"github.com/castbox/go-guru/pkg/util/mongodb/codecs"
 	"github.com/castbox/go-guru/pkg/util/mongodb/filters"
+	"github.com/castbox/go-guru/pkg/util/sqids"
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/pkg/errors"
 	p "github.com/wesleywu/ri-service-provider/app/videocollection/service/proto"
@@ -28,17 +30,28 @@ func NewDeleteLogic(collection *mongo.Collection, helper *log.Helper) *DeleteLog
 
 func (s *DeleteLogic) Delete(ctx context.Context, req *p.VideoCollectionDeleteReq) (*p.VideoCollectionDeleteRes, error) {
 	var (
-		filter *bson.D
-		result *mongo.DeleteResult
-		err    error
+		reqId    string
+		filter   *bson.D
+		result   *mongo.DeleteResult
+		objectID primitive.ObjectID
+		err      error
 	)
 	if req.Id == "" {
 		return nil, guruErrors.ErrorIdValueMissing("主键ID的值为空")
 	}
-	objectID, err := primitive.ObjectIDFromHex(req.Id)
+	if codecs.UseObjectIDObfuscated {
+		reqId, err = sqids.DecodeObjectID(req.Id)
+		if err != nil {
+			return nil, err
+		}
+	} else {
+		reqId = req.Id
+	}
+	objectID, err = primitive.ObjectIDFromHex(reqId)
 	if err != nil {
 		return nil, guruErrors.ErrorIdValueInvalid("主键ID的值 %s 不是合法的 ObjectID Hex 字符串: ", req.Id)
 	}
+
 	filter, err = filters.NewObjectIdFilter(objectID)
 	if err != nil {
 		return nil, err

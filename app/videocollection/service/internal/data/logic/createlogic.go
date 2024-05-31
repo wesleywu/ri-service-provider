@@ -6,6 +6,8 @@ import (
 	"time"
 
 	"github.com/castbox/go-guru/pkg/goguru/types"
+	"github.com/castbox/go-guru/pkg/util/mongodb/codecs"
+	"github.com/castbox/go-guru/pkg/util/sqids"
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/pkg/errors"
 	p "github.com/wesleywu/ri-service-provider/app/videocollection/service/proto"
@@ -35,16 +37,16 @@ func (s *CreateLogic) Create(ctx context.Context, req *p.VideoCollectionCreateRe
 		err = errors.Wrap(err, fmt.Sprintf("创建记录失败: %v", req))
 		return nil, err
 	}
-	var insertedID *types.ObjectID
+	var insertedID string
 	if res.InsertedID != nil {
-		insertedIdHex := res.InsertedID.(primitive.ObjectID).Hex()
-		insertedID = &types.ObjectID{
-			Value: insertedIdHex,
+		insertedID = res.InsertedID.(primitive.ObjectID).Hex()
+		if codecs.UseObjectIDObfuscated {
+			insertedID = sqids.EncodeObjectID(insertedID)
 		}
 	}
 	return &p.VideoCollectionCreateRes{
 		Message:       "创建记录成功",
-		InsertedID:    insertedID,
+		InsertedID:    types.Wrap(insertedID),
 		InsertedCount: 1,
 	}, err
 }
