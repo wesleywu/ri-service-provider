@@ -7,7 +7,6 @@ import (
 
 	guruErrors "github.com/castbox/go-guru/pkg/goguru/error"
 	"github.com/castbox/go-guru/pkg/goguru/types"
-	"github.com/castbox/go-guru/pkg/util/mongodb/codecs"
 	"github.com/castbox/go-guru/pkg/util/mongodb/filters"
 	"github.com/castbox/go-guru/pkg/util/sqids"
 	"github.com/go-kratos/kratos/v2/log"
@@ -21,14 +20,16 @@ import (
 )
 
 type UpsertLogic struct {
-	collection *mongo.Collection
-	helper     *log.Helper
+	collection       *mongo.Collection
+	helper           *log.Helper
+	useIdObfuscating bool
 }
 
-func NewUpsertLogic(collection *mongo.Collection, helper *log.Helper) *UpsertLogic {
+func NewUpsertLogic(collection *mongo.Collection, helper *log.Helper, useIdObfuscating bool) *UpsertLogic {
 	return &UpsertLogic{
-		collection: collection,
-		helper:     helper,
+		collection:       collection,
+		helper:           helper,
+		useIdObfuscating: useIdObfuscating,
 	}
 }
 
@@ -68,7 +69,7 @@ func (s *UpsertLogic) Upsert(ctx context.Context, req *p.VideoCollectionUpsertRe
 	message := "更新记录成功"
 	if updateResult.UpsertedID != nil {
 		upsertedId = updateResult.UpsertedID.(primitive.ObjectID).Hex()
-		if codecs.UseObjectIDObfuscated {
+		if s.useIdObfuscating {
 			upsertedId = sqids.EncodeObjectID(upsertedId)
 		}
 		message = "插入记录成功"

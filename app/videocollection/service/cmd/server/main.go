@@ -39,7 +39,8 @@ var (
 	providerSet = wire.NewSet(
 		logger.NewLogger,
 		logger.NewLoggerHelper,
-		mongodb.NewMongoDatabase,
+		mongodb.NewDefaultMongoOptions,
+		mongodb.NewMongoClient,
 		redis.NewRedisCache,
 		redis.NewRedisLock,
 		servicecache.NewCacheProvider,

@@ -6,7 +6,6 @@ import (
 	"time"
 
 	"github.com/castbox/go-guru/pkg/goguru/types"
-	"github.com/castbox/go-guru/pkg/util/mongodb/codecs"
 	"github.com/castbox/go-guru/pkg/util/sqids"
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/pkg/errors"
@@ -17,14 +16,16 @@ import (
 )
 
 type CreateLogic struct {
-	collection *mongo.Collection
-	helper     *log.Helper
+	collection       *mongo.Collection
+	helper           *log.Helper
+	useIdObfuscating bool
 }
 
-func NewCreateLogic(collection *mongo.Collection, helper *log.Helper) *CreateLogic {
+func NewCreateLogic(collection *mongo.Collection, helper *log.Helper, useIdObfuscating bool) *CreateLogic {
 	return &CreateLogic{
-		collection: collection,
-		helper:     helper,
+		collection:       collection,
+		helper:           helper,
+		useIdObfuscating: useIdObfuscating,
 	}
 }
 
@@ -40,7 +41,7 @@ func (s *CreateLogic) Create(ctx context.Context, req *p.VideoCollectionCreateRe
 	var insertedID string
 	if res.InsertedID != nil {
 		insertedID = res.InsertedID.(primitive.ObjectID).Hex()
-		if codecs.UseObjectIDObfuscated {
+		if s.useIdObfuscating {
 			insertedID = sqids.EncodeObjectID(insertedID)
 		}
 	}

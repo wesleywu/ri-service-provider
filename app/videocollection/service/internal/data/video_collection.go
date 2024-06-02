@@ -3,6 +3,7 @@ package data
 import (
 	"context"
 
+	"github.com/castbox/go-guru/pkg/util/mongodb"
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/wesleywu/ri-service-provider/app/videocollection/service/internal/biz"
 	"github.com/wesleywu/ri-service-provider/app/videocollection/service/internal/data/logic"
@@ -13,15 +14,17 @@ import (
 const collectionNameVideoCollection = "video_collection"
 
 type VideoCollectionRepoImpl struct {
-	collection *mongo.Collection
-	helper     *log.Helper
+	collection       *mongo.Collection
+	helper           *log.Helper
+	useIdObfuscating bool
 }
 
-func NewVideoCollectionRepo(database *mongo.Database, helper *log.Helper) biz.VideoCollectionRepo {
+func NewVideoCollectionRepo(database *mongodb.GMongoClient, helper *log.Helper) biz.VideoCollectionRepo {
 	collection := database.Collection(collectionNameVideoCollection)
 	return &VideoCollectionRepoImpl{
-		collection: collection,
-		helper:     helper,
+		collection:       collection,
+		helper:           helper,
+		useIdObfuscating: true,
 	}
 }
 
@@ -59,7 +62,7 @@ func (s *VideoCollectionRepoImpl) Get(ctx context.Context, req *p.VideoCollectio
 // 包括表中所有字段，支持字段类型自动转换，支持对非主键且可为空字段不赋值
 // 未赋值或赋值为nil的字段将被更新为 NULL 或数据库表指定的DEFAULT
 func (s *VideoCollectionRepoImpl) Create(ctx context.Context, req *p.VideoCollectionCreateReq) (*p.VideoCollectionCreateRes, error) {
-	l := logic.NewCreateLogic(s.collection, s.helper)
+	l := logic.NewCreateLogic(s.collection, s.helper, true)
 	return l.Create(ctx, req)
 }
 
@@ -75,13 +78,13 @@ func (s *VideoCollectionRepoImpl) Update(ctx context.Context, req *p.VideoCollec
 // 支持字段类型自动转换，支持对非主键字段赋值/不赋值
 // 未赋值或赋值为nil的字段不参与更新/插入（即更新时不会修改原记录的字段值）
 func (s *VideoCollectionRepoImpl) Upsert(ctx context.Context, req *p.VideoCollectionUpsertReq) (*p.VideoCollectionUpsertRes, error) {
-	l := logic.NewUpsertLogic(s.collection, s.helper)
+	l := logic.NewUpsertLogic(s.collection, s.helper, true)
 	return l.Upsert(ctx, req)
 }
 
 // Delete 根据主键删除对应记录
 func (s *VideoCollectionRepoImpl) Delete(ctx context.Context, req *p.VideoCollectionDeleteReq) (*p.VideoCollectionDeleteRes, error) {
-	l := logic.NewDeleteLogic(s.collection, s.helper)
+	l := logic.NewDeleteLogic(s.collection, s.helper, true)
 	return l.Delete(ctx, req)
 }
 

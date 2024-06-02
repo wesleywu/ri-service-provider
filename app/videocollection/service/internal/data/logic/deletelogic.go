@@ -5,7 +5,6 @@ import (
 	"fmt"
 
 	guruErrors "github.com/castbox/go-guru/pkg/goguru/error"
-	"github.com/castbox/go-guru/pkg/util/mongodb/codecs"
 	"github.com/castbox/go-guru/pkg/util/mongodb/filters"
 	"github.com/castbox/go-guru/pkg/util/sqids"
 	"github.com/go-kratos/kratos/v2/log"
@@ -17,14 +16,16 @@ import (
 )
 
 type DeleteLogic struct {
-	collection *mongo.Collection
-	helper     *log.Helper
+	collection       *mongo.Collection
+	helper           *log.Helper
+	useIdObfuscating bool
 }
 
-func NewDeleteLogic(collection *mongo.Collection, helper *log.Helper) *DeleteLogic {
+func NewDeleteLogic(collection *mongo.Collection, helper *log.Helper, useIdObfuscating bool) *DeleteLogic {
 	return &DeleteLogic{
-		collection: collection,
-		helper:     helper,
+		collection:       collection,
+		helper:           helper,
+		useIdObfuscating: useIdObfuscating,
 	}
 }
 
@@ -39,7 +40,7 @@ func (s *DeleteLogic) Delete(ctx context.Context, req *p.VideoCollectionDeleteRe
 	if req.Id == "" {
 		return nil, guruErrors.ErrorIdValueMissing("主键ID的值为空")
 	}
-	if codecs.UseObjectIDObfuscated {
+	if s.useIdObfuscating {
 		reqId, err = sqids.DecodeObjectID(req.Id)
 		if err != nil {
 			return nil, err
