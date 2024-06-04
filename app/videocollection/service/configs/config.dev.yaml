@@ -14,6 +14,7 @@ data:
     type: mongo
     link: mongodb://gowing:gowing@127.0.0.1:27017/gowing
     database_name: gowing
+    use_id_obfuscating: false
 
 log:
   level: debug

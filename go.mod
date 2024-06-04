@@ -3,7 +3,7 @@ module github.com/wesleywu/ri-service-provider
 go 1.22
 
 require (
-	github.com/castbox/go-guru v0.1.36
+	github.com/castbox/go-guru v0.2.0-beta.1
 	github.com/go-kratos/kratos/v2 v2.7.3
 	github.com/google/wire v0.6.0
 	github.com/pkg/errors v0.9.1
@@ -12,12 +12,12 @@ require (
 	github.com/srikrsna/protoc-gen-gotag v1.0.0
 	github.com/stretchr/testify v1.9.0
 	go.mongodb.org/mongo-driver v1.15.0
-	google.golang.org/genproto/googleapis/api v0.0.0-20240520151616-dc85e6b867a5
+	google.golang.org/genproto/googleapis/api v0.0.0-20240528184218-531527333157
 	google.golang.org/grpc v1.64.0
 	google.golang.org/protobuf v1.34.1
 )
 
-replace github.com/castbox/go-guru => ../go-guru
+//replace github.com/castbox/go-guru => ../go-guru
 
 require (
 	github.com/beorn7/perks v1.0.1 // indirect
@@ -28,7 +28,7 @@ require (
 	github.com/dgryski/go-rendezvous v0.0.0-20200823014737-9f7001d12a5f // indirect
 	github.com/fsnotify/fsnotify v1.7.0 // indirect
 	github.com/go-kratos/aegis v0.2.0 // indirect
-	github.com/go-kratos/kratos/contrib/log/zerolog/v2 v2.0.0-20240430092255-be624d035565 // indirect
+	github.com/go-kratos/kratos/contrib/log/zerolog/v2 v2.0.0-20240601080717-c0a7935bb120 // indirect
 	github.com/go-kratos/kratos/contrib/metrics/prometheus/v2 v2.0.0-20240322155018-41971ffa647a // indirect
 	github.com/go-logr/logr v1.4.1 // indirect
 	github.com/go-logr/stdr v1.2.2 // indirect
@@ -48,7 +48,7 @@ require (
 	github.com/prometheus/procfs v0.12.0 // indirect
 	github.com/redis/go-redis/extra/rediscmd/v9 v9.0.5 // indirect
 	github.com/redis/go-redis/extra/redisotel/v9 v9.0.5 // indirect
-	github.com/redis/go-redis/v9 v9.5.1 // indirect
+	github.com/redis/go-redis/v9 v9.5.2 // indirect
 	github.com/rs/cors v1.11.0 // indirect
 	github.com/sqids/sqids-go v0.4.1 // indirect
 	github.com/wesleywu/gcontainer v0.9.7 // indirect
@@ -70,7 +70,7 @@ require (
 	golang.org/x/sync v0.7.0 // indirect
 	golang.org/x/sys v0.20.0 // indirect
 	golang.org/x/text v0.15.0 // indirect
-	google.golang.org/genproto/googleapis/rpc v0.0.0-20240515191416-fc5f0ca64291 // indirect
+	google.golang.org/genproto/googleapis/rpc v0.0.0-20240521202816-d264139d666e // indirect
 	gopkg.in/natefinch/lumberjack.v2 v2.2.1 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )

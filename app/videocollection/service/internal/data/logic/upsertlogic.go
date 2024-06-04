@@ -7,7 +7,7 @@ import (
 
 	guruErrors "github.com/castbox/go-guru/pkg/goguru/error"
 	"github.com/castbox/go-guru/pkg/goguru/types"
-	"github.com/castbox/go-guru/pkg/util/mongodb/filters"
+	"github.com/castbox/go-guru/pkg/infra/mongodb/filters"
 	"github.com/castbox/go-guru/pkg/util/sqids"
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/pkg/errors"

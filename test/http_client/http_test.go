@@ -7,18 +7,16 @@ import (
 	"testing"
 	"time"
 
-	"github.com/castbox/go-guru/pkg/goguru/conf"
-	"github.com/castbox/go-guru/pkg/server"
+	httpclient "github.com/castbox/go-guru/pkg/client/http"
+	"github.com/castbox/go-guru/pkg/infra/logger"
+	httpserver "github.com/castbox/go-guru/pkg/server/http"
 	"github.com/castbox/go-guru/pkg/util/codec"
-	"github.com/castbox/go-guru/pkg/util/httpclient"
-	"github.com/castbox/go-guru/pkg/util/logger"
 	"github.com/go-kratos/kratos/v2/encoding"
 	"github.com/rs/zerolog"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"github.com/wesleywu/ri-service-provider/app/videocollection/service/enum"
 	"github.com/wesleywu/ri-service-provider/app/videocollection/service/proto"
-	"google.golang.org/protobuf/types/known/durationpb"
 )
 
 var (
@@ -26,8 +24,8 @@ var (
 	baseUrl   = "http://localhost:8200/v1/video-collection"
 	log       = logger.NewConsoleLogger(zerolog.InfoLevel)
 	logHelper = logger.NewLoggerHelper(ctx, log)
-	client    = httpclient.NewHttpClient(&conf.HttpClient{
-		Timeout: durationpb.New(10 * time.Second),
+	client    = httpclient.NewHttpClient(&httpclient.Configs{
+		Timeout: 10 * time.Second,
 	},
 		logHelper)
 	commonHeaders = &http.Header{
@@ -163,7 +161,7 @@ func TestCreate(t *testing.T) {
 	require.NoError(t, err)
 	require.NotNil(t, httpRes)
 	require.Equal(t, 200, httpRes.StatusCode)
-	createRes := (*server.ResponseWrapper[proto.VideoCollectionCreateRes])(nil)
+	createRes := (*httpserver.ResponseWrapper[proto.VideoCollectionCreateRes])(nil)
 	err = jsonCodec.Unmarshal(httpRes.Body, &createRes)
 	require.NoError(t, err)
 	require.NotNil(t, createRes.Data.InsertedID)
@@ -175,7 +173,7 @@ func TestCreate(t *testing.T) {
 	require.NoError(t, err)
 	require.NotNil(t, httpRes)
 	require.Equal(t, 200, httpRes.StatusCode)
-	deleteRes := (*server.ResponseWrapper[proto.VideoCollectionDeleteRes])(nil)
+	deleteRes := (*httpserver.ResponseWrapper[proto.VideoCollectionDeleteRes])(nil)
 	err = jsonCodec.Unmarshal(httpRes.Body, &deleteRes)
 	require.NoError(t, err)
 	require.Equal(t, int64(1), deleteRes.Data.DeletedCount)
@@ -275,7 +273,7 @@ func TestVideoCollection_Create_One_Count_List_DeleteMulti(t *testing.T) {
 	var (
 		url         string
 		data        string
-		httpRes     *httpclient.HttpResponse
+		httpRes     *httpclient.Response
 		createRes   *proto.VideoCollectionCreateRes
 		oneRes      *proto.VideoCollectionOneRes
 		countRes    *proto.VideoCollectionCountRes

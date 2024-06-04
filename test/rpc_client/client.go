@@ -4,16 +4,16 @@ import (
 	"context"
 	"os"
 
-	"github.com/castbox/go-guru/pkg/client"
-	"github.com/castbox/go-guru/pkg/util/appinfo"
-	"github.com/castbox/go-guru/pkg/util/logger"
+	grpcserver "github.com/castbox/go-guru/pkg/client/grpc"
+	"github.com/castbox/go-guru/pkg/infra/appinfo"
+	"github.com/castbox/go-guru/pkg/infra/logger"
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/google/wire"
 	v1 "github.com/wesleywu/ri-service-provider/api/videocollection/service/v1"
 	"google.golang.org/grpc"
 )
 
-var ProviderSet = wire.NewSet(newAppMetadata, logger.NewLogger, client.NewGrpcConnection, NewClients)
+var ProviderSet = wire.NewSet(newAppMetadata, logger.NewLogger, grpcserver.NewGrpcConnections, NewClients)
 
 type Clients struct {
 	logger          log.Logger

@@ -6,14 +6,14 @@ import (
 	"os"
 
 	"github.com/castbox/go-guru/pkg/goguru/conf"
+	"github.com/castbox/go-guru/pkg/infra/appinfo"
+	"github.com/castbox/go-guru/pkg/infra/logger"
+	"github.com/castbox/go-guru/pkg/infra/mongodb"
+	"github.com/castbox/go-guru/pkg/infra/otlp"
+	"github.com/castbox/go-guru/pkg/infra/redis"
 	"github.com/castbox/go-guru/pkg/middleware/servicecache"
-	"github.com/castbox/go-guru/pkg/server"
-	"github.com/castbox/go-guru/pkg/util/appinfo"
+	httpserver "github.com/castbox/go-guru/pkg/server/http"
 	"github.com/castbox/go-guru/pkg/util/codec"
-	"github.com/castbox/go-guru/pkg/util/logger"
-	"github.com/castbox/go-guru/pkg/util/mongodb"
-	"github.com/castbox/go-guru/pkg/util/otlp"
-	"github.com/castbox/go-guru/pkg/util/redis"
 	"github.com/go-kratos/kratos/v2"
 	"github.com/go-kratos/kratos/v2/config"
 	"github.com/go-kratos/kratos/v2/config/env"
@@ -37,17 +37,21 @@ var (
 	flagconf string
 	// providerSet app related providers
 	providerSet = wire.NewSet(
+		logger.NewConfigsByGuru,
 		logger.NewLogger,
 		logger.NewLoggerHelper,
-		mongodb.NewDefaultMongoOptions,
+		mongodb.NewConfigsByGuru,
 		mongodb.NewMongoClient,
+		redis.NewConfigsByGuru,
 		redis.NewRedisCache,
 		redis.NewRedisLock,
 		servicecache.NewCacheProvider,
+		otlp.NewConfigsByGuru,
 		otlp.NewTracerProvider,
 		useMiddlewares,
-		server.DefaultResponseEncoderFunc,
-		server.NewHTTPServer,
+		httpserver.NewConfigsByGuru,
+		httpserver.DefaultResponseEncoderFunc,
+		httpserver.NewHTTPServer,
 		newAppMetadata,
 		newApp)
 )
@@ -77,7 +81,7 @@ func main() {
 		panic(err)
 	}
 
-	app, cleanup, err := wireApp(ctx, cfg.Server, cfg.Server.ServiceCache, cfg.Data.Database, cfg.Data.Redis, cfg.Log, cfg.Otlp)
+	app, cleanup, err := wireApp(ctx, cfg.Server.Http, cfg.Server.ServiceCache, cfg.Data.Database, cfg.Data.Redis, cfg.Log, cfg.Otlp)
 	if err != nil {
 		log.Fatal(err)
 	}

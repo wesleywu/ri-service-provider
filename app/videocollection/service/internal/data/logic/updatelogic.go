@@ -6,7 +6,7 @@ import (
 	"time"
 
 	guruErrors "github.com/castbox/go-guru/pkg/goguru/error"
-	"github.com/castbox/go-guru/pkg/util/mongodb/filters"
+	"github.com/castbox/go-guru/pkg/infra/mongodb/filters"
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/pkg/errors"
 	p "github.com/wesleywu/ri-service-provider/app/videocollection/service/proto"
