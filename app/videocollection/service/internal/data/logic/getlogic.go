@@ -7,6 +7,7 @@ import (
 
 	guruErrors "github.com/castbox/go-guru/pkg/goguru/error"
 	"github.com/castbox/go-guru/pkg/infra/mongodb/filters"
+	"github.com/castbox/go-guru/pkg/util/sqids"
 	"github.com/go-kratos/kratos/v2/log"
 	pkgErrors "github.com/pkg/errors"
 	p "github.com/wesleywu/ri-service-provider/app/videocollection/service/proto"
@@ -16,27 +17,37 @@ import (
 )
 
 type GetLogic struct {
-	collection *mongo.Collection
-	helper     *log.Helper
+	collection       *mongo.Collection
+	helper           *log.Helper
+	useIdObfuscating bool
 }
 
-func NewGetLogic(collection *mongo.Collection, helper *log.Helper) *GetLogic {
+func NewGetLogic(collection *mongo.Collection, useIdObfuscating bool, helper *log.Helper) *GetLogic {
 	return &GetLogic{
-		collection: collection,
-		helper:     helper,
+		collection:       collection,
+		helper:           helper,
+		useIdObfuscating: useIdObfuscating,
 	}
 }
 
 func (s *GetLogic) Get(ctx context.Context, req *p.VideoCollectionGetReq) (*p.VideoCollectionGetRes, error) {
 	var (
+		reqID  string
 		filter *bson.D
 		err    error
 		item   *p.VideoCollectionGetRes
 	)
-	if req.Id == "" {
+	reqID = req.Id
+	if reqID == "" {
 		return nil, guruErrors.ErrorIdValueMissing("主键ID的值为空")
 	}
-	objectID, err := primitive.ObjectIDFromHex(req.Id)
+	if s.useIdObfuscating {
+		reqID, err = sqids.DecodeObjectID(reqID)
+		if err != nil {
+			return nil, err
+		}
+	}
+	objectID, err := primitive.ObjectIDFromHex(reqID)
 	if err != nil {
 		return nil, guruErrors.ErrorIdValueInvalid("主键ID的值 %s 不是合法的 ObjectID Hex 字符串: ", req.Id)
 	}

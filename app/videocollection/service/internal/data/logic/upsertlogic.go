@@ -25,7 +25,7 @@ type UpsertLogic struct {
 	useIdObfuscating bool
 }
 
-func NewUpsertLogic(collection *mongo.Collection, helper *log.Helper, useIdObfuscating bool) *UpsertLogic {
+func NewUpsertLogic(collection *mongo.Collection, useIdObfuscating bool, helper *log.Helper) *UpsertLogic {
 	return &UpsertLogic{
 		collection:       collection,
 		helper:           helper,
@@ -35,15 +35,23 @@ func NewUpsertLogic(collection *mongo.Collection, helper *log.Helper, useIdObfus
 
 func (s *UpsertLogic) Upsert(ctx context.Context, req *p.VideoCollectionUpsertReq) (*p.VideoCollectionUpsertRes, error) {
 	var (
+		reqID        string
 		filter       *bson.D
 		updateResult *mongo.UpdateResult
 		upsertedId   string
 		err          error
 	)
-	if req.Id == "" {
+	reqID = req.Id
+	if reqID == "" {
 		return nil, guruErrors.ErrorIdValueMissing("主键ID的值为空")
 	}
-	objectID, err := primitive.ObjectIDFromHex(req.Id)
+	if s.useIdObfuscating {
+		reqID, err = sqids.DecodeObjectID(reqID)
+		if err != nil {
+			return nil, err
+		}
+	}
+	objectID, err := primitive.ObjectIDFromHex(reqID)
 	if err != nil {
 		return nil, guruErrors.ErrorIdValueInvalid("主键ID的值 %s 不是合法的 ObjectID Hex 字符串: ", req.Id)
 	}

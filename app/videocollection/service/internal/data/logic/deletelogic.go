@@ -21,7 +21,7 @@ type DeleteLogic struct {
 	useIdObfuscating bool
 }
 
-func NewDeleteLogic(collection *mongo.Collection, helper *log.Helper, useIdObfuscating bool) *DeleteLogic {
+func NewDeleteLogic(collection *mongo.Collection, useIdObfuscating bool, helper *log.Helper) *DeleteLogic {
 	return &DeleteLogic{
 		collection:       collection,
 		helper:           helper,

@@ -21,7 +21,7 @@ type CreateLogic struct {
 	useIdObfuscating bool
 }
 
-func NewCreateLogic(collection *mongo.Collection, helper *log.Helper, useIdObfuscating bool) *CreateLogic {
+func NewCreateLogic(collection *mongo.Collection, useIdObfuscating bool, helper *log.Helper) *CreateLogic {
 	return &CreateLogic{
 		collection:       collection,
 		helper:           helper,
