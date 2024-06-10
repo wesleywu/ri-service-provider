@@ -6,11 +6,10 @@ plugins:
   - plugin: go-grpc
     out: .
     opt: paths=source_relative
-  - plugin: go-http
-    out: .
-    opt: paths=source_relative
   - plugin: go-guru
     out: .
-    opt: paths=source_relative
+    opt:
+      - paths=source_relative
+      - features=rpcinfo
   - plugin: openapiv2
     out: .

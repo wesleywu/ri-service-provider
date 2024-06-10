@@ -16,8 +16,8 @@ import (
 	"github.com/castbox/go-guru/pkg/middleware/servicecache"
 	"github.com/castbox/go-guru/pkg/server/http"
 	"github.com/go-kratos/kratos/v2"
-	"github.com/wesleywu/ri-service-provider/app/videocollection/service/internal/data"
 	"github.com/wesleywu/ri-service-provider/app/videocollection/service/internal/service"
+	"github.com/wesleywu/ri-service-provider/app/videocollection/service/proto"
 )
 
 // Injectors from wire.go:
@@ -65,7 +65,12 @@ func wireApp(contextContext context.Context, server_HTTP *conf.Server_HTTP, serv
 		cleanup()
 		return nil, nil, err
 	}
-	videoCollectionRepo := data.NewVideoCollectionRepo(client, helper)
+	videoCollectionRepo, err := proto.NewVideoCollectionRepo(client, helper)
+	if err != nil {
+		cleanup2()
+		cleanup()
+		return nil, nil, err
+	}
 	videoCollection := service.NewVideoCollectionService(videoCollectionRepo, helper)
 	registerInfo, err := service.RegisterToHTTPServer(server, videoCollection)
 	if err != nil {

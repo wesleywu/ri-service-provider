@@ -3,10 +3,9 @@ module github.com/wesleywu/ri-service-provider
 go 1.22
 
 require (
-	github.com/castbox/go-guru v0.2.0-beta.2
+	github.com/castbox/go-guru v0.2.0-beta.3
 	github.com/go-kratos/kratos/v2 v2.7.3
 	github.com/google/wire v0.6.0
-	github.com/pkg/errors v0.9.1
 	github.com/prometheus/client_golang v1.19.1
 	github.com/rs/zerolog v1.33.0
 	github.com/srikrsna/protoc-gen-gotag v1.0.0
@@ -42,6 +41,7 @@ require (
 	github.com/mattn/go-colorable v0.1.13 // indirect
 	github.com/mattn/go-isatty v0.0.20 // indirect
 	github.com/montanaflynn/stats v0.6.6 // indirect
+	github.com/pkg/errors v0.9.1 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/prometheus/client_model v0.5.0 // indirect
 	github.com/prometheus/common v0.48.0 // indirect

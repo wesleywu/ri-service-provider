@@ -7,7 +7,7 @@ import (
 	"testing"
 
 	"github.com/castbox/go-guru/pkg/goguru/conf"
-	"github.com/castbox/go-guru/pkg/goguru/query"
+	"github.com/castbox/go-guru/pkg/goguru/orm"
 	goguruTypes "github.com/castbox/go-guru/pkg/goguru/types"
 	"github.com/castbox/go-guru/pkg/util/gjson"
 	"github.com/go-kratos/kratos/v2/config"
@@ -96,16 +96,16 @@ func TestCount(t *testing.T) {
 func TestList(t *testing.T) {
 	req := &p.VideoCollectionListReq{
 		Id: nil,
-		Name: goguruTypes.AnyCondition(query.NewCondition(
-			goguruTypes.AnyString("每日"), query.WithOperator(query.OperatorType_Like), query.WithWildcard(query.WildcardType_Contains))),
+		Name: goguruTypes.AnyCondition(orm.NewCondition(
+			goguruTypes.AnyString("每日"), orm.WithOperator(orm.OperatorType_Like), orm.WithWildcard(orm.WildcardType_Contains))),
 		ContentType: goguruTypes.AnyUInt32Slice([]uint32{1, 2}),
 		FilterType:  nil,
-		Count: goguruTypes.AnyCondition(query.NewCondition(
-			goguruTypes.AnyUInt32(0), query.WithOperator(query.OperatorType_GT))),
+		Count: goguruTypes.AnyCondition(orm.NewCondition(
+			goguruTypes.AnyUInt32(0), orm.WithOperator(orm.OperatorType_GT))),
 		IsOnline:  nil,
 		CreatedAt: nil,
 		UpdatedAt: nil,
-		PageRequest: &query.PageRequest{
+		PageRequest: &orm.PageRequest{
 			Number: 1,
 			Size:   1,
 			Sorts:  nil,
@@ -125,12 +125,12 @@ func BenchmarkList(b *testing.B) {
 
 	req := &p.VideoCollectionListReq{
 		Id: nil,
-		Name: goguruTypes.AnyCondition(query.NewCondition(
-			goguruTypes.AnyString("每日"), query.WithOperator(query.OperatorType_Like), query.WithWildcard(query.WildcardType_Contains))),
+		Name: goguruTypes.AnyCondition(orm.NewCondition(
+			goguruTypes.AnyString("每日"), orm.WithOperator(orm.OperatorType_Like), orm.WithWildcard(orm.WildcardType_Contains))),
 		ContentType: goguruTypes.AnyUInt32Slice([]uint32{1, 2}),
 		FilterType:  nil,
-		Count: goguruTypes.AnyCondition(query.NewCondition(
-			goguruTypes.AnyUInt32(0), query.WithOperator(query.OperatorType_GT))),
+		Count: goguruTypes.AnyCondition(orm.NewCondition(
+			goguruTypes.AnyUInt32(0), orm.WithOperator(orm.OperatorType_GT))),
 		IsOnline:  nil,
 		CreatedAt: nil,
 		UpdatedAt: nil,
@@ -149,7 +149,7 @@ func TestCreateDeleteOne(t *testing.T) {
 		Name:        goguruTypes.WrapString("特别长的名称特别长的名称特别长的名称特别长的"),
 		ContentType: goguruTypes.Wrap(enum.ContentType_PortraitVideo),
 		FilterType:  goguruTypes.Wrap(enum.FilterType_Manual),
-		Count:       goguruTypes.WrapUInt32(401),
+		Count:       goguruTypes.WrapInt32(401),
 		IsOnline:    goguruTypes.WrapBool(true),
 	})
 	require.NoError(t, err)

@@ -11,11 +11,11 @@ import "google/api/annotations.proto";
 import "google/protobuf/timestamp.proto";
 import "google/protobuf/any.proto";
 import "tagger/tagger.proto";
-import "goguru/annotations/annotations.proto";
-import "goguru/query/condition.proto";
-import "goguru/query/query.proto";
+import "goguru/cache/annotations.proto";
+import "goguru/orm/condition.proto";
+import "goguru/orm/query.proto";
 import "goguru/types/objectid.proto";
-import "app/videocollection/service/proto/video_collection_repo.proto";
+import "app/videocollection/service/proto/video_collection.proto";
 
 service VideoCollection {
   rpc Count (proto.VideoCollectionCountReq) returns (proto.VideoCollectionCountRes){
@@ -23,7 +23,7 @@ service VideoCollection {
       post: "/v1/video-collection/count",
       body: "*",
     };
-    option (goguru.annotations.cache) = {
+    option (goguru.cache.rule) = {
       cachable: false,
       name: "VideoCollection",
       ttl: "30s",
@@ -35,7 +35,7 @@ service VideoCollection {
       post: "/v1/video-collection/one",
       body: "*",
     };
-    option (goguru.annotations.cache) = {
+    option (goguru.cache.rule) = {
       cachable: false,
       name: "VideoCollection",
       ttl: "30s",
@@ -47,7 +47,7 @@ service VideoCollection {
       post: "/v1/video-collection/list",
       body: "*",
     };
-    option (goguru.annotations.cache) = {
+    option (goguru.cache.rule) = {
       cachable: false,
       name: "VideoCollection",
       ttl: "30s",
@@ -58,7 +58,7 @@ service VideoCollection {
     option (google.api.http) = {
       get: "/v1/video-collection/{id}",
     };
-    option (goguru.annotations.cache) = {
+    option (goguru.cache.rule) = {
       cachable: false,
     };
   }
@@ -67,7 +67,7 @@ service VideoCollection {
       post: "/v1/video-collection",
       body: "*",
     };
-    option (goguru.annotations.cache) = {
+    option (goguru.cache.rule) = {
       cachable: false,
     };
   }
@@ -76,7 +76,7 @@ service VideoCollection {
       patch: "/v1/video-collection/{id}",
       body: "*",
     };
-    option (goguru.annotations.cache) = {
+    option (goguru.cache.rule) = {
       cachable: false,
     };
   }
@@ -85,7 +85,7 @@ service VideoCollection {
       put: "/v1/video-collection/{id}",
       body: "*",
     };
-    option (goguru.annotations.cache) = {
+    option (goguru.cache.rule) = {
       cachable: false,
     };
   }
@@ -93,7 +93,7 @@ service VideoCollection {
     option (google.api.http) = {
       delete: "/v1/video-collection/{id}",
     };
-    option (goguru.annotations.cache) = {
+    option (goguru.cache.rule) = {
       cachable: false,
     };
   }
@@ -102,7 +102,7 @@ service VideoCollection {
       post: "/v1/video-collection/delete",
       body: "*",
     };
-    option (goguru.annotations.cache) = {
+    option (goguru.cache.rule) = {
       cachable: false,
     };
   }

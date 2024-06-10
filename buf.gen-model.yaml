@@ -3,3 +3,8 @@ plugins:
   - plugin: go
     out: .
     opt: paths=source_relative
+  - plugin: go-guru
+    out: .
+    opt:
+      - paths=source_relative
+      - features=setter+repository

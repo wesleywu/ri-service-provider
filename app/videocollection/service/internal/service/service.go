@@ -7,7 +7,7 @@ import (
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/go-kratos/kratos/v2/transport/http"
 	v1 "github.com/wesleywu/ri-service-provider/api/videocollection/service/v1"
-	"github.com/wesleywu/ri-service-provider/app/videocollection/service/internal/biz"
+	p "github.com/wesleywu/ri-service-provider/app/videocollection/service/proto"
 )
 
 // RegisterInfo 用于提供已注册的服务清单，虽然这个意义不大，但如果没有这个 struct 并且被 main.newApp 使用，则无法 wire RegisterToGRPCServer 函数在 App 启动时执行
@@ -21,7 +21,7 @@ func (r *RegisterInfo) String() string {
 
 type VideoCollection struct {
 	v1.UnimplementedVideoCollectionServer
-	repo   biz.VideoCollectionRepo
+	repo   *p.VideoCollectionRepo
 	helper *log.Helper
 }
 
