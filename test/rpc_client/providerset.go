@@ -15,16 +15,22 @@ import (
 	"google.golang.org/grpc"
 )
 
-const clientProfileKey = "video-collection"
+const (
+	grpcClientProfileKey = "video-collection"
+	grpcServerEndpoint   = "127.0.0.1:22000"
+	otlpHttpEndpoint     = "34.120.15.175"
+	otlpBasicAuthToken   = "bWVuZ3llLnd1QGNhc3Rib3guZm06VUxGV3BnQ3ZJNUdDWDhCTA=="
+	otlpInsecure         = true
+)
 
 var ProviderSet = wire.NewSet(
 	newAppMetadata,
-	logger.NewConfigsByGuru,
+	logger.NewConfigs,
 	logger.NewLogger,
 	logger.NewLoggerHelper,
-	grpcclient.NewConfigsByGuru,
+	newGrpcConfigs,
 	grpcclient.NewGrpcConnections,
-	otlp.NewConfigsByGuru,
+	newOtlpConfigs,
 	otlp.NewTracerProvider,
 	NewClients)
 
@@ -42,12 +48,25 @@ func newAppMetadata() *appinfo.AppMetadata {
 	}
 }
 
+func newGrpcConfigs() *grpcclient.Configs {
+	profile := grpcclient.NewProfileDefault(grpcClientProfileKey, grpcServerEndpoint)
+	profile.ApplyLoggingMiddleware(true)
+	profile.ApplyTraceMiddleware(true)
+	profile.ApplyRecoverMiddleware(true)
+	profile.ApplyPrometheusMiddleware(true)
+	return grpcclient.NewConfigs(profile)
+}
+
+func newOtlpConfigs(m *appinfo.AppMetadata) *otlp.Configs {
+	return otlp.NewHttpTpConfigs(m, otlpHttpEndpoint, otlpBasicAuthToken, otlpInsecure)
+}
+
 // NewClients .
 func NewClients(ctx context.Context, conns map[string]*grpc.ClientConn, logger log.Logger) (*Clients, error) {
 	if conns == nil {
 		return nil, errors.New("没有配置grpc client")
 	}
-	if conn, ok := conns[clientProfileKey]; ok {
+	if conn, ok := conns[grpcClientProfileKey]; ok {
 		return &Clients{
 			logger:          logger,
 			VideoCollection: v1.NewVideoCollectionClient(conn),

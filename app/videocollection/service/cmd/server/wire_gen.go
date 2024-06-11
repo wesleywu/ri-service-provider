@@ -25,7 +25,7 @@ import (
 
 func wireApp(contextContext context.Context, server_HTTP *conf.Server_HTTP, server_GRPC *conf.Server_GRPC, server_ServiceCache *conf.Server_ServiceCache, database *conf.Database, confRedis *conf.Redis, log *conf.Log, confOtlp *conf.Otlp) (*kratos.App, func(), error) {
 	appMetadata := newAppMetadata()
-	configs := logger.NewConfigsByGuru(appMetadata, log)
+	configs := logger.NewConfigsByGuru(log)
 	logLogger, err := logger.NewLogger(appMetadata, configs)
 	if err != nil {
 		return nil, nil, err

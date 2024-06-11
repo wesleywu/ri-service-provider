@@ -9,28 +9,21 @@ package rpc_client
 import (
 	"context"
 	"github.com/castbox/go-guru/pkg/client/grpc"
-	"github.com/castbox/go-guru/pkg/goguru/conf"
 	"github.com/castbox/go-guru/pkg/infra/logger"
 	"github.com/castbox/go-guru/pkg/infra/otlp"
 )
 
 // Injectors from wire.go:
 
-func wireClient(contextContext context.Context, client *conf.Client, log *conf.Log, confOtlp *conf.Otlp) (*Clients, func(), error) {
-	configs, err := grpc.NewConfigsByGuru(client)
-	if err != nil {
-		return nil, nil, err
-	}
+func wireClient(contextContext context.Context) (*Clients, func(), error) {
+	configs := newGrpcConfigs()
 	appMetadata := newAppMetadata()
-	loggerConfigs := logger.NewConfigsByGuru(appMetadata, log)
+	loggerConfigs := logger.NewConfigs()
 	logLogger, err := logger.NewLogger(appMetadata, loggerConfigs)
 	if err != nil {
 		return nil, nil, err
 	}
-	otlpConfigs, err := otlp.NewConfigsByGuru(appMetadata, confOtlp)
-	if err != nil {
-		return nil, nil, err
-	}
+	otlpConfigs := newOtlpConfigs(appMetadata)
 	helper := logger.NewLoggerHelper(contextContext, logLogger)
 	tracerProvider, err := otlp.NewTracerProvider(contextContext, appMetadata, otlpConfigs, helper)
 	if err != nil {

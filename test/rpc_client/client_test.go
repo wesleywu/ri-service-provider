@@ -2,57 +2,30 @@ package rpc_client
 
 import (
 	"context"
-	"flag"
 	"os"
 	"testing"
 	"time"
 
-	"github.com/castbox/go-guru/pkg/goguru/conf"
 	"github.com/castbox/go-guru/pkg/goguru/orm"
 	"github.com/castbox/go-guru/pkg/goguru/types"
-	"github.com/go-kratos/kratos/v2/config"
-	"github.com/go-kratos/kratos/v2/config/env"
-	"github.com/go-kratos/kratos/v2/config/file"
-	"github.com/go-kratos/kratos/v2/log"
 	"github.com/stretchr/testify/assert"
 	v1 "github.com/wesleywu/ri-service-provider/api/videocollection/service/v1"
 	"github.com/wesleywu/ri-service-provider/app/videocollection/service/enum"
 	p "github.com/wesleywu/ri-service-provider/app/videocollection/service/proto"
+	"go.opentelemetry.io/otel"
 )
 
 var (
-	ctx                   = context.Background()
-	flagconf              string
-	videoCollectionClient v1.VideoCollectionClient
-	helper                *log.Helper
+	ctx    = context.Background()
+	client v1.VideoCollectionClient
 )
 
 func setupSuite() func(tb *testing.M) {
-	flag.StringVar(&flagconf, "conf", "configs", "config path, eg: -conf config.yaml")
-	flag.Parse()
-	c := config.New(
-		config.WithSource(
-			env.NewSource("GURU_"),
-			file.NewSource(flagconf),
-		),
-	)
-	defer func(c config.Config) {
-		_ = c.Close()
-	}(c)
-
-	if err := c.Load(); err != nil {
-		panic(err)
-	}
-	var cfg conf.Application
-	if err := c.Scan(&cfg); err != nil {
-		panic(err)
-	}
-	clients, cleanup, err := wireClient(ctx, cfg.Client, cfg.Log, cfg.Otlp)
+	clients, cleanup, err := wireClient(ctx)
 	if err != nil {
 		panic(err)
 	}
-	videoCollectionClient = clients.VideoCollection
-	helper = log.NewHelper(clients.logger)
+	client = clients.VideoCollection
 
 	// Return a function to teardown the test
 	return func(t *testing.M) {
@@ -93,11 +66,16 @@ func TestVideoCollectionRepo_All(t *testing.T) {
 		insertedID2    = "qiihWlTCtVz72T9znB9"
 		err            error
 	)
+	// 创建链路追踪
+	tp := otel.GetTracerProvider()
+	tracer := tp.Tracer("ri-service-provider-test")
+	ctx, span := tracer.Start(ctx, "grpc_client_test.TestVideoCollectionRepo_All")
+	defer span.End()
 	// test Delete 删除1条可能之前存在的记录
 	deleteReq = &p.VideoCollectionDeleteReq{
 		Id: insertedID2,
 	}
-	deleteRes, err = videoCollectionClient.Delete(ctx, deleteReq)
+	deleteRes, err = client.Delete(ctx, deleteReq)
 	assert.NoError(t, err)
 
 	dateStarted := time.Now()
@@ -110,7 +88,7 @@ func TestVideoCollectionRepo_All(t *testing.T) {
 		Count:       types.WrapInt32(1234),
 		IsOnline:    types.Wrap(false),
 	}
-	createRes, err = videoCollectionClient.Create(ctx, createReq)
+	createRes, err = client.Create(ctx, createReq)
 	assert.NoError(t, err)
 	assert.NotNil(t, createRes)
 	assert.NotNil(t, createRes.InsertedID)
@@ -126,7 +104,7 @@ func TestVideoCollectionRepo_All(t *testing.T) {
 		Count:       types.WrapInt32(2345),
 		IsOnline:    types.Wrap(true),
 	}
-	upsertRes, err = videoCollectionClient.Upsert(ctx, upsertReq)
+	upsertRes, err = client.Upsert(ctx, upsertReq)
 	assert.NoError(t, err)
 	assert.NotNil(t, upsertRes.UpsertedID)
 	assert.Equal(t, insertedID2, *upsertRes.UpsertedID)
@@ -139,7 +117,7 @@ func TestVideoCollectionRepo_All(t *testing.T) {
 		IsOnline:    types.AnyBoolSlice([]bool{true, false}),
 		CreatedAt:   types.AnyCondition(orm.NewCondition(types.AnyTimestamp(dateStarted), orm.WithOperator(orm.OperatorType_GTE))),
 	}
-	oneRes, err = videoCollectionClient.One(ctx, oneReq)
+	oneRes, err = client.One(ctx, oneReq)
 	assert.NoError(t, err)
 	assert.Equal(t, true, oneRes.Found)
 	assert.Equal(t, int32(1234), *oneRes.Item.Count)
@@ -151,7 +129,7 @@ func TestVideoCollectionRepo_All(t *testing.T) {
 		IsOnline:    types.AnyBoolSlice([]bool{true, false}),
 		CreatedAt:   types.AnyCondition(orm.NewCondition(types.AnyTimestamp(dateStarted), orm.WithOperator(orm.OperatorType_GTE))),
 	}
-	oneRes, err = videoCollectionClient.One(ctx, oneReq)
+	oneRes, err = client.One(ctx, oneReq)
 	assert.NoError(t, err)
 	assert.Equal(t, false, oneRes.Found)
 
@@ -159,7 +137,7 @@ func TestVideoCollectionRepo_All(t *testing.T) {
 	oneReq = &p.VideoCollectionOneReq{
 		Id: types.AnyObjectID(insertedID1),
 	}
-	oneRes, err = videoCollectionClient.One(ctx, oneReq)
+	oneRes, err = client.One(ctx, oneReq)
 	assert.NoError(t, err)
 	assert.Equal(t, true, oneRes.Found)
 	assert.Equal(t, "测试视频集01", *oneRes.Item.Name)
@@ -170,7 +148,7 @@ func TestVideoCollectionRepo_All(t *testing.T) {
 		IsOnline:    types.AnyBoolSlice([]bool{true, false}),
 		CreatedAt:   types.AnyCondition(orm.NewCondition(types.AnyTimestamp(dateStarted), orm.WithOperator(orm.OperatorType_GTE))),
 	}
-	countRes, err = videoCollectionClient.Count(ctx, countReq)
+	countRes, err = client.Count(ctx, countReq)
 	assert.NoError(t, err)
 	assert.Equal(t, int64(2), countRes.TotalElements)
 
@@ -179,7 +157,7 @@ func TestVideoCollectionRepo_All(t *testing.T) {
 		Name:      types.AnyString("测试视频集01"),
 		CreatedAt: types.AnyCondition(orm.NewCondition(types.AnyTimestamp(dateStarted), orm.WithOperator(orm.OperatorType_GTE))),
 	}
-	countRes, err = videoCollectionClient.Count(ctx, countReq)
+	countRes, err = client.Count(ctx, countReq)
 	assert.NoError(t, err)
 	assert.Equal(t, int64(1), countRes.TotalElements)
 
@@ -188,7 +166,7 @@ func TestVideoCollectionRepo_All(t *testing.T) {
 	countReq = &p.VideoCollectionCountReq{
 		CreatedAt: types.AnyCondition(orm.NewCondition(types.AnyTimestampSlice([]time.Time{dateStarted, nextDate}), orm.WithMulti(orm.MultiType_Between))),
 	}
-	countRes, err = videoCollectionClient.Count(ctx, countReq)
+	countRes, err = client.Count(ctx, countReq)
 	assert.NoError(t, err)
 	assert.NoError(t, err)
 	assert.Equal(t, int64(2), countRes.TotalElements)
@@ -209,7 +187,7 @@ func TestVideoCollectionRepo_All(t *testing.T) {
 			},
 		},
 	}
-	listRes, err = videoCollectionClient.List(ctx, listReq)
+	listRes, err = client.List(ctx, listReq)
 	assert.NoError(t, err)
 	assert.Equal(t, int64(2), listRes.PageInfo.Number)
 	assert.Equal(t, int64(2), listRes.PageInfo.TotalElements)
@@ -222,7 +200,7 @@ func TestVideoCollectionRepo_All(t *testing.T) {
 	getReq = &p.VideoCollectionGetReq{
 		Id: insertedID1,
 	}
-	getRes, err = videoCollectionClient.Get(ctx, getReq)
+	getRes, err = client.Get(ctx, getReq)
 	assert.NoError(t, err)
 	assert.NotNil(t, getRes.Name)
 	assert.Equal(t, "测试视频集01", *getRes.Name)
@@ -234,7 +212,7 @@ func TestVideoCollectionRepo_All(t *testing.T) {
 		Count:    types.WrapInt32(3456),
 		IsOnline: types.Wrap(false),
 	}
-	updateRes, err = videoCollectionClient.Update(ctx, updateReq)
+	updateRes, err = client.Update(ctx, updateReq)
 	assert.NoError(t, err)
 	assert.Equal(t, int64(1), updateRes.ModifiedCount)
 
@@ -242,7 +220,7 @@ func TestVideoCollectionRepo_All(t *testing.T) {
 	getReq = &p.VideoCollectionGetReq{
 		Id: insertedID1,
 	}
-	getRes, err = videoCollectionClient.Get(ctx, getReq)
+	getRes, err = client.Get(ctx, getReq)
 	assert.NoError(t, err)
 	assert.NotNil(t, getRes.Name)
 	assert.NotNil(t, getRes.Count)
@@ -258,7 +236,7 @@ func TestVideoCollectionRepo_All(t *testing.T) {
 		Count:    types.WrapInt32(4567),
 		IsOnline: types.Wrap(true),
 	}
-	upsertRes, err = videoCollectionClient.Upsert(ctx, upsertReq)
+	upsertRes, err = client.Upsert(ctx, upsertReq)
 	assert.NoError(t, err)
 	assert.Equal(t, int64(1), updateRes.ModifiedCount)
 
@@ -266,7 +244,7 @@ func TestVideoCollectionRepo_All(t *testing.T) {
 	getReq = &p.VideoCollectionGetReq{
 		Id: insertedID1,
 	}
-	getRes, err = videoCollectionClient.Get(ctx, getReq)
+	getRes, err = client.Get(ctx, getReq)
 	assert.NoError(t, err)
 	assert.NotNil(t, getRes.Name)
 	assert.NotNil(t, getRes.Count)
@@ -279,7 +257,7 @@ func TestVideoCollectionRepo_All(t *testing.T) {
 	deleteMultiReq = &p.VideoCollectionDeleteMultiReq{
 		Id: types.AnyObjectIDSlice([]string{insertedID1, insertedID2}),
 	}
-	deleteMultiRes, err = videoCollectionClient.DeleteMulti(ctx, deleteMultiReq)
+	deleteMultiRes, err = client.DeleteMulti(ctx, deleteMultiReq)
 	assert.NoError(t, err)
 	assert.Equal(t, int64(2), deleteMultiRes.DeletedCount)
 
@@ -287,7 +265,7 @@ func TestVideoCollectionRepo_All(t *testing.T) {
 	deleteReq = &p.VideoCollectionDeleteReq{
 		Id: insertedID1,
 	}
-	deleteRes, err = videoCollectionClient.Delete(ctx, deleteReq)
+	deleteRes, err = client.Delete(ctx, deleteReq)
 	assert.NoError(t, err)
 	assert.Equal(t, int64(0), deleteRes.DeletedCount)
 }

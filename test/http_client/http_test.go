@@ -4,11 +4,14 @@ import (
 	"context"
 	"fmt"
 	"net/http"
+	"os"
 	"testing"
 	"time"
 
 	httpclient "github.com/castbox/go-guru/pkg/client/http"
+	"github.com/castbox/go-guru/pkg/infra/appinfo"
 	"github.com/castbox/go-guru/pkg/infra/logger"
+	"github.com/castbox/go-guru/pkg/infra/otlp"
 	"github.com/castbox/go-guru/pkg/util/codec"
 	"github.com/go-kratos/kratos/v2/encoding"
 	"github.com/rs/zerolog"
@@ -18,22 +21,35 @@ import (
 	"github.com/wesleywu/ri-service-provider/app/videocollection/service/proto"
 )
 
+const (
+	otlpHttpEndpoint   = "34.120.15.175"
+	otlpBasicAuthToken = "bWVuZ3llLnd1QGNhc3Rib3guZm06VUxGV3BnQ3ZJNUdDWDhCTA=="
+	otlpInsecure       = true
+)
+
 var (
-	ctx       = context.Background()
-	baseUrl   = "http://localhost:8200/v1/video-collection"
-	log       = logger.NewConsoleLogger(zerolog.InfoLevel)
-	logHelper = logger.NewLoggerHelper(ctx, log)
-	client    = httpclient.NewHttpClient(&httpclient.Configs{
-		Timeout: 10 * time.Second,
-	},
-		logHelper)
+	ctx           = context.Background()
+	baseUrl       = "http://localhost:8200/v1/video-collection"
+	log           = logger.NewConsoleLogger(zerolog.InfoLevel)
+	logHelper     = logger.NewLoggerHelper(ctx, log)
+	appMetadata   = newAppMetadata()
+	otlpConfigs   = otlp.NewHttpTpConfigs(appMetadata, otlpHttpEndpoint, otlpBasicAuthToken, otlpInsecure)
+	tp, _         = otlp.NewTracerProvider(ctx, appMetadata, otlpConfigs, logHelper)
+	client        = httpclient.NewHttpClient(httpclient.NewConfigs(), tp, logHelper)
 	commonHeaders = &http.Header{
-		"Content-Type":                  []string{"application/json"},
-		"x-dubbo-http1.1-dubbo-version": []string{"1.0.0"},
-		"x-dubbo-service-protocol":      []string{"triple"},
+		"Content-Type": []string{"application/json"},
 	}
 	jsonCodec = encoding.GetCodec(codec.Name)
 )
+
+func newAppMetadata() *appinfo.AppMetadata {
+	hostname, _ := os.Hostname()
+	return &appinfo.AppMetadata{
+		AppName:    "http_client_test",
+		AppVersion: "v0.0.1",
+		HostName:   hostname,
+	}
+}
 
 func TestVideoCollectionRepo_All(t *testing.T) {
 	var (
@@ -53,6 +69,10 @@ func TestVideoCollectionRepo_All(t *testing.T) {
 		insertedID2    = "qiihWlTCtVz72T9znB9"
 		err            error
 	)
+	tracer := tp.Tracer("ri-service-provider-test")
+	_, span := tracer.Start(ctx, "http_client_test.TestVideoCollectionRepo_All")
+	defer span.End()
+
 	// test Delete 删除1条可能之前存在的记录
 	url = baseUrl + "/" + insertedID2
 	httpRes, err = client.DeleteWithHeaders(url, commonHeaders, "", 0)
