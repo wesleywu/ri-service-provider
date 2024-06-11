@@ -16,7 +16,7 @@ require (
 	google.golang.org/protobuf v1.34.1
 )
 
-//replace github.com/castbox/go-guru => ../go-guru
+replace github.com/castbox/go-guru => ../go-guru
 
 require (
 	github.com/beorn7/perks v1.0.1 // indirect

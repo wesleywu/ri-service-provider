@@ -12,6 +12,6 @@ import (
 	"github.com/wesleywu/ri-service-provider/app/videocollection/service"
 )
 
-func wireApp(context.Context, *conf.Server_HTTP, *conf.Server_ServiceCache, *conf.Database, *conf.Redis, *conf.Log, *conf.Otlp) (*kratos.App, func(), error) {
+func wireApp(context.Context, *conf.Server_HTTP, *conf.Server_GRPC, *conf.Server_ServiceCache, *conf.Database, *conf.Redis, *conf.Log, *conf.Otlp) (*kratos.App, func(), error) {
 	panic(wire.Build(service.ProviderSet, providerSet))
 }

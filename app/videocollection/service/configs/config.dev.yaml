@@ -7,6 +7,14 @@ server:
       trace: true
       prometheus: true
   #      recover: true
+  grpc:
+    address: "${GRPC_ADDRESS:0.0.0.0:22000}"
+    timeout: "${GRPC_TIMEOUT:300s}"
+    middlewares:
+      logging: true
+      trace: true
+      prometheus: true
+  #      recover: true
   service_cache:
     provider: redis
 data:

@@ -14,6 +14,7 @@ import (
 	"github.com/castbox/go-guru/pkg/infra/otlp"
 	"github.com/castbox/go-guru/pkg/infra/redis"
 	"github.com/castbox/go-guru/pkg/middleware/servicecache"
+	"github.com/castbox/go-guru/pkg/server/grpc"
 	"github.com/castbox/go-guru/pkg/server/http"
 	"github.com/go-kratos/kratos/v2"
 	"github.com/wesleywu/ri-service-provider/app/videocollection/service/internal/service"
@@ -22,7 +23,7 @@ import (
 
 // Injectors from wire.go:
 
-func wireApp(contextContext context.Context, server_HTTP *conf.Server_HTTP, server_ServiceCache *conf.Server_ServiceCache, database *conf.Database, confRedis *conf.Redis, log *conf.Log, confOtlp *conf.Otlp) (*kratos.App, func(), error) {
+func wireApp(contextContext context.Context, server_HTTP *conf.Server_HTTP, server_GRPC *conf.Server_GRPC, server_ServiceCache *conf.Server_ServiceCache, database *conf.Database, confRedis *conf.Redis, log *conf.Log, confOtlp *conf.Otlp) (*kratos.App, func(), error) {
 	appMetadata := newAppMetadata()
 	configs := logger.NewConfigsByGuru(appMetadata, log)
 	logLogger, err := logger.NewLogger(appMetadata, configs)
@@ -59,6 +60,16 @@ func wireApp(contextContext context.Context, server_HTTP *conf.Server_HTTP, serv
 		cleanup()
 		return nil, nil, err
 	}
+	grpcConfigs, err := grpc.NewConfigsByGuru(server_GRPC)
+	if err != nil {
+		cleanup()
+		return nil, nil, err
+	}
+	grpcServer, err := grpc.NewGRPCServer(contextContext, grpcConfigs, logLogger, tracerProvider, v...)
+	if err != nil {
+		cleanup()
+		return nil, nil, err
+	}
 	mongodbConfigs := mongodb.NewConfigsByGuru(database, tracerProvider)
 	client, cleanup2, err := mongodb.NewMongoClient(contextContext, helper, mongodbConfigs)
 	if err != nil {
@@ -72,13 +83,19 @@ func wireApp(contextContext context.Context, server_HTTP *conf.Server_HTTP, serv
 		return nil, nil, err
 	}
 	videoCollection := service.NewVideoCollectionService(videoCollectionRepo, helper)
-	registerInfo, err := service.RegisterToHTTPServer(server, videoCollection)
+	httpRegisterInfo, err := service.RegisterToHTTPServer(server, videoCollection)
 	if err != nil {
 		cleanup2()
 		cleanup()
 		return nil, nil, err
 	}
-	app, err := newApp(contextContext, appMetadata, logLogger, server, registerInfo)
+	grpcRegisterInfo, err := service.RegisterToGRPCServer(grpcServer, videoCollection)
+	if err != nil {
+		cleanup2()
+		cleanup()
+		return nil, nil, err
+	}
+	app, err := newApp(contextContext, appMetadata, logLogger, server, grpcServer, httpRegisterInfo, grpcRegisterInfo)
 	if err != nil {
 		cleanup2()
 		cleanup()

@@ -12,6 +12,7 @@ import (
 	"github.com/castbox/go-guru/pkg/infra/otlp"
 	"github.com/castbox/go-guru/pkg/infra/redis"
 	"github.com/castbox/go-guru/pkg/middleware/servicecache"
+	grpcserver "github.com/castbox/go-guru/pkg/server/grpc"
 	httpserver "github.com/castbox/go-guru/pkg/server/http"
 	"github.com/castbox/go-guru/pkg/util/codec"
 	"github.com/go-kratos/kratos/v2"
@@ -21,6 +22,7 @@ import (
 	"github.com/go-kratos/kratos/v2/encoding"
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/go-kratos/kratos/v2/middleware"
+	"github.com/go-kratos/kratos/v2/transport/grpc"
 	"github.com/go-kratos/kratos/v2/transport/http"
 	"github.com/google/wire"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
@@ -52,6 +54,8 @@ var (
 		httpserver.NewConfigsByGuru,
 		httpserver.DefaultResponseEncoderFunc,
 		httpserver.NewHTTPServer,
+		grpcserver.NewConfigsByGuru,
+		grpcserver.NewGRPCServer,
 		newAppMetadata,
 		newApp)
 )
@@ -81,7 +85,7 @@ func main() {
 		panic(err)
 	}
 
-	app, cleanup, err := wireApp(ctx, cfg.Server.Http, cfg.Server.ServiceCache, cfg.Data.Database, cfg.Data.Redis, cfg.Log, cfg.Otlp)
+	app, cleanup, err := wireApp(ctx, cfg.Server.Http, cfg.Server.Grpc, cfg.Server.ServiceCache, cfg.Data.Database, cfg.Data.Redis, cfg.Log, cfg.Otlp)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -100,8 +104,9 @@ func newAppMetadata() *appinfo.AppMetadata {
 	}
 }
 
-func newApp(ctx context.Context, m *appinfo.AppMetadata, logger log.Logger, server *http.Server, registerInfo *service.RegisterInfo) (*kratos.App, error) {
-	server.Handle("/metrics", promhttp.Handler())
+func newApp(ctx context.Context, m *appinfo.AppMetadata, logger log.Logger, httpServer *http.Server, grpcServer *grpc.Server,
+	_ *service.HttpRegisterInfo, _ *service.GrpcRegisterInfo) (*kratos.App, error) {
+	httpServer.Handle("/metrics", promhttp.Handler())
 	app := kratos.New(
 		kratos.Context(ctx),
 		kratos.Name(m.HostName),
@@ -109,7 +114,8 @@ func newApp(ctx context.Context, m *appinfo.AppMetadata, logger log.Logger, serv
 		kratos.Metadata(map[string]string{}),
 		kratos.Logger(logger),
 		kratos.Server(
-			server,
+			httpServer,
+			grpcServer,
 		),
 	)
 	encoding.RegisterCodec(codec.JsonCodec{})

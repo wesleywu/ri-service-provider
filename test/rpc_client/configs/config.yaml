@@ -1,7 +1,7 @@
 client:
   grpc:
     video-collection:
-      server_endpoint: "${GRPC_SERVER_ENDPOINT:127.0.0.1:20000}"
+      server_endpoint: "${GRPC_SERVER_ENDPOINT:127.0.0.1:22000}"
       timeout: "${GRPC_TIMEOUT:5s}"
       middlewares:
         trace: true

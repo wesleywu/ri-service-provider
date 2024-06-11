@@ -5,17 +5,16 @@ import (
 	"flag"
 	"os"
 	"testing"
+	"time"
 
 	"github.com/castbox/go-guru/pkg/goguru/conf"
 	"github.com/castbox/go-guru/pkg/goguru/orm"
-	goguruTypes "github.com/castbox/go-guru/pkg/goguru/types"
-	"github.com/castbox/go-guru/pkg/util/gjson"
+	"github.com/castbox/go-guru/pkg/goguru/types"
 	"github.com/go-kratos/kratos/v2/config"
 	"github.com/go-kratos/kratos/v2/config/env"
 	"github.com/go-kratos/kratos/v2/config/file"
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
 	v1 "github.com/wesleywu/ri-service-provider/api/videocollection/service/v1"
 	"github.com/wesleywu/ri-service-provider/app/videocollection/service/enum"
 	p "github.com/wesleywu/ri-service-provider/app/videocollection/service/proto"
@@ -70,119 +69,225 @@ func TestMain(m *testing.M) {
 	os.Exit(code)
 }
 
-func TestCount(t *testing.T) {
-	//teardownSuite := setupSuite(t)
-	//defer teardownSuite(t)
-
-	req := &p.VideoCollectionCountReq{
-		Id:          nil,
-		Name:        goguruTypes.AnyString("每日推荐视频"),
-		ContentType: goguruTypes.AnyInt32Slice([]int32{1, 2}),
-		FilterType:  nil,
-		Count:       nil,
-		IsOnline:    nil,
-		CreatedAt:   nil,
-		UpdatedAt:   nil,
+func TestVideoCollectionRepo_All(t *testing.T) {
+	var (
+		createReq      *p.VideoCollectionCreateReq
+		upsertReq      *p.VideoCollectionUpsertReq
+		updateReq      *p.VideoCollectionUpdateReq
+		oneReq         *p.VideoCollectionOneReq
+		countReq       *p.VideoCollectionCountReq
+		getReq         *p.VideoCollectionGetReq
+		listReq        *p.VideoCollectionListReq
+		deleteReq      *p.VideoCollectionDeleteReq
+		deleteMultiReq *p.VideoCollectionDeleteMultiReq
+		createRes      *p.VideoCollectionCreateRes
+		upsertRes      *p.VideoCollectionUpsertRes
+		updateRes      *p.VideoCollectionUpdateRes
+		oneRes         *p.VideoCollectionOneRes
+		countRes       *p.VideoCollectionCountRes
+		getRes         *p.VideoCollectionGetRes
+		listRes        *p.VideoCollectionListRes
+		deleteRes      *p.VideoCollectionDeleteRes
+		deleteMultiRes *p.VideoCollectionDeleteMultiRes
+		insertedID1    string
+		insertedID2    = "qiihWlTCtVz72T9znB9"
+		err            error
+	)
+	// test Delete 删除1条可能之前存在的记录
+	deleteReq = &p.VideoCollectionDeleteReq{
+		Id: insertedID2,
 	}
-	helper.Info(gjson.MustEncodeString(req))
-	res, err := videoCollectionClient.Count(ctx, req)
-	if err != nil {
-		panic(err)
-	}
-	helper.Info(gjson.MustEncodeString(res))
-	assert.Equal(t, int64(2), res.TotalElements)
-}
+	deleteRes, err = videoCollectionClient.Delete(ctx, deleteReq)
+	assert.NoError(t, err)
 
-func TestList(t *testing.T) {
-	req := &p.VideoCollectionListReq{
-		Id: nil,
-		Name: goguruTypes.AnyCondition(orm.NewCondition(
-			goguruTypes.AnyString("每日"), orm.WithOperator(orm.OperatorType_Like), orm.WithWildcard(orm.WildcardType_Contains))),
-		ContentType: goguruTypes.AnyUInt32Slice([]uint32{1, 2}),
-		FilterType:  nil,
-		Count: goguruTypes.AnyCondition(orm.NewCondition(
-			goguruTypes.AnyUInt32(0), orm.WithOperator(orm.OperatorType_GT))),
-		IsOnline:  nil,
-		CreatedAt: nil,
-		UpdatedAt: nil,
+	dateStarted := time.Now()
+
+	// test Create 会插入一条记录
+	createReq = &p.VideoCollectionCreateReq{
+		Name:        types.Wrap("测试视频集01"),
+		ContentType: types.Wrap(enum.ContentType_PortraitVideo),
+		FilterType:  types.Wrap(enum.FilterType_Manual),
+		Count:       types.WrapInt32(1234),
+		IsOnline:    types.Wrap(false),
+	}
+	createRes, err = videoCollectionClient.Create(ctx, createReq)
+	assert.NoError(t, err)
+	assert.NotNil(t, createRes)
+	assert.NotNil(t, createRes.InsertedID)
+	assert.Equal(t, int64(1), createRes.InsertedCount)
+	insertedID1 = *createRes.InsertedID
+
+	// test Upsert 会插入第二条记录
+	upsertReq = &p.VideoCollectionUpsertReq{
+		Id:          insertedID2,
+		Name:        types.Wrap("测试视频集02"),
+		ContentType: types.Wrap(enum.ContentType_LandscapeVideo),
+		FilterType:  types.Wrap(enum.FilterType_Ruled),
+		Count:       types.WrapInt32(2345),
+		IsOnline:    types.Wrap(true),
+	}
+	upsertRes, err = videoCollectionClient.Upsert(ctx, upsertReq)
+	assert.NoError(t, err)
+	assert.NotNil(t, upsertRes.UpsertedID)
+	assert.Equal(t, insertedID2, *upsertRes.UpsertedID)
+	assert.Equal(t, int64(1), upsertRes.UpsertedCount)
+
+	// test One 第1次，命中1条记录
+	oneReq = &p.VideoCollectionOneReq{
+		Name:        types.AnyString("测试视频集01"),
+		ContentType: types.AnyStringSlice([]string{"LandscapeVideo", "PortraitVideo"}),
+		IsOnline:    types.AnyBoolSlice([]bool{true, false}),
+		CreatedAt:   types.AnyCondition(orm.NewCondition(types.AnyTimestamp(dateStarted), orm.WithOperator(orm.OperatorType_GTE))),
+	}
+	oneRes, err = videoCollectionClient.One(ctx, oneReq)
+	assert.NoError(t, err)
+	assert.Equal(t, true, oneRes.Found)
+	assert.Equal(t, int32(1234), *oneRes.Item.Count)
+
+	// test One 第2次，无命中记录
+	oneReq = &p.VideoCollectionOneReq{
+		Name:        types.AnyString("测试视频集01"),
+		ContentType: types.AnyString("LandscapeVideo"),
+		IsOnline:    types.AnyBoolSlice([]bool{true, false}),
+		CreatedAt:   types.AnyCondition(orm.NewCondition(types.AnyTimestamp(dateStarted), orm.WithOperator(orm.OperatorType_GTE))),
+	}
+	oneRes, err = videoCollectionClient.One(ctx, oneReq)
+	assert.NoError(t, err)
+	assert.Equal(t, false, oneRes.Found)
+
+	// test One 第3次，命中1条记录
+	oneReq = &p.VideoCollectionOneReq{
+		Id: types.AnyObjectID(insertedID1),
+	}
+	oneRes, err = videoCollectionClient.One(ctx, oneReq)
+	assert.NoError(t, err)
+	assert.Equal(t, true, oneRes.Found)
+	assert.Equal(t, "测试视频集01", *oneRes.Item.Name)
+
+	// test Count 第1次，共2条满足条件的记录
+	countReq = &p.VideoCollectionCountReq{
+		ContentType: types.AnyStringSlice([]string{"LandscapeVideo", "PortraitVideo"}),
+		IsOnline:    types.AnyBoolSlice([]bool{true, false}),
+		CreatedAt:   types.AnyCondition(orm.NewCondition(types.AnyTimestamp(dateStarted), orm.WithOperator(orm.OperatorType_GTE))),
+	}
+	countRes, err = videoCollectionClient.Count(ctx, countReq)
+	assert.NoError(t, err)
+	assert.Equal(t, int64(2), countRes.TotalElements)
+
+	// test Count 第2次，共1条满足条件的记录
+	countReq = &p.VideoCollectionCountReq{
+		Name:      types.AnyString("测试视频集01"),
+		CreatedAt: types.AnyCondition(orm.NewCondition(types.AnyTimestamp(dateStarted), orm.WithOperator(orm.OperatorType_GTE))),
+	}
+	countRes, err = videoCollectionClient.Count(ctx, countReq)
+	assert.NoError(t, err)
+	assert.Equal(t, int64(1), countRes.TotalElements)
+
+	// test Count 第3次，命中2条记录
+	nextDate := dateStarted.AddDate(0, 0, 1)
+	countReq = &p.VideoCollectionCountReq{
+		CreatedAt: types.AnyCondition(orm.NewCondition(types.AnyTimestampSlice([]time.Time{dateStarted, nextDate}), orm.WithMulti(orm.MultiType_Between))),
+	}
+	countRes, err = videoCollectionClient.Count(ctx, countReq)
+	assert.NoError(t, err)
+	assert.NoError(t, err)
+	assert.Equal(t, int64(2), countRes.TotalElements)
+
+	// test List 第1次，返回第2页，每页1条记录，当页有1条记录，为满足条件的第2条记录，其 Name 为 "TemplateName456"
+	listReq = &p.VideoCollectionListReq{
+		ContentType: types.AnyStringSlice([]string{"LandscapeVideo", "PortraitVideo"}),
+		IsOnline:    types.AnyBoolSlice([]bool{true, false}),
+		CreatedAt:   types.AnyCondition(orm.NewCondition(types.AnyTimestamp(dateStarted), orm.WithOperator(orm.OperatorType_GTE))),
 		PageRequest: &orm.PageRequest{
-			Number: 1,
+			Number: 2,
 			Size:   1,
-			Sorts:  nil,
+			Sorts: []*orm.SortParam{
+				{
+					Property:  "name",
+					Direction: orm.SortDirection_Asc,
+				},
+			},
 		},
 	}
-	helper.Info(gjson.MustEncodeString(req))
-	res, err := videoCollectionClient.List(ctx, req)
-	if err != nil {
-		panic(err)
+	listRes, err = videoCollectionClient.List(ctx, listReq)
+	assert.NoError(t, err)
+	assert.Equal(t, int64(2), listRes.PageInfo.Number)
+	assert.Equal(t, int64(2), listRes.PageInfo.TotalElements)
+	assert.Equal(t, int64(2), listRes.PageInfo.TotalPages)
+	assert.Equal(t, int64(1), listRes.PageInfo.NumberOfElements)
+	assert.Equal(t, false, listRes.PageInfo.First)
+	assert.Equal(t, true, listRes.PageInfo.Last)
+
+	// test Get 返回第一条记录
+	getReq = &p.VideoCollectionGetReq{
+		Id: insertedID1,
 	}
-	assert.Equal(t, int64(2), res.PageInfo.TotalElements)
-	assert.Equal(t, 1, len(res.Items))
-	helper.Info(gjson.MustEncodeString(res))
-}
+	getRes, err = videoCollectionClient.Get(ctx, getReq)
+	assert.NoError(t, err)
+	assert.NotNil(t, getRes.Name)
+	assert.Equal(t, "测试视频集01", *getRes.Name)
 
-func BenchmarkList(b *testing.B) {
-
-	req := &p.VideoCollectionListReq{
-		Id: nil,
-		Name: goguruTypes.AnyCondition(orm.NewCondition(
-			goguruTypes.AnyString("每日"), orm.WithOperator(orm.OperatorType_Like), orm.WithWildcard(orm.WildcardType_Contains))),
-		ContentType: goguruTypes.AnyUInt32Slice([]uint32{1, 2}),
-		FilterType:  nil,
-		Count: goguruTypes.AnyCondition(orm.NewCondition(
-			goguruTypes.AnyUInt32(0), orm.WithOperator(orm.OperatorType_GT))),
-		IsOnline:  nil,
-		CreatedAt: nil,
-		UpdatedAt: nil,
+	// test Update 修改第一条记录
+	updateReq = &p.VideoCollectionUpdateReq{
+		Id:       insertedID1,
+		Name:     types.Wrap("测试视频集03"),
+		Count:    types.WrapInt32(3456),
+		IsOnline: types.Wrap(false),
 	}
-	helper.Info(gjson.MustEncodeString(req))
-	res, err := videoCollectionClient.List(ctx, req)
-	if err != nil {
-		panic(err)
+	updateRes, err = videoCollectionClient.Update(ctx, updateReq)
+	assert.NoError(t, err)
+	assert.Equal(t, int64(1), updateRes.ModifiedCount)
+
+	// test Get 再次验证第一条记录
+	getReq = &p.VideoCollectionGetReq{
+		Id: insertedID1,
 	}
-	assert.Equal(b, int64(2), res.PageInfo.TotalElements)
-	helper.Info(gjson.MustEncodeString(res))
-}
+	getRes, err = videoCollectionClient.Get(ctx, getReq)
+	assert.NoError(t, err)
+	assert.NotNil(t, getRes.Name)
+	assert.NotNil(t, getRes.Count)
+	assert.NotNil(t, getRes.IsOnline)
+	assert.Equal(t, "测试视频集03", *getRes.Name)
+	assert.Equal(t, int32(3456), *getRes.Count)
+	assert.Equal(t, false, *getRes.IsOnline)
 
-func TestCreateDeleteOne(t *testing.T) {
-	createRes, err := videoCollectionClient.Create(ctx, &p.VideoCollectionCreateReq{
-		Name:        goguruTypes.WrapString("特别长的名称特别长的名称特别长的名称特别长的"),
-		ContentType: goguruTypes.Wrap(enum.ContentType_PortraitVideo),
-		FilterType:  goguruTypes.Wrap(enum.FilterType_Manual),
-		Count:       goguruTypes.WrapInt32(401),
-		IsOnline:    goguruTypes.WrapBool(true),
-	})
-	require.NoError(t, err)
-	require.Equal(t, int64(1), createRes.InsertedCount)
-	helper.Info(gjson.MustEncodeString(createRes))
-	require.NotNil(t, createRes.InsertedID)
-	id := *createRes.InsertedID
-	helper.Info(id)
-
-	oneRes, err := videoCollectionClient.One(ctx, &p.VideoCollectionOneReq{
-		Id: goguruTypes.AnyObjectID(id),
-	})
-	if err != nil {
-		panic(err)
+	// test Upsert 修改第一条记录
+	upsertReq = &p.VideoCollectionUpsertReq{
+		Id:       insertedID1,
+		Name:     types.Wrap("测试视频集04"),
+		Count:    types.WrapInt32(4567),
+		IsOnline: types.Wrap(true),
 	}
-	require.Equal(t, true, oneRes.Found)
-	require.NotNil(t, oneRes.Item)
-	require.NotNil(t, oneRes.Item.Name)
-	require.NotNil(t, oneRes.Item.ContentType)
-	require.NotNil(t, oneRes.Item.FilterType)
-	require.NotNil(t, oneRes.Item.Count)
-	require.NotNil(t, oneRes.Item.IsOnline)
-	require.NotNil(t, oneRes.Item.CreatedAt)
-	require.NotNil(t, oneRes.Item.UpdatedAt)
-	require.Equal(t, "特别长的名称特别长的名称特别长的名称特别长的", *oneRes.Item.Name)
-	require.Equal(t, enum.ContentType_PortraitVideo, *oneRes.Item.ContentType)
-	require.Equal(t, enum.FilterType_Manual, *oneRes.Item.FilterType)
-	require.Equal(t, uint32(401), *oneRes.Item.Count)
-	require.Equal(t, true, *oneRes.Item.IsOnline)
+	upsertRes, err = videoCollectionClient.Upsert(ctx, upsertReq)
+	assert.NoError(t, err)
+	assert.Equal(t, int64(1), updateRes.ModifiedCount)
 
-	deleteRes, err := videoCollectionClient.Delete(ctx, &p.VideoCollectionDeleteReq{
-		Id: id,
-	})
-	require.NoError(t, err)
-	require.Equal(t, int64(1), deleteRes.DeletedCount)
+	// test Get 再次验证第一条记录
+	getReq = &p.VideoCollectionGetReq{
+		Id: insertedID1,
+	}
+	getRes, err = videoCollectionClient.Get(ctx, getReq)
+	assert.NoError(t, err)
+	assert.NotNil(t, getRes.Name)
+	assert.NotNil(t, getRes.Count)
+	assert.NotNil(t, getRes.IsOnline)
+	assert.Equal(t, "测试视频集04", *getRes.Name)
+	assert.Equal(t, int32(4567), *getRes.Count)
+	assert.Equal(t, true, *getRes.IsOnline)
+
+	// test DeleteMulti 删除2条记录
+	deleteMultiReq = &p.VideoCollectionDeleteMultiReq{
+		Id: types.AnyObjectIDSlice([]string{insertedID1, insertedID2}),
+	}
+	deleteMultiRes, err = videoCollectionClient.DeleteMulti(ctx, deleteMultiReq)
+	assert.NoError(t, err)
+	assert.Equal(t, int64(2), deleteMultiRes.DeletedCount)
+
+	// test Delete 删除0条记录，因为之前的 deleteMulti 已经删除过了
+	deleteReq = &p.VideoCollectionDeleteReq{
+		Id: insertedID1,
+	}
+	deleteRes, err = videoCollectionClient.Delete(ctx, deleteReq)
+	assert.NoError(t, err)
+	assert.Equal(t, int64(0), deleteRes.DeletedCount)
 }

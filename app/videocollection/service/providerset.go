@@ -10,4 +10,5 @@ var ProviderSet = wire.NewSet(
 	p.NewVideoCollectionRepo,
 	service.NewVideoCollectionService,
 	service.RegisterToHTTPServer,
+	service.RegisterToGRPCServer,
 )

@@ -50,9 +50,19 @@ func TestVideoCollectionRepo_All(t *testing.T) {
 		deleteRes      *proto.VideoCollectionDeleteRes
 		deleteMultiRes *proto.VideoCollectionDeleteMultiRes
 		insertedID1    string
-		insertedID2    string
+		insertedID2    = "qiihWlTCtVz72T9znB9"
 		err            error
 	)
+	// test Delete 删除1条可能之前存在的记录
+	url = baseUrl + "/" + insertedID2
+	httpRes, err = client.DeleteWithHeaders(url, commonHeaders, "", 0)
+	require.NoError(t, err)
+	require.NotNil(t, httpRes)
+	require.Equal(t, 200, httpRes.StatusCode)
+	deleteRes = (*proto.VideoCollectionDeleteRes)(nil)
+	err = jsonCodec.Unmarshal(httpRes.Body, &deleteRes)
+	assert.NoError(t, err)
+
 	dateStarted := time.Now()
 
 	// test Create 会插入一条记录
@@ -76,8 +86,7 @@ func TestVideoCollectionRepo_All(t *testing.T) {
 	assert.Equal(t, int64(1), createRes.InsertedCount)
 	insertedID1 = *createRes.InsertedID
 
-	// test Create 会插入第二条记录
-	insertedID2 = "qiihWlTCtVz72T9znB9"
+	// test Upsert 会插入第二条记录
 	url = baseUrl + "/" + insertedID2
 	data = fmt.Sprintf(`{
 			"name": "测试视频集02",
@@ -217,6 +226,28 @@ func TestVideoCollectionRepo_All(t *testing.T) {
 	assert.NoError(t, err)
 	assert.Equal(t, int64(1), countRes.TotalElements)
 
+	// test Count 第3次，共2条满足条件的记录
+	url = baseUrl + "/count"
+	nextDate := dateStarted.AddDate(0, 0, 1)
+	data = fmt.Sprintf(`{
+				"createdAt": {
+					"@type":"goguru.orm.Condition",
+					"multi": "Between",
+					"value": {
+						"@type":"goguru.types.TimestampSlice",
+						"value": ["%s","%s"]
+					}
+				}
+			}`, dateStarted.Format(time.RFC3339Nano), nextDate.Format(time.RFC3339Nano))
+	httpRes, err = client.PostWithHeaders(url, commonHeaders, data, 0)
+	assert.NoError(t, err)
+	assert.NotNil(t, httpRes)
+	assert.Equal(t, 200, httpRes.StatusCode)
+	countRes = (*proto.VideoCollectionCountRes)(nil)
+	err = jsonCodec.Unmarshal(httpRes.Body, &countRes)
+	assert.NoError(t, err)
+	assert.Equal(t, int64(2), countRes.TotalElements)
+
 	// test List 第1次，返回第2页，每页1条记录，当页有1条记录，为满足条件的第2条记录，其 Name 为 "TemplateName456"
 	url = baseUrl + "/list"
 	data = fmt.Sprintf(`{
@@ -300,6 +331,36 @@ func TestVideoCollectionRepo_All(t *testing.T) {
 	assert.Equal(t, int32(3456), *getRes.Count)
 	assert.Equal(t, false, *getRes.IsOnline)
 
+	// test Upsert 修改第一条记录
+	url = baseUrl + "/" + insertedID1
+	data = fmt.Sprintf(`{
+			"name": "测试视频集04",
+			"count": 4567,
+			"isOnline": true
+		}`)
+	httpRes, err = client.PutWithHeaders(url, commonHeaders, data, 0)
+	assert.NoError(t, err)
+	assert.NotNil(t, httpRes)
+	assert.Equal(t, 200, httpRes.StatusCode)
+	updateRes = (*proto.VideoCollectionUpdateRes)(nil)
+	err = jsonCodec.Unmarshal(httpRes.Body, &updateRes)
+	assert.Equal(t, int64(1), updateRes.ModifiedCount)
+
+	// test Get 再次验证第一条记录
+	url = baseUrl + "/" + insertedID1
+	httpRes, err = client.GetWithHeaders(url, commonHeaders, 0)
+	assert.NoError(t, err)
+	assert.NotNil(t, httpRes)
+	assert.Equal(t, 200, httpRes.StatusCode)
+	getRes = (*proto.VideoCollectionGetRes)(nil)
+	err = jsonCodec.Unmarshal(httpRes.Body, &getRes)
+	assert.NotNil(t, getRes.Name)
+	assert.NotNil(t, getRes.Count)
+	assert.NotNil(t, getRes.IsOnline)
+	assert.Equal(t, "测试视频集04", *getRes.Name)
+	assert.Equal(t, int32(4567), *getRes.Count)
+	assert.Equal(t, true, *getRes.IsOnline)
+
 	// test DeleteMulti 删除2条记录
 	url = baseUrl + "/delete"
 	data = fmt.Sprintf(`{
@@ -327,5 +388,4 @@ func TestVideoCollectionRepo_All(t *testing.T) {
 	err = jsonCodec.Unmarshal(httpRes.Body, &deleteRes)
 	assert.NoError(t, err)
 	assert.Equal(t, int64(0), deleteRes.DeletedCount)
-
 }
