@@ -7,4 +7,4 @@ plugins:
     out: .
     opt:
       - paths=source_relative
-      - features=setter+repository
+      - features=setter+repository+enummarshal
