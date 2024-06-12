@@ -3,7 +3,7 @@ module github.com/wesleywu/ri-service-provider
 go 1.22
 
 require (
-	github.com/castbox/go-guru v0.2.0-beta.3
+	github.com/castbox/go-guru v0.2.0
 	github.com/go-kratos/kratos/v2 v2.7.3
 	github.com/google/wire v0.6.0
 	github.com/prometheus/client_golang v1.19.1
@@ -17,7 +17,7 @@ require (
 	google.golang.org/protobuf v1.34.1
 )
 
-replace github.com/castbox/go-guru => ../go-guru
+//replace github.com/castbox/go-guru => ../go-guru
 
 require (
 	github.com/beorn7/perks v1.0.1 // indirect
