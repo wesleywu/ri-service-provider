@@ -385,7 +385,7 @@ func TestVideoCollectionRepo_All(t *testing.T) {
 	url = baseUrl + "/delete"
 	data = fmt.Sprintf(`{
 				"id": {
-					"@type":"goguru.types.ObjectIDSlice",
+					"@type":"goguru.types.StringSlice",
 					"value": ["%s","%s"]
 				}
 			}`, insertedID1, insertedID2)

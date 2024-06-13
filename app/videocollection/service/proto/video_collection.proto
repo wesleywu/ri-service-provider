@@ -20,7 +20,9 @@ import "app/videocollection/service/enum/video_collection_enum.proto";
 
 message VideoCollection {
   option (goguru.orm.repository) = {
-    collection_name: "video_collection",
+    collection_name:    "video_collection",
+    object_id_fields:   ["_id"],
+    use_id_obfuscating: true,
     indices: [
       {
         fields: [

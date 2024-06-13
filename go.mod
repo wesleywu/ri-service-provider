@@ -10,6 +10,7 @@ require (
 	github.com/rs/zerolog v1.33.0
 	github.com/srikrsna/protoc-gen-gotag v1.0.0
 	github.com/stretchr/testify v1.9.0
+	github.com/wesleywu/gcontainer v0.9.7
 	go.mongodb.org/mongo-driver v1.15.0
 	go.opentelemetry.io/otel v1.27.0
 	google.golang.org/genproto/googleapis/api v0.0.0-20240528184218-531527333157
@@ -17,7 +18,7 @@ require (
 	google.golang.org/protobuf v1.34.1
 )
 
-//replace github.com/castbox/go-guru => ../go-guru
+replace github.com/castbox/go-guru => ../go-guru
 
 require (
 	github.com/beorn7/perks v1.0.1 // indirect
@@ -53,7 +54,6 @@ require (
 	github.com/redis/go-redis/v9 v9.5.2 // indirect
 	github.com/rs/cors v1.11.0 // indirect
 	github.com/sqids/sqids-go v0.4.1 // indirect
-	github.com/wesleywu/gcontainer v0.9.7 // indirect
 	github.com/xdg-go/pbkdf2 v1.0.0 // indirect
 	github.com/xdg-go/scram v1.1.2 // indirect
 	github.com/xdg-go/stringprep v1.0.4 // indirect

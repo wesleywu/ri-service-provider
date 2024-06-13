@@ -255,7 +255,7 @@ func TestVideoCollectionRepo_All(t *testing.T) {
 
 	// test DeleteMulti 删除2条记录
 	deleteMultiReq = &p.VideoCollectionDeleteMultiReq{
-		Id: types.AnyObjectIDSlice([]string{insertedID1, insertedID2}),
+		Id: types.AnyStringSlice([]string{insertedID1, insertedID2}),
 	}
 	deleteMultiRes, err = client.DeleteMulti(ctx, deleteMultiReq)
 	assert.NoError(t, err)
