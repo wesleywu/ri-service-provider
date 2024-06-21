@@ -44,14 +44,14 @@ message VideoCollection {
       }
     ]
   };
-  optional string                      id            = 1  [(tagger.tags) = "bson:\"_id,omitempty\" json:\"id,omitempty\""];
-  optional string                      name          = 2  [(tagger.tags) = "bson:\"name,omitempty\" json:\"name,omitempty\""];
-  optional ContentType                 contentType   = 3  [(tagger.tags) = "bson:\"content_type,omitempty\" json:\"contentType,omitempty\""];
-  optional FilterType                  filterType    = 4  [(tagger.tags) = "bson:\"filter_type,omitempty\" json:\"filterType,omitempty\""];
-  optional int32                       count         = 5  [(tagger.tags) = "bson:\"count,omitempty\" json:\"count,omitempty\""];
-  optional bool                        isOnline      = 6  [(tagger.tags) = "bson:\"is_online,omitempty\" json:\"isOnline,omitempty\""];
-  optional google.protobuf.Timestamp   createdAt     = 7  [(tagger.tags) = "bson:\"created_at,omitempty\" json:\"createdAt,omitempty\""];
-  optional google.protobuf.Timestamp   updatedAt     = 8  [(tagger.tags) = "bson:\"updated_at,omitempty\" json:\"updatedAt,omitempty\""];
+  optional string                      id            = 1    [(tagger.tags) = "bson:\"_id,omitempty\" json:\"id,omitempty\""];
+  optional string                      name          = 2    [(tagger.tags) = "bson:\"name,omitempty\" json:\"name,omitempty\""];
+  optional ContentType                 content_type  = 3    [(tagger.tags) = "bson:\"content_type,omitempty\" json:\"contentType,omitempty\""];
+  optional FilterType                  filter_type   = 4    [(tagger.tags) = "bson:\"filter_type,omitempty\" json:\"filterType,omitempty\""];
+  optional int32                       count         = 5    [(tagger.tags) = "bson:\"count,omitempty\" json:\"count,omitempty\""];
+  optional bool                        is_online     = 6    [(tagger.tags) = "bson:\"is_online,omitempty\" json:\"isOnline,omitempty\""];
+  optional google.protobuf.Timestamp   created_at    = 7    [(tagger.tags) = "bson:\"created_at,omitempty\" json:\"createdAt,omitempty\""];
+  optional google.protobuf.Timestamp   updated_at    = 8    [(tagger.tags) = "bson:\"updated_at,omitempty\" json:\"updatedAt,omitempty\""];
 }
 
 service VideoCollectionRepo {
@@ -70,32 +70,32 @@ message VideoCollectionCountReq {
   message Test {
     string name = 1;
   }
-  google.protobuf.Any                  id            = 1;
-  google.protobuf.Any                  name          = 2;
-  google.protobuf.Any                  contentType   = 3;
-  google.protobuf.Any                  filterType    = 4;
-  google.protobuf.Any                  count         = 5;
-  google.protobuf.Any                  isOnline      = 6;
-  google.protobuf.Any                  createdAt     = 7;
-  google.protobuf.Any                  updatedAt     = 8;
-  repeated goguru.orm.PropertyFilter   extraFilters  = 1001;
+  google.protobuf.Any                  id            = 1    [(tagger.tags) = "json:\"id,omitempty\""];
+  google.protobuf.Any                  name          = 2    [(tagger.tags) = "json:\"name,omitempty\""];
+  google.protobuf.Any                  content_type  = 3    [(tagger.tags) = "json:\"contentType,omitempty\""];
+  google.protobuf.Any                  filter_type   = 4    [(tagger.tags) = "json:\"filterType,omitempty\""];
+  google.protobuf.Any                  count         = 5    [(tagger.tags) = "json:\"count,omitempty\""];
+  google.protobuf.Any                  is_online     = 6    [(tagger.tags) = "json:\"isOnline,omitempty\""];
+  google.protobuf.Any                  created_at    = 7    [(tagger.tags) = "json:\"createdAt,omitempty\""];
+  google.protobuf.Any                  updated_at    = 8    [(tagger.tags) = "json:\"updatedAt,omitempty\""];
+  repeated goguru.orm.PropertyFilter   extra_filters = 1001 [(tagger.tags) = "json:\"extraFilters,omitempty\""];
 }
 
 message VideoCollectionCountRes {
-  int64                                totalElements = 1  [(tagger.tags) = "json:\"total\""];
+  int64                                totalElements = 1    [(tagger.tags) = "json:\"total\""];
 }
 
 message VideoCollectionOneReq {
-  google.protobuf.Any                  id            = 1;
-  google.protobuf.Any                  name          = 2;
-  google.protobuf.Any                  contentType   = 3;
-  google.protobuf.Any                  filterType    = 4;
-  google.protobuf.Any                  count         = 5;
-  google.protobuf.Any                  isOnline      = 6;
-  google.protobuf.Any                  createdAt     = 7;
-  google.protobuf.Any                  updatedAt     = 8;
-  repeated goguru.orm.PropertyFilter   extraFilters  = 1001;
-  goguru.orm.PageRequest               pageRequest   = 1002;
+  google.protobuf.Any                  id            = 1    [(tagger.tags) = "json:\"id,omitempty\""];
+  google.protobuf.Any                  name          = 2    [(tagger.tags) = "json:\"name,omitempty\""];
+  google.protobuf.Any                  content_type  = 3    [(tagger.tags) = "json:\"contentType,omitempty\""];
+  google.protobuf.Any                  filter_type   = 4    [(tagger.tags) = "json:\"filterType,omitempty\""];
+  google.protobuf.Any                  count         = 5    [(tagger.tags) = "json:\"count,omitempty\""];
+  google.protobuf.Any                  is_online     = 6    [(tagger.tags) = "json:\"isOnline,omitempty\""];
+  google.protobuf.Any                  created_at    = 7    [(tagger.tags) = "json:\"createdAt,omitempty\""];
+  google.protobuf.Any                  updated_at    = 8    [(tagger.tags) = "json:\"updatedAt,omitempty\""];
+  repeated goguru.orm.PropertyFilter   extra_filters = 1001 [(tagger.tags) = "json:\"extraFilters,omitempty\""];
+  goguru.orm.PageRequest               page_request  = 1002 [(tagger.tags) = "json:\"pageRequest,omitempty\""];
 }
 
 message VideoCollectionOneRes {
@@ -104,112 +104,112 @@ message VideoCollectionOneRes {
 }
 
 message VideoCollectionListReq {
-  google.protobuf.Any                  id            = 1;
-  google.protobuf.Any                  name          = 2;
-  google.protobuf.Any                  contentType   = 3;
-  google.protobuf.Any                  filterType    = 4;
-  google.protobuf.Any                  count         = 5;
-  google.protobuf.Any                  isOnline      = 6;
-  google.protobuf.Any                  createdAt     = 7;
-  google.protobuf.Any                  updatedAt     = 8;
-  repeated goguru.orm.PropertyFilter   extraFilters  = 1001;
-  goguru.orm.PageRequest               pageRequest   = 1002;
+  google.protobuf.Any                  id            = 1    [(tagger.tags) = "json:\"id,omitempty\""];
+  google.protobuf.Any                  name          = 2    [(tagger.tags) = "json:\"name,omitempty\""];
+  google.protobuf.Any                  content_type  = 3    [(tagger.tags) = "json:\"contentType,omitempty\""];
+  google.protobuf.Any                  filter_type   = 4    [(tagger.tags) = "json:\"filterType,omitempty\""];
+  google.protobuf.Any                  count         = 5    [(tagger.tags) = "json:\"count,omitempty\""];
+  google.protobuf.Any                  is_online     = 6    [(tagger.tags) = "json:\"isOnline,omitempty\""];
+  google.protobuf.Any                  created_at    = 7    [(tagger.tags) = "json:\"createdAt,omitempty\""];
+  google.protobuf.Any                  updated_at    = 8    [(tagger.tags) = "json:\"updatedAt,omitempty\""];
+  repeated goguru.orm.PropertyFilter   extra_filters = 1001 [(tagger.tags) = "json:\"extraFilters,omitempty\""];
+  goguru.orm.PageRequest               page_request  = 1002 [(tagger.tags) = "json:\"pageRequest,omitempty\""];
 }
 
 message VideoCollectionListRes {
-  goguru.orm.PageInfo                  pageInfo      = 1  [(tagger.tags) = "json:\"pageInfo\""];
-  repeated VideoCollection             items         = 2  [(tagger.tags) = "json:\"items\""];
+  goguru.orm.PageInfo                  pageInfo      = 1    [(tagger.tags) = "json:\"pageInfo\""];
+  repeated VideoCollection             items         = 2    [(tagger.tags) = "json:\"items\""];
 }
 
 message VideoCollectionGetReq {
-  string                               id            = 1  [(tagger.tags) = "bson:\"-\" json:\"id\""];
+  string                               id            = 1    [(tagger.tags) = "bson:\"-\" json:\"id\""];
 }
 
 message VideoCollectionGetRes {
-  optional string                      id            = 1  [(tagger.tags) = "bson:\"_id,omitempty\" json:\"id,omitempty\""];
-  optional string                      name          = 2  [(tagger.tags) = "bson:\"name,omitempty\" json:\"name,omitempty\""];
-  optional ContentType                 contentType   = 3  [(tagger.tags) = "bson:\"content_type,omitempty\" json:\"contentType,omitempty\""];
-  optional FilterType                  filterType    = 4  [(tagger.tags) = "bson:\"filter_type,omitempty\" json:\"filterType,omitempty\""];
-  optional int32                       count         = 5  [(tagger.tags) = "bson:\"count,omitempty\" json:\"count,omitempty\""];
-  optional bool                        isOnline      = 6  [(tagger.tags) = "bson:\"is_online,omitempty\" json:\"isOnline,omitempty\""];
-  optional google.protobuf.Timestamp   createdAt     = 7  [(tagger.tags) = "bson:\"created_at,omitempty\" json:\"createdAt,omitempty\""];
-  optional google.protobuf.Timestamp   updatedAt     = 8  [(tagger.tags) = "bson:\"updated_at,omitempty\" json:\"updatedAt,omitempty\""];
+  optional string                      id            = 1    [(tagger.tags) = "bson:\"_id,omitempty\" json:\"id,omitempty\""];
+  optional string                      name          = 2    [(tagger.tags) = "bson:\"name,omitempty\" json:\"name,omitempty\""];
+  optional ContentType                 content_type  = 3    [(tagger.tags) = "bson:\"content_type,omitempty\" json:\"contentType,omitempty\""];
+  optional FilterType                  filter_type   = 4    [(tagger.tags) = "bson:\"filter_type,omitempty\" json:\"filterType,omitempty\""];
+  optional int32                       count         = 5    [(tagger.tags) = "bson:\"count,omitempty\" json:\"count,omitempty\""];
+  optional bool                        is_online     = 6    [(tagger.tags) = "bson:\"is_online,omitempty\" json:\"isOnline,omitempty\""];
+  optional google.protobuf.Timestamp   created_at    = 7    [(tagger.tags) = "bson:\"created_at,omitempty\" json:\"createdAt,omitempty\""];
+  optional google.protobuf.Timestamp   updated_at    = 8    [(tagger.tags) = "bson:\"updated_at,omitempty\" json:\"updatedAt,omitempty\""];
 }
 
 message VideoCollectionCreateReq {
-  optional string                      name          = 2  [(tagger.tags) = "bson:\"name,omitempty\" json:\"name,omitempty\""];
-  optional ContentType                 contentType   = 3  [(tagger.tags) = "bson:\"content_type,omitempty\" json:\"contentType,omitempty\""];
-  optional FilterType                  filterType    = 4  [(tagger.tags) = "bson:\"filter_type,omitempty\" json:\"filterType,omitempty\""];
-  optional int32                       count         = 5  [(tagger.tags) = "bson:\"count,omitempty\" json:\"count,omitempty\""];
-  optional bool                        isOnline      = 6  [(tagger.tags) = "bson:\"is_online,omitempty\" json:\"isOnline,omitempty\""];
-  optional google.protobuf.Timestamp   createdAt     = 7  [(tagger.tags) = "bson:\"created_at,omitempty\" json:\"createdAt,omitempty\""];
-  optional google.protobuf.Timestamp   updatedAt     = 8  [(tagger.tags) = "bson:\"updated_at,omitempty\" json:\"updatedAt,omitempty\""];
+  optional string                      name          = 2    [(tagger.tags) = "bson:\"name,omitempty\" json:\"name,omitempty\""];
+  optional ContentType                 content_type  = 3    [(tagger.tags) = "bson:\"content_type,omitempty\" json:\"contentType,omitempty\""];
+  optional FilterType                  filter_type   = 4    [(tagger.tags) = "bson:\"filter_type,omitempty\" json:\"filterType,omitempty\""];
+  optional int32                       count         = 5    [(tagger.tags) = "bson:\"count,omitempty\" json:\"count,omitempty\""];
+  optional bool                        is_online     = 6    [(tagger.tags) = "bson:\"is_online,omitempty\" json:\"isOnline,omitempty\""];
+  optional google.protobuf.Timestamp   created_at    = 7    [(tagger.tags) = "bson:\"created_at,omitempty\" json:\"createdAt,omitempty\""];
+  optional google.protobuf.Timestamp   updated_at    = 8    [(tagger.tags) = "bson:\"updated_at,omitempty\" json:\"updatedAt,omitempty\""];
 }
 
 message VideoCollectionCreateRes {
-  string                               message       = 1  [(tagger.tags) = "json:\"message\""];
-  optional string                      insertedID    = 2  [(tagger.tags) = "json:\"insertedID\""];
-  int64                                insertedCount = 3  [(tagger.tags) = "json:\"insertedCount\""];
+  string                               message       = 1    [(tagger.tags) = "json:\"message\""];
+  optional string                      insertedID    = 2    [(tagger.tags) = "json:\"insertedID\""];
+  int64                                insertedCount = 3    [(tagger.tags) = "json:\"insertedCount\""];
 }
 
 message VideoCollectionUpdateReq {
-  string                               id            = 1  [(tagger.tags) = "bson:\"-\" json:\"id\""];
-  optional string                      name          = 2  [(tagger.tags) = "bson:\"name,omitempty\" json:\"name,omitempty\""];
-  optional ContentType                 contentType   = 3  [(tagger.tags) = "bson:\"content_type,omitempty\" json:\"contentType,omitempty\""];
-  optional FilterType                  filterType    = 4  [(tagger.tags) = "bson:\"filter_type,omitempty\" json:\"filterType,omitempty\""];
-  optional int32                       count         = 5  [(tagger.tags) = "bson:\"count,omitempty\" json:\"count,omitempty\""];
-  optional bool                        isOnline      = 6  [(tagger.tags) = "bson:\"is_online,omitempty\" json:\"isOnline,omitempty\""];
-  optional google.protobuf.Timestamp   createdAt     = 7  [(tagger.tags) = "bson:\"created_at,omitempty\" json:\"createdAt,omitempty\""];
-  optional google.protobuf.Timestamp   updatedAt     = 8  [(tagger.tags) = "bson:\"updated_at,omitempty\" json:\"updatedAt,omitempty\""];
+  string                               id            = 1    [(tagger.tags) = "bson:\"-\" json:\"id\""];
+  optional string                      name          = 2    [(tagger.tags) = "bson:\"name,omitempty\" json:\"name,omitempty\""];
+  optional ContentType                 content_type  = 3    [(tagger.tags) = "bson:\"content_type,omitempty\" json:\"contentType,omitempty\""];
+  optional FilterType                  filter_type   = 4    [(tagger.tags) = "bson:\"filter_type,omitempty\" json:\"filterType,omitempty\""];
+  optional int32                       count         = 5    [(tagger.tags) = "bson:\"count,omitempty\" json:\"count,omitempty\""];
+  optional bool                        is_online     = 6    [(tagger.tags) = "bson:\"is_online,omitempty\" json:\"isOnline,omitempty\""];
+  optional google.protobuf.Timestamp   created_at    = 7    [(tagger.tags) = "bson:\"created_at,omitempty\" json:\"createdAt,omitempty\""];
+  optional google.protobuf.Timestamp   updated_at    = 8    [(tagger.tags) = "bson:\"updated_at,omitempty\" json:\"updatedAt,omitempty\""];
 }
 
 message VideoCollectionUpdateRes {
-  string                               message       = 1  [(tagger.tags) = "json:\"message\""];
-  int64                                matchedCount  = 3  [(tagger.tags) = "json:\"matchedCount\""]; // The number of documents matched by the upsert operation
-  int64                                modifiedCount = 4  [(tagger.tags) = "json:\"modifiedCount\""]; // The number of documents modified by the operation.
+  string                               message       = 1    [(tagger.tags) = "json:\"message\""];
+  int64                                matchedCount  = 2    [(tagger.tags) = "json:\"matchedCount\""]; // The number of documents matched by the upsert operation
+  int64                                modifiedCount = 3    [(tagger.tags) = "json:\"modifiedCount\""]; // The number of documents modified by the operation.
 }
 
 message VideoCollectionUpsertReq {
-  string                               id            = 1  [(tagger.tags) = "bson:\"-\" json:\"id\""];
-  optional string                      name          = 2  [(tagger.tags) = "bson:\"name,omitempty\" json:\"name,omitempty\""];
-  optional ContentType                 contentType   = 3  [(tagger.tags) = "bson:\"content_type,omitempty\" json:\"contentType,omitempty\""];
-  optional FilterType                  filterType    = 4  [(tagger.tags) = "bson:\"filter_type,omitempty\" json:\"filterType,omitempty\""];
-  optional int32                       count         = 5  [(tagger.tags) = "bson:\"count,omitempty\" json:\"count,omitempty\""];
-  optional bool                        isOnline      = 6  [(tagger.tags) = "bson:\"is_online,omitempty\" json:\"isOnline,omitempty\""];
-  optional google.protobuf.Timestamp   createdAt     = 7  [(tagger.tags) = "bson:\"created_at,omitempty\" json:\"createdAt,omitempty\""];
-  optional google.protobuf.Timestamp   updatedAt     = 8  [(tagger.tags) = "bson:\"updated_at,omitempty\" json:\"updatedAt,omitempty\""];
+  string                               id            = 1    [(tagger.tags) = "bson:\"-\" json:\"id\""];
+  optional string                      name          = 2    [(tagger.tags) = "bson:\"name,omitempty\" json:\"name,omitempty\""];
+  optional ContentType                 content_type  = 3    [(tagger.tags) = "bson:\"content_type,omitempty\" json:\"contentType,omitempty\""];
+  optional FilterType                  filter_type   = 4    [(tagger.tags) = "bson:\"filter_type,omitempty\" json:\"filterType,omitempty\""];
+  optional int32                       count         = 5    [(tagger.tags) = "bson:\"count,omitempty\" json:\"count,omitempty\""];
+  optional bool                        is_online     = 6    [(tagger.tags) = "bson:\"is_online,omitempty\" json:\"isOnline,omitempty\""];
+  optional google.protobuf.Timestamp   created_at    = 7    [(tagger.tags) = "bson:\"created_at,omitempty\" json:\"createdAt,omitempty\""];
+  optional google.protobuf.Timestamp   updated_at    = 8    [(tagger.tags) = "bson:\"updated_at,omitempty\" json:\"updatedAt,omitempty\""];
 }
 
 message VideoCollectionUpsertRes {
-  string                               message       = 1  [(tagger.tags) = "json:\"message\""];
-  optional string                      upsertedID    = 2  [(tagger.tags) = "json:\"upsertedID\""];
-  int64                                matchedCount  = 3  [(tagger.tags) = "json:\"matchedCount\""]; // The number of documents matched by the upsert operation
-  int64                                modifiedCount = 4  [(tagger.tags) = "json:\"modifiedCount\""]; // The number of documents modified by the operation.
-  int64                                upsertedCount = 5  [(tagger.tags) = "json:\"upsertedCount\""]; // The number of documents upserted by the operation.
+  string                               message       = 1    [(tagger.tags) = "json:\"message\""];
+  optional string                      upsertedID    = 2    [(tagger.tags) = "json:\"upsertedID\""];
+  int64                                matchedCount  = 3    [(tagger.tags) = "json:\"matchedCount\""]; // The number of documents matched by the upsert operation
+  int64                                modifiedCount = 4    [(tagger.tags) = "json:\"modifiedCount\""]; // The number of documents modified by the operation.
+  int64                                upsertedCount = 5    [(tagger.tags) = "json:\"upsertedCount\""]; // The number of documents upserted by the operation.
 }
 
 message VideoCollectionDeleteReq {
-  string                               id            = 1  [(tagger.tags) = "bson:\"-\" json:\"id\""];
+  string                               id            = 1    [(tagger.tags) = "bson:\"-\" json:\"id\""];
 }
 
 message VideoCollectionDeleteRes {
-  string                               message       = 1  [(tagger.tags) = "json:\"message\""];
-  int64                                deletedCount  = 3  [(tagger.tags) = "json:\"deletedCount\""];
+  string                               message       = 1    [(tagger.tags) = "json:\"message\""];
+  int64                                deletedCount  = 2    [(tagger.tags) = "json:\"deletedCount\""];
 }
 
 message VideoCollectionDeleteMultiReq {
-  google.protobuf.Any                  id           = 1;
-  google.protobuf.Any                  name         = 2;
-  google.protobuf.Any                  contentType  = 3;
-  google.protobuf.Any                  filterType   = 4;
-  google.protobuf.Any                  count        = 5;
-  google.protobuf.Any                  isOnline     = 6;
-  google.protobuf.Any                  createdAt    = 7;
-  google.protobuf.Any                  updatedAt    = 8;
-  repeated goguru.orm.PropertyFilter   extraFilters = 1001;
+  google.protobuf.Any                  id            = 1    [(tagger.tags) = "json:\"id,omitempty\""];
+  google.protobuf.Any                  name          = 2    [(tagger.tags) = "json:\"name,omitempty\""];
+  google.protobuf.Any                  content_type  = 3    [(tagger.tags) = "json:\"contentType,omitempty\""];
+  google.protobuf.Any                  filter_type   = 4    [(tagger.tags) = "json:\"filterType,omitempty\""];
+  google.protobuf.Any                  count         = 5    [(tagger.tags) = "json:\"count,omitempty\""];
+  google.protobuf.Any                  is_online     = 6    [(tagger.tags) = "json:\"isOnline,omitempty\""];
+  google.protobuf.Any                  created_at    = 7    [(tagger.tags) = "json:\"createdAt,omitempty\""];
+  google.protobuf.Any                  updated_at    = 8    [(tagger.tags) = "json:\"updatedAt,omitempty\""];
+  repeated goguru.orm.PropertyFilter   extra_filters = 1001 [(tagger.tags) = "json:\"extraFilters,omitempty\""];
 }
 
 message VideoCollectionDeleteMultiRes {
-  string                               message       = 1  [(tagger.tags) = "json:\"message\""];
-  int64                                deletedCount  = 3  [(tagger.tags) = "json:\"deletedCount\""];
+  string                               message       = 1    [(tagger.tags) = "json:\"message\""];
+  int64                                deletedCount  = 2    [(tagger.tags) = "json:\"deletedCount\""];
 }
