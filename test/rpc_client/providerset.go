@@ -11,7 +11,7 @@ import (
 	"github.com/castbox/go-guru/pkg/infra/otlp"
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/google/wire"
-	v1 "github.com/wesleywu/ri-service-provider/api/videocollection/service/v1"
+	v1 "github.com/wesleywu/ri-service-provider/api/episode/service/v1"
 	"google.golang.org/grpc"
 )
 
@@ -35,8 +35,8 @@ var ProviderSet = wire.NewSet(
 	NewClients)
 
 type Clients struct {
-	logger          log.Logger
-	VideoCollection v1.VideoCollectionClient
+	logger  log.Logger
+	Episode v1.EpisodeClient
 }
 
 func newAppMetadata() *appinfo.AppMetadata {
@@ -68,8 +68,8 @@ func NewClients(ctx context.Context, conns map[string]*grpc.ClientConn, logger l
 	}
 	if conn, ok := conns[grpcClientProfileKey]; ok {
 		return &Clients{
-			logger:          logger,
-			VideoCollection: v1.NewVideoCollectionClient(conn),
+			logger:  logger,
+			Episode: v1.NewEpisodeClient(conn),
 		}, nil
 	}
 	return nil, errors.New("没有配置grpc client")

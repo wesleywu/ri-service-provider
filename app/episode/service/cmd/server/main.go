@@ -26,7 +26,7 @@ import (
 	"github.com/go-kratos/kratos/v2/transport/http"
 	"github.com/google/wire"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
-	"github.com/wesleywu/ri-service-provider/app/videocollection/service/internal/service"
+	"github.com/wesleywu/ri-service-provider/app/episode/service/internal/service"
 )
 
 // go build -ldflags "-X main.Version=x.y.z"

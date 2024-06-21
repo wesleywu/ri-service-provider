@@ -6,6 +6,9 @@ plugins:
   - plugin: go-grpc
     out: .
     opt: paths=source_relative
+  - plugin: go-http
+    out: .
+    opt: paths=source_relative
   - plugin: go-guru
     out: .
     opt:

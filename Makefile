@@ -1,12 +1,12 @@
 .PHONY: wire
 wire:
-	cd app/videocollection/service/cmd/server && wire
+	cd app/episode/service/cmd/server && wire
 	cd test/rpc_client && wire
 
 .PHONY: proto-gen
 proto-gen:
 	buf mod update
-	buf generate --template buf.gen-model.yaml app/videocollection/service/enum/video_collection_enum.proto
-	buf generate --template buf.gen-model.yaml app/videocollection/service/proto/video_collection.proto
-	buf generate --template buf.gen-tag.yaml   app/videocollection/service/proto/video_collection.proto
-	buf generate --template buf.gen.yaml       api/videocollection/service/v1/video_collection_api.proto
+	buf generate --template buf.gen-model.yaml app/episode/service/enum/episode_enum.proto
+	buf generate --template buf.gen-model.yaml app/episode/service/proto/episode.proto
+	buf generate --template buf.gen-tag.yaml   app/episode/service/proto/episode.proto
+	buf generate --template buf.gen.yaml       api/episode/service/v1/episode_api.proto

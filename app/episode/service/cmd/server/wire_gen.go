@@ -17,8 +17,8 @@ import (
 	"github.com/castbox/go-guru/pkg/server/grpc"
 	"github.com/castbox/go-guru/pkg/server/http"
 	"github.com/go-kratos/kratos/v2"
-	"github.com/wesleywu/ri-service-provider/app/videocollection/service/internal/service"
-	"github.com/wesleywu/ri-service-provider/app/videocollection/service/proto"
+	"github.com/wesleywu/ri-service-provider/app/episode/service/internal/service"
+	"github.com/wesleywu/ri-service-provider/app/episode/service/proto"
 )
 
 // Injectors from wire.go:
@@ -76,20 +76,20 @@ func wireApp(contextContext context.Context, server_HTTP *conf.Server_HTTP, serv
 		cleanup()
 		return nil, nil, err
 	}
-	videoCollectionRepo, err := proto.NewVideoCollectionRepo(client, helper)
+	episodeRepo, err := proto.NewEpisodeRepo(client, helper)
 	if err != nil {
 		cleanup2()
 		cleanup()
 		return nil, nil, err
 	}
-	videoCollection := service.NewVideoCollectionService(videoCollectionRepo, helper)
-	httpRegisterInfo, err := service.RegisterToHTTPServer(server, videoCollection)
+	episode := service.NewEpisodeService(episodeRepo, helper)
+	httpRegisterInfo, err := service.RegisterToHTTPServer(server, episode)
 	if err != nil {
 		cleanup2()
 		cleanup()
 		return nil, nil, err
 	}
-	grpcRegisterInfo, err := service.RegisterToGRPCServer(grpcServer, videoCollection)
+	grpcRegisterInfo, err := service.RegisterToGRPCServer(grpcServer, episode)
 	if err != nil {
 		cleanup2()
 		cleanup()

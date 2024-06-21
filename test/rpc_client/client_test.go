@@ -9,15 +9,15 @@ import (
 	"github.com/castbox/go-guru/pkg/goguru/orm"
 	"github.com/castbox/go-guru/pkg/goguru/types"
 	"github.com/stretchr/testify/assert"
-	v1 "github.com/wesleywu/ri-service-provider/api/videocollection/service/v1"
-	"github.com/wesleywu/ri-service-provider/app/videocollection/service/enum"
-	p "github.com/wesleywu/ri-service-provider/app/videocollection/service/proto"
+	v1 "github.com/wesleywu/ri-service-provider/api/episode/service/v1"
+	"github.com/wesleywu/ri-service-provider/app/episode/service/enum"
+	p "github.com/wesleywu/ri-service-provider/app/episode/service/proto"
 	"go.opentelemetry.io/otel"
 )
 
 var (
 	ctx    = context.Background()
-	client v1.VideoCollectionClient
+	client v1.EpisodeClient
 )
 
 func setupSuite() func(tb *testing.M) {
@@ -25,7 +25,7 @@ func setupSuite() func(tb *testing.M) {
 	if err != nil {
 		panic(err)
 	}
-	client = clients.VideoCollection
+	client = clients.Episode
 
 	// Return a function to teardown the test
 	return func(t *testing.M) {
@@ -42,26 +42,26 @@ func TestMain(m *testing.M) {
 	os.Exit(code)
 }
 
-func TestVideoCollectionRepo_All(t *testing.T) {
+func TestEpisodeRepo_All(t *testing.T) {
 	var (
-		createReq      *p.VideoCollectionCreateReq
-		upsertReq      *p.VideoCollectionUpsertReq
-		updateReq      *p.VideoCollectionUpdateReq
-		oneReq         *p.VideoCollectionOneReq
-		countReq       *p.VideoCollectionCountReq
-		getReq         *p.VideoCollectionGetReq
-		listReq        *p.VideoCollectionListReq
-		deleteReq      *p.VideoCollectionDeleteReq
-		deleteMultiReq *p.VideoCollectionDeleteMultiReq
-		createRes      *p.VideoCollectionCreateRes
-		upsertRes      *p.VideoCollectionUpsertRes
-		updateRes      *p.VideoCollectionUpdateRes
-		oneRes         *p.VideoCollectionOneRes
-		countRes       *p.VideoCollectionCountRes
-		getRes         *p.VideoCollectionGetRes
-		listRes        *p.VideoCollectionListRes
-		deleteRes      *p.VideoCollectionDeleteRes
-		deleteMultiRes *p.VideoCollectionDeleteMultiRes
+		createReq      *p.EpisodeCreateReq
+		upsertReq      *p.EpisodeUpsertReq
+		updateReq      *p.EpisodeUpdateReq
+		oneReq         *p.EpisodeOneReq
+		countReq       *p.EpisodeCountReq
+		getReq         *p.EpisodeGetReq
+		listReq        *p.EpisodeListReq
+		deleteReq      *p.EpisodeDeleteReq
+		deleteMultiReq *p.EpisodeDeleteMultiReq
+		createRes      *p.EpisodeCreateRes
+		upsertRes      *p.EpisodeUpsertRes
+		updateRes      *p.EpisodeUpdateRes
+		oneRes         *p.EpisodeOneRes
+		countRes       *p.EpisodeCountRes
+		getRes         *p.EpisodeGetRes
+		listRes        *p.EpisodeListRes
+		deleteRes      *p.EpisodeDeleteRes
+		deleteMultiRes *p.EpisodeDeleteMultiRes
 		insertedID1    string
 		insertedID2    = "qiihWlTCtVz72T9znB9"
 		err            error
@@ -69,10 +69,10 @@ func TestVideoCollectionRepo_All(t *testing.T) {
 	// 创建链路追踪
 	tp := otel.GetTracerProvider()
 	tracer := tp.Tracer("ri-service-provider-test")
-	ctx, span := tracer.Start(ctx, "grpc_client_test.TestVideoCollectionRepo_All")
+	ctx, span := tracer.Start(ctx, "grpc_client_test.TestEpisodeRepo_All")
 	defer span.End()
 	// test Delete 删除1条可能之前存在的记录
-	deleteReq = &p.VideoCollectionDeleteReq{
+	deleteReq = &p.EpisodeDeleteReq{
 		Id: insertedID2,
 	}
 	deleteRes, err = client.Delete(ctx, deleteReq)
@@ -81,10 +81,10 @@ func TestVideoCollectionRepo_All(t *testing.T) {
 	dateStarted := time.Now()
 
 	// test Create 会插入一条记录
-	createReq = &p.VideoCollectionCreateReq{
+	createReq = &p.EpisodeCreateReq{
 		Name:        types.Wrap("测试视频集01"),
-		ContentType: types.Wrap(enum.ContentType_PortraitVideo),
-		FilterType:  types.Wrap(enum.FilterType_Manual),
+		ContentType: types.Wrap(enum.ContentType_sports),
+		FilterType:  types.Wrap(enum.FilterType_manual),
 		Count:       types.WrapInt32(1234),
 		IsOnline:    types.Wrap(false),
 	}
@@ -96,11 +96,11 @@ func TestVideoCollectionRepo_All(t *testing.T) {
 	insertedID1 = *createRes.InsertedID
 
 	// test Upsert 会插入第二条记录
-	upsertReq = &p.VideoCollectionUpsertReq{
+	upsertReq = &p.EpisodeUpsertReq{
 		Id:          insertedID2,
 		Name:        types.Wrap("测试视频集02"),
-		ContentType: types.Wrap(enum.ContentType_LandscapeVideo),
-		FilterType:  types.Wrap(enum.FilterType_Ruled),
+		ContentType: types.Wrap(enum.ContentType_comedy),
+		FilterType:  types.Wrap(enum.FilterType_ruled),
 		Count:       types.WrapInt32(2345),
 		IsOnline:    types.Wrap(true),
 	}
@@ -111,9 +111,9 @@ func TestVideoCollectionRepo_All(t *testing.T) {
 	assert.Equal(t, int64(1), upsertRes.UpsertedCount)
 
 	// test One 第1次，命中1条记录
-	oneReq = &p.VideoCollectionOneReq{
+	oneReq = &p.EpisodeOneReq{
 		Name:        types.AnyString("测试视频集01"),
-		ContentType: types.AnyStringSlice([]string{"LandscapeVideo", "PortraitVideo"}),
+		ContentType: types.AnyStringSlice([]string{"comedy", "sports"}),
 		IsOnline:    types.AnyBoolSlice([]bool{true, false}),
 		CreatedAt:   types.AnyCondition(orm.NewCondition(types.AnyTimestamp(dateStarted), orm.WithOperator(orm.OperatorType_GTE))),
 	}
@@ -123,9 +123,9 @@ func TestVideoCollectionRepo_All(t *testing.T) {
 	assert.Equal(t, int32(1234), *oneRes.Item.Count)
 
 	// test One 第2次，无命中记录
-	oneReq = &p.VideoCollectionOneReq{
+	oneReq = &p.EpisodeOneReq{
 		Name:        types.AnyString("测试视频集01"),
-		ContentType: types.AnyString("LandscapeVideo"),
+		ContentType: types.AnyString("comedy"),
 		IsOnline:    types.AnyBoolSlice([]bool{true, false}),
 		CreatedAt:   types.AnyCondition(orm.NewCondition(types.AnyTimestamp(dateStarted), orm.WithOperator(orm.OperatorType_GTE))),
 	}
@@ -134,7 +134,7 @@ func TestVideoCollectionRepo_All(t *testing.T) {
 	assert.Equal(t, false, oneRes.Found)
 
 	// test One 第3次，命中1条记录
-	oneReq = &p.VideoCollectionOneReq{
+	oneReq = &p.EpisodeOneReq{
 		Id: types.AnyObjectID(insertedID1),
 	}
 	oneRes, err = client.One(ctx, oneReq)
@@ -143,8 +143,8 @@ func TestVideoCollectionRepo_All(t *testing.T) {
 	assert.Equal(t, "测试视频集01", *oneRes.Item.Name)
 
 	// test Count 第1次，共2条满足条件的记录
-	countReq = &p.VideoCollectionCountReq{
-		ContentType: types.AnyStringSlice([]string{"LandscapeVideo", "PortraitVideo"}),
+	countReq = &p.EpisodeCountReq{
+		ContentType: types.AnyStringSlice([]string{"comedy", "sports"}),
 		IsOnline:    types.AnyBoolSlice([]bool{true, false}),
 		CreatedAt:   types.AnyCondition(orm.NewCondition(types.AnyTimestamp(dateStarted), orm.WithOperator(orm.OperatorType_GTE))),
 	}
@@ -153,7 +153,7 @@ func TestVideoCollectionRepo_All(t *testing.T) {
 	assert.Equal(t, int64(2), countRes.TotalElements)
 
 	// test Count 第2次，共1条满足条件的记录
-	countReq = &p.VideoCollectionCountReq{
+	countReq = &p.EpisodeCountReq{
 		Name:      types.AnyString("测试视频集01"),
 		CreatedAt: types.AnyCondition(orm.NewCondition(types.AnyTimestamp(dateStarted), orm.WithOperator(orm.OperatorType_GTE))),
 	}
@@ -163,7 +163,7 @@ func TestVideoCollectionRepo_All(t *testing.T) {
 
 	// test Count 第3次，命中2条记录
 	nextDate := dateStarted.AddDate(0, 0, 1)
-	countReq = &p.VideoCollectionCountReq{
+	countReq = &p.EpisodeCountReq{
 		CreatedAt: types.AnyCondition(orm.NewCondition(types.AnyTimestampSlice([]time.Time{dateStarted, nextDate}), orm.WithMulti(orm.MultiType_Between))),
 	}
 	countRes, err = client.Count(ctx, countReq)
@@ -172,8 +172,8 @@ func TestVideoCollectionRepo_All(t *testing.T) {
 	assert.Equal(t, int64(2), countRes.TotalElements)
 
 	// test List 第1次，返回第2页，每页1条记录，当页有1条记录，为满足条件的第2条记录，其 Name 为 "TemplateName456"
-	listReq = &p.VideoCollectionListReq{
-		ContentType: types.AnyStringSlice([]string{"LandscapeVideo", "PortraitVideo"}),
+	listReq = &p.EpisodeListReq{
+		ContentType: types.AnyStringSlice([]string{"comedy", "sports"}),
 		IsOnline:    types.AnyBoolSlice([]bool{true, false}),
 		CreatedAt:   types.AnyCondition(orm.NewCondition(types.AnyTimestamp(dateStarted), orm.WithOperator(orm.OperatorType_GTE))),
 		PageRequest: &orm.PageRequest{
@@ -197,7 +197,7 @@ func TestVideoCollectionRepo_All(t *testing.T) {
 	assert.Equal(t, true, listRes.PageInfo.Last)
 
 	// test Get 返回第一条记录
-	getReq = &p.VideoCollectionGetReq{
+	getReq = &p.EpisodeGetReq{
 		Id: insertedID1,
 	}
 	getRes, err = client.Get(ctx, getReq)
@@ -206,7 +206,7 @@ func TestVideoCollectionRepo_All(t *testing.T) {
 	assert.Equal(t, "测试视频集01", *getRes.Name)
 
 	// test Update 修改第一条记录
-	updateReq = &p.VideoCollectionUpdateReq{
+	updateReq = &p.EpisodeUpdateReq{
 		Id:       insertedID1,
 		Name:     types.Wrap("测试视频集03"),
 		Count:    types.WrapInt32(3456),
@@ -217,7 +217,7 @@ func TestVideoCollectionRepo_All(t *testing.T) {
 	assert.Equal(t, int64(1), updateRes.ModifiedCount)
 
 	// test Get 再次验证第一条记录
-	getReq = &p.VideoCollectionGetReq{
+	getReq = &p.EpisodeGetReq{
 		Id: insertedID1,
 	}
 	getRes, err = client.Get(ctx, getReq)
@@ -230,7 +230,7 @@ func TestVideoCollectionRepo_All(t *testing.T) {
 	assert.Equal(t, false, *getRes.IsOnline)
 
 	// test Upsert 修改第一条记录
-	upsertReq = &p.VideoCollectionUpsertReq{
+	upsertReq = &p.EpisodeUpsertReq{
 		Id:       insertedID1,
 		Name:     types.Wrap("测试视频集04"),
 		Count:    types.WrapInt32(4567),
@@ -241,7 +241,7 @@ func TestVideoCollectionRepo_All(t *testing.T) {
 	assert.Equal(t, int64(1), updateRes.ModifiedCount)
 
 	// test Get 再次验证第一条记录
-	getReq = &p.VideoCollectionGetReq{
+	getReq = &p.EpisodeGetReq{
 		Id: insertedID1,
 	}
 	getRes, err = client.Get(ctx, getReq)
@@ -254,7 +254,7 @@ func TestVideoCollectionRepo_All(t *testing.T) {
 	assert.Equal(t, true, *getRes.IsOnline)
 
 	// test DeleteMulti 删除2条记录
-	deleteMultiReq = &p.VideoCollectionDeleteMultiReq{
+	deleteMultiReq = &p.EpisodeDeleteMultiReq{
 		Id: types.AnyStringSlice([]string{insertedID1, insertedID2}),
 	}
 	deleteMultiRes, err = client.DeleteMulti(ctx, deleteMultiReq)
@@ -262,7 +262,7 @@ func TestVideoCollectionRepo_All(t *testing.T) {
 	assert.Equal(t, int64(2), deleteMultiRes.DeletedCount)
 
 	// test Delete 删除0条记录，因为之前的 deleteMulti 已经删除过了
-	deleteReq = &p.VideoCollectionDeleteReq{
+	deleteReq = &p.EpisodeDeleteReq{
 		Id: insertedID1,
 	}
 	deleteRes, err = client.Delete(ctx, deleteReq)

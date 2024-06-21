@@ -46,7 +46,7 @@
 
 测试
 
-`curl --location --request GET 'http://localhost:8200/app/video-collection/one?name=视频推荐'`
+`curl --location --request GET 'http://localhost:8200/app/episode/one?name=视频推荐'`
 
 ### 3. 测试dubbo-go provider
 
@@ -67,28 +67,28 @@
  |______|   \_/    \__,_| |_| |_| |___/
 
  more expressive universal gRPC client
-proto.video_collection.VideoCollection@127.0.0.1:22000>
+proto.video_collection.Episode@127.0.0.1:22000>
 
 # 查看grpc server提供了哪些服务和rpc接口
-proto.video_collection.VideoCollection@127.0.0.1:22000> show service
+proto.video_collection.Episode@127.0.0.1:22000> show service
 
 +-----------------+--------+--------------------------+--------------------------+
 |     SERVICE     |  RPC   |       REQUEST TYPE       |      RESPONSE TYPE       |
 +-----------------+--------+--------------------------+--------------------------+
-| VideoCollection | Count  | VideoCollectionCountReq  | VideoCollectionCountRes  |
-| VideoCollection | One    | VideoCollectionOneReq    | VideoCollectionOneRes    |
-| VideoCollection | List   | VideoCollectionListReq   | VideoCollectionListRes   |
-| VideoCollection | Create | VideoCollectionCreateReq | VideoCollectionCreateRes |
-| VideoCollection | Update | VideoCollectionUpdateReq | VideoCollectionUpdateRes |
-| VideoCollection | Upsert | VideoCollectionUpsertReq | VideoCollectionUpsertRes |
-| VideoCollection | Delete | VideoCollectionDeleteReq | VideoCollectionDeleteRes |
+| Episode | Count  | EpisodeCountReq  | EpisodeCountRes  |
+| Episode | One    | EpisodeOneReq    | EpisodeOneRes    |
+| Episode | List   | EpisodeListReq   | EpisodeListRes   |
+| Episode | Create | EpisodeCreateReq | EpisodeCreateRes |
+| Episode | Update | EpisodeUpdateReq | EpisodeUpdateRes |
+| Episode | Upsert | EpisodeUpsertReq | EpisodeUpsertRes |
+| Episode | Delete | EpisodeDeleteReq | EpisodeDeleteRes |
 +-----------------+--------+--------------------------+--------------------------+
 
 # 查看grpc server提供了哪些服务和rpc接口
-proto.video_collection.VideoCollection@127.0.0.1:22000> service VideoCollection
-# 已切换到 VideoCollection 服务下，之后的 call 命令可以直接调用该服务下的 rpc method 了
+proto.video_collection.Episode@127.0.0.1:22000> service Episode
+# 已切换到 Episode 服务下，之后的 call 命令可以直接调用该服务下的 rpc method 了
 
-proto.video_collection.VideoCollection@127.0.0.1:22000> call One
+proto.video_collection.Episode@127.0.0.1:22000> call One
 ✔ _
 meta (TYPE_ENUM) => 
 id::type_url (TYPE_STRING) => type.googleapis.com/google.protobuf.StringValue
@@ -139,7 +139,7 @@ docker run -p 8888:8888 \
 
 例如
 ```shell
-curl --location --request POST 'http://localhost:8888/repo_service/VideoCollection/List' \
+curl --location --request POST 'http://localhost:8888/repo_service/Episode/List' \
 --header 'Content-Type: application/json' \
 --data-raw '{
     "name": {
@@ -179,7 +179,7 @@ sql 脚本待提供
 
 测试
 
-`curl --location --request GET 'http://localhost:8200/app/video-collection/one?name=视频推荐'`
+`curl --location --request GET 'http://localhost:8200/app/episode/one?name=视频推荐'`
 
 
 ## 三、附加说明

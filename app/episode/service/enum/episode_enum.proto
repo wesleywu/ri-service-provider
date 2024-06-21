@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+package proto;
+
+option go_package = "github.com/wesleywu/ri-service-provider/app/episode/service/enum;enum";
+
+enum ContentType {
+  news           = 0;  // 新闻
+  comedy         = 1;  // 喜剧
+  sports         = 2;  // 体育
+}
+
+enum FilterType {
+  ruled          = 0; // 规则筛选
+  manual         = 1; // 人工
+}
+

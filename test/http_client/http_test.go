@@ -17,8 +17,8 @@ import (
 	"github.com/rs/zerolog"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"github.com/wesleywu/ri-service-provider/app/videocollection/service/enum"
-	"github.com/wesleywu/ri-service-provider/app/videocollection/service/proto"
+	"github.com/wesleywu/ri-service-provider/app/episode/service/enum"
+	"github.com/wesleywu/ri-service-provider/app/episode/service/proto"
 )
 
 const (
@@ -29,7 +29,7 @@ const (
 
 var (
 	ctx           = context.Background()
-	baseUrl       = "http://localhost:8200/v1/video-collection"
+	baseUrl       = "http://localhost:8200/v1/episode"
 	log           = logger.NewConsoleLogger(zerolog.InfoLevel)
 	logHelper     = logger.NewLoggerHelper(ctx, log)
 	appMetadata   = newAppMetadata()
@@ -51,26 +51,26 @@ func newAppMetadata() *appinfo.AppMetadata {
 	}
 }
 
-func TestVideoCollectionRepo_All(t *testing.T) {
+func TestEpisodeRepo_All(t *testing.T) {
 	var (
 		url            string
 		data           string
 		httpRes        *httpclient.Response
-		createRes      *proto.VideoCollectionCreateRes
-		upsertRes      *proto.VideoCollectionUpsertRes
-		updateRes      *proto.VideoCollectionUpdateRes
-		oneRes         *proto.VideoCollectionOneRes
-		countRes       *proto.VideoCollectionCountRes
-		getRes         *proto.VideoCollectionGetRes
-		listRes        *proto.VideoCollectionListRes
-		deleteRes      *proto.VideoCollectionDeleteRes
-		deleteMultiRes *proto.VideoCollectionDeleteMultiRes
+		createRes      *proto.EpisodeCreateRes
+		upsertRes      *proto.EpisodeUpsertRes
+		updateRes      *proto.EpisodeUpdateRes
+		oneRes         *proto.EpisodeOneRes
+		countRes       *proto.EpisodeCountRes
+		getRes         *proto.EpisodeGetRes
+		listRes        *proto.EpisodeListRes
+		deleteRes      *proto.EpisodeDeleteRes
+		deleteMultiRes *proto.EpisodeDeleteMultiRes
 		insertedID1    string
 		insertedID2    = "qiihWlTCtVz72T9znB9"
 		err            error
 	)
 	tracer := tp.Tracer("ri-service-provider-test")
-	_, span := tracer.Start(ctx, "http_client_test.TestVideoCollectionRepo_All")
+	_, span := tracer.Start(ctx, "http_client_test.TestEpisodeRepo_All")
 	defer span.End()
 
 	// test Delete 删除1条可能之前存在的记录
@@ -79,7 +79,7 @@ func TestVideoCollectionRepo_All(t *testing.T) {
 	require.NoError(t, err)
 	require.NotNil(t, httpRes)
 	require.Equal(t, 200, httpRes.StatusCode)
-	deleteRes = (*proto.VideoCollectionDeleteRes)(nil)
+	deleteRes = (*proto.EpisodeDeleteRes)(nil)
 	err = jsonCodec.Unmarshal(httpRes.Body, &deleteRes)
 	assert.NoError(t, err)
 
@@ -93,12 +93,12 @@ func TestVideoCollectionRepo_All(t *testing.T) {
 			"filterType": "%s",
 			"count": 1234,
 			"isOnline": false
-		}`, enum.ContentType_name[int32(enum.ContentType_PortraitVideo)], enum.FilterType_name[int32(enum.FilterType_Manual)])
+		}`, enum.ContentType_name[int32(enum.ContentType_comedy)], enum.FilterType_name[int32(enum.FilterType_manual)])
 	httpRes, err = client.PostWithHeaders(url, commonHeaders, data, 0)
 	assert.NoError(t, err)
 	assert.NotNil(t, httpRes)
 	assert.Equal(t, 200, httpRes.StatusCode)
-	createRes = (*proto.VideoCollectionCreateRes)(nil)
+	createRes = (*proto.EpisodeCreateRes)(nil)
 	err = jsonCodec.Unmarshal(httpRes.Body, &createRes)
 	//err = jsonCodec.Unmarshal(httpRes.Body, &createRes)
 	assert.NoError(t, err)
@@ -114,12 +114,12 @@ func TestVideoCollectionRepo_All(t *testing.T) {
 			"filterType": "%s",
 			"count": 2345,
 			"isOnline": true
-		}`, enum.ContentType_name[int32(enum.ContentType_LandscapeVideo)], enum.FilterType_name[int32(enum.FilterType_Ruled)])
+		}`, enum.ContentType_name[int32(enum.ContentType_sports)], enum.FilterType_name[int32(enum.FilterType_ruled)])
 	httpRes, err = client.PutWithHeaders(url, commonHeaders, data, 0)
 	assert.NoError(t, err)
 	assert.NotNil(t, httpRes)
 	assert.Equal(t, 200, httpRes.StatusCode)
-	upsertRes = (*proto.VideoCollectionUpsertRes)(nil)
+	upsertRes = (*proto.EpisodeUpsertRes)(nil)
 	err = jsonCodec.Unmarshal(httpRes.Body, &upsertRes)
 	assert.NoError(t, err)
 	assert.NotNil(t, upsertRes.UpsertedID)
@@ -135,7 +135,7 @@ func TestVideoCollectionRepo_All(t *testing.T) {
 				},
 				"contentType": {
 					"@type":"goguru.types.StringSlice",
-					"value":["LandscapeVideo", "PortraitVideo"]
+					"value":["sports", "comedy"]
 				},
 				"isOnline": {
 					"@type":"goguru.types.BoolSlice",
@@ -154,7 +154,7 @@ func TestVideoCollectionRepo_All(t *testing.T) {
 	assert.NoError(t, err)
 	assert.NotNil(t, httpRes)
 	assert.Equal(t, 200, httpRes.StatusCode)
-	oneRes = (*proto.VideoCollectionOneRes)(nil)
+	oneRes = (*proto.EpisodeOneRes)(nil)
 	err = jsonCodec.Unmarshal(httpRes.Body, &oneRes)
 	assert.NoError(t, err)
 	assert.Equal(t, true, oneRes.Found)
@@ -168,7 +168,7 @@ func TestVideoCollectionRepo_All(t *testing.T) {
 				},
 				"contentType": {
 					"@type":"google.protobuf.StringValue",
-					"value":"LandscapeVideo"
+					"value":"sports"
 				},
 				"isOnline": {
 					"@type":"goguru.types.BoolSlice",
@@ -187,7 +187,7 @@ func TestVideoCollectionRepo_All(t *testing.T) {
 	assert.NoError(t, err)
 	assert.NotNil(t, httpRes)
 	assert.Equal(t, 200, httpRes.StatusCode)
-	oneRes = (*proto.VideoCollectionOneRes)(nil)
+	oneRes = (*proto.EpisodeOneRes)(nil)
 	err = jsonCodec.Unmarshal(httpRes.Body, &oneRes)
 	assert.NoError(t, err)
 	assert.Equal(t, false, oneRes.Found)
@@ -197,7 +197,7 @@ func TestVideoCollectionRepo_All(t *testing.T) {
 	data = fmt.Sprintf(`{
 				"contentType": {
 					"@type":"goguru.types.StringSlice",
-					"value":["LandscapeVideo", "PortraitVideo"]
+					"value":["sports", "comedy"]
 				},
 				"isOnline": {
 					"@type":"goguru.types.BoolSlice",
@@ -216,7 +216,7 @@ func TestVideoCollectionRepo_All(t *testing.T) {
 	assert.NoError(t, err)
 	assert.NotNil(t, httpRes)
 	assert.Equal(t, 200, httpRes.StatusCode)
-	countRes = (*proto.VideoCollectionCountRes)(nil)
+	countRes = (*proto.EpisodeCountRes)(nil)
 	err = jsonCodec.Unmarshal(httpRes.Body, &countRes)
 	assert.NoError(t, err)
 	assert.Equal(t, int64(2), countRes.TotalElements)
@@ -241,7 +241,7 @@ func TestVideoCollectionRepo_All(t *testing.T) {
 	assert.NoError(t, err)
 	assert.NotNil(t, httpRes)
 	assert.Equal(t, 200, httpRes.StatusCode)
-	countRes = (*proto.VideoCollectionCountRes)(nil)
+	countRes = (*proto.EpisodeCountRes)(nil)
 	err = jsonCodec.Unmarshal(httpRes.Body, &countRes)
 	assert.NoError(t, err)
 	assert.Equal(t, int64(1), countRes.TotalElements)
@@ -263,7 +263,7 @@ func TestVideoCollectionRepo_All(t *testing.T) {
 	assert.NoError(t, err)
 	assert.NotNil(t, httpRes)
 	assert.Equal(t, 200, httpRes.StatusCode)
-	countRes = (*proto.VideoCollectionCountRes)(nil)
+	countRes = (*proto.EpisodeCountRes)(nil)
 	err = jsonCodec.Unmarshal(httpRes.Body, &countRes)
 	assert.NoError(t, err)
 	assert.Equal(t, int64(2), countRes.TotalElements)
@@ -273,7 +273,7 @@ func TestVideoCollectionRepo_All(t *testing.T) {
 	data = fmt.Sprintf(`{
 				"contentType": {
 					"@type":"goguru.types.StringSlice",
-					"value":["LandscapeVideo", "PortraitVideo"]
+					"value":["sports", "comedy"]
 				},
 				"isOnline": {
 					"@type":"goguru.types.BoolSlice",
@@ -300,7 +300,7 @@ func TestVideoCollectionRepo_All(t *testing.T) {
 	assert.NoError(t, err)
 	assert.NotNil(t, httpRes)
 	assert.Equal(t, 200, httpRes.StatusCode)
-	listRes = (*proto.VideoCollectionListRes)(nil)
+	listRes = (*proto.EpisodeListRes)(nil)
 	err = jsonCodec.Unmarshal(httpRes.Body, &listRes)
 	assert.NoError(t, err)
 	assert.Equal(t, int64(2), listRes.PageInfo.Number)
@@ -316,7 +316,7 @@ func TestVideoCollectionRepo_All(t *testing.T) {
 	assert.NoError(t, err)
 	assert.NotNil(t, httpRes)
 	assert.Equal(t, 200, httpRes.StatusCode)
-	getRes = (*proto.VideoCollectionGetRes)(nil)
+	getRes = (*proto.EpisodeGetRes)(nil)
 	err = jsonCodec.Unmarshal(httpRes.Body, &getRes)
 	assert.NotNil(t, getRes.Name)
 	assert.Equal(t, "测试视频集01", *getRes.Name)
@@ -332,7 +332,7 @@ func TestVideoCollectionRepo_All(t *testing.T) {
 	assert.NoError(t, err)
 	assert.NotNil(t, httpRes)
 	assert.Equal(t, 200, httpRes.StatusCode)
-	updateRes = (*proto.VideoCollectionUpdateRes)(nil)
+	updateRes = (*proto.EpisodeUpdateRes)(nil)
 	err = jsonCodec.Unmarshal(httpRes.Body, &updateRes)
 	assert.Equal(t, int64(1), updateRes.ModifiedCount)
 
@@ -342,7 +342,7 @@ func TestVideoCollectionRepo_All(t *testing.T) {
 	assert.NoError(t, err)
 	assert.NotNil(t, httpRes)
 	assert.Equal(t, 200, httpRes.StatusCode)
-	getRes = (*proto.VideoCollectionGetRes)(nil)
+	getRes = (*proto.EpisodeGetRes)(nil)
 	err = jsonCodec.Unmarshal(httpRes.Body, &getRes)
 	assert.NotNil(t, getRes.Name)
 	assert.NotNil(t, getRes.Count)
@@ -362,7 +362,7 @@ func TestVideoCollectionRepo_All(t *testing.T) {
 	assert.NoError(t, err)
 	assert.NotNil(t, httpRes)
 	assert.Equal(t, 200, httpRes.StatusCode)
-	updateRes = (*proto.VideoCollectionUpdateRes)(nil)
+	updateRes = (*proto.EpisodeUpdateRes)(nil)
 	err = jsonCodec.Unmarshal(httpRes.Body, &updateRes)
 	assert.Equal(t, int64(1), updateRes.ModifiedCount)
 
@@ -372,7 +372,7 @@ func TestVideoCollectionRepo_All(t *testing.T) {
 	assert.NoError(t, err)
 	assert.NotNil(t, httpRes)
 	assert.Equal(t, 200, httpRes.StatusCode)
-	getRes = (*proto.VideoCollectionGetRes)(nil)
+	getRes = (*proto.EpisodeGetRes)(nil)
 	err = jsonCodec.Unmarshal(httpRes.Body, &getRes)
 	assert.NotNil(t, getRes.Name)
 	assert.NotNil(t, getRes.Count)
@@ -393,7 +393,7 @@ func TestVideoCollectionRepo_All(t *testing.T) {
 	require.NoError(t, err)
 	require.NotNil(t, httpRes)
 	require.Equal(t, 200, httpRes.StatusCode)
-	deleteMultiRes = (*proto.VideoCollectionDeleteMultiRes)(nil)
+	deleteMultiRes = (*proto.EpisodeDeleteMultiRes)(nil)
 	err = jsonCodec.Unmarshal(httpRes.Body, &deleteMultiRes)
 	assert.NoError(t, err)
 	assert.Equal(t, int64(2), deleteMultiRes.DeletedCount)
@@ -404,7 +404,7 @@ func TestVideoCollectionRepo_All(t *testing.T) {
 	require.NoError(t, err)
 	require.NotNil(t, httpRes)
 	require.Equal(t, 200, httpRes.StatusCode)
-	deleteRes = (*proto.VideoCollectionDeleteRes)(nil)
+	deleteRes = (*proto.EpisodeDeleteRes)(nil)
 	err = jsonCodec.Unmarshal(httpRes.Body, &deleteRes)
 	assert.NoError(t, err)
 	assert.Equal(t, int64(0), deleteRes.DeletedCount)

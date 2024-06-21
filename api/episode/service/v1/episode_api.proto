@@ -2,10 +2,10 @@ syntax = "proto3";
 
 package v1;
 
-option go_package = "github.com/wesleywu/ri-service-provider/api/videocollection/service/v1;v1";
+option go_package = "github.com/wesleywu/ri-service-provider/api/episode/service/v1;v1";
 option java_multiple_files = true;
-option java_package = "repo.video_collection.v1";
-option java_outer_classname = "VideoCollectionV1";
+option java_package = "repo.episode.v1";
+option java_outer_classname = "EpisodeV1";
 
 import "google/api/annotations.proto";
 import "google/protobuf/timestamp.proto";
@@ -15,91 +15,91 @@ import "goguru/cache/annotations.proto";
 import "goguru/orm/condition.proto";
 import "goguru/orm/query.proto";
 import "goguru/types/objectid.proto";
-import "app/videocollection/service/proto/video_collection.proto";
+import "app/episode/service/proto/episode.proto";
 
-service VideoCollection {
-  rpc Count (proto.VideoCollectionCountReq) returns (proto.VideoCollectionCountRes){
+service Episode {
+  rpc Count (proto.EpisodeCountReq) returns (proto.EpisodeCountRes){
     option (google.api.http) = {
-      post: "/v1/video-collection/count",
+      post: "/v1/episode/count",
       body: "*",
     };
     option (goguru.cache.rule) = {
       cachable: false,
-      name: "VideoCollection",
+      name: "Episode",
       ttl: "30s",
       key: "",
     };
   }
-  rpc One (proto.VideoCollectionOneReq) returns (proto.VideoCollectionOneRes){
+  rpc One (proto.EpisodeOneReq) returns (proto.EpisodeOneRes){
     option (google.api.http) = {
-      post: "/v1/video-collection/one",
+      post: "/v1/episode/one",
       body: "*",
     };
     option (goguru.cache.rule) = {
       cachable: false,
-      name: "VideoCollection",
+      name: "Episode",
       ttl: "30s",
       key: "",
     };
   }
-  rpc List (proto.VideoCollectionListReq) returns (proto.VideoCollectionListRes){
+  rpc List (proto.EpisodeListReq) returns (proto.EpisodeListRes){
     option (google.api.http) = {
-      post: "/v1/video-collection/list",
+      post: "/v1/episode/list",
       body: "*",
     };
     option (goguru.cache.rule) = {
       cachable: false,
-      name: "VideoCollection",
+      name: "Episode",
       ttl: "30s",
       key: "",
     };
   }
-  rpc Get (proto.VideoCollectionGetReq) returns (proto.VideoCollectionGetRes){
+  rpc Get (proto.EpisodeGetReq) returns (proto.EpisodeGetRes){
     option (google.api.http) = {
-      get: "/v1/video-collection/{id}",
+      get: "/v1/episode/{id}",
     };
     option (goguru.cache.rule) = {
       cachable: false,
     };
   }
-  rpc Create (proto.VideoCollectionCreateReq) returns (proto.VideoCollectionCreateRes){
+  rpc Create (proto.EpisodeCreateReq) returns (proto.EpisodeCreateRes){
     option (google.api.http) = {
-      post: "/v1/video-collection",
+      post: "/v1/episode",
       body: "*",
     };
     option (goguru.cache.rule) = {
       cachable: false,
     };
   }
-  rpc Update (proto.VideoCollectionUpdateReq) returns (proto.VideoCollectionUpdateRes){
+  rpc Update (proto.EpisodeUpdateReq) returns (proto.EpisodeUpdateRes){
     option (google.api.http) = {
-      patch: "/v1/video-collection/{id}",
+      patch: "/v1/episode/{id}",
       body: "*",
     };
     option (goguru.cache.rule) = {
       cachable: false,
     };
   }
-  rpc Upsert (proto.VideoCollectionUpsertReq) returns (proto.VideoCollectionUpsertRes){
+  rpc Upsert (proto.EpisodeUpsertReq) returns (proto.EpisodeUpsertRes){
     option (google.api.http) = {
-      put: "/v1/video-collection/{id}",
+      put: "/v1/episode/{id}",
       body: "*",
     };
     option (goguru.cache.rule) = {
       cachable: false,
     };
   }
-  rpc Delete (proto.VideoCollectionDeleteReq) returns (proto.VideoCollectionDeleteRes){
+  rpc Delete (proto.EpisodeDeleteReq) returns (proto.EpisodeDeleteRes){
     option (google.api.http) = {
-      delete: "/v1/video-collection/{id}",
+      delete: "/v1/episode/{id}",
     };
     option (goguru.cache.rule) = {
       cachable: false,
     };
   }
-  rpc DeleteMulti (proto.VideoCollectionDeleteMultiReq) returns (proto.VideoCollectionDeleteMultiRes){
+  rpc DeleteMulti (proto.EpisodeDeleteMultiReq) returns (proto.EpisodeDeleteMultiRes){
     option (google.api.http) = {
-      post: "/v1/video-collection/delete",
+      post: "/v1/episode/delete",
       body: "*",
     };
     option (goguru.cache.rule) = {
