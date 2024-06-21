@@ -4,8 +4,13 @@ deps:
   - remote: buf.build
     owner: castbox
     repository: goguru
-    commit: cee1a810793e480087928fdb124cf42f
-    digest: shake256:bd366b2ebd75df570be90dcd6d446587beca6b13b384d794c64a38c7d5d6f397ca713981fcf879078206cbfeba2bf08a8c98f6a8dde57138ae55d5e2aca5eda5
+    commit: 95454b5ced7e40f79972f56c4fc1f4f5
+    digest: shake256:a323f731261dadbc5f9c767629639045a091929f3c3874ef6db654b36c5e10789d0df01d8d2494c28b5f429e1a9b18d7a7bae13dbcbbbce034e95b40ea9a1c48
+  - remote: buf.build
+    owner: castbox
+    repository: translation
+    commit: b1afe158f6424dc5ace511a0911cf1a7
+    digest: shake256:b67eea6e17f17add6b0c1b5092a8154496a1c9cc363d32a2080702fd487e3f87df1b6ff4e81d6c60285d025c7625d07ba3d268048d1ce1097d47a3b0c5b3e1ca
   - remote: buf.build
     owner: googleapis
     repository: googleapis

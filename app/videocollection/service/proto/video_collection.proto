@@ -67,6 +67,9 @@ service VideoCollectionRepo {
 }
 
 message VideoCollectionCountReq {
+  message Test {
+    string name = 1;
+  }
   google.protobuf.Any                  id            = 1;
   google.protobuf.Any                  name          = 2;
   google.protobuf.Any                  contentType   = 3;
