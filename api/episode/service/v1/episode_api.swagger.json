@@ -737,7 +737,7 @@
         "message": {
           "type": "string"
         },
-        "insertedID": {
+        "insertedId": {
           "type": "string"
         },
         "insertedCount": {
@@ -911,6 +911,12 @@
         },
         "pageRequest": {
           "$ref": "#/definitions/ormPageRequest"
+        },
+        "fieldsIncluded": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         }
       }
     },
@@ -974,6 +980,12 @@
         },
         "pageRequest": {
           "$ref": "#/definitions/ormPageRequest"
+        },
+        "fieldsIncluded": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         }
       }
     },
@@ -1012,7 +1024,7 @@
         "message": {
           "type": "string"
         },
-        "upsertedID": {
+        "upsertedId": {
           "type": "string"
         },
         "matchedCount": {

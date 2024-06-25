@@ -344,6 +344,10 @@ func (m *EpisodeOneReq) SetPageRequest(v *orm.PageRequest) {
 	m.PageRequest = v
 }
 
+func (m *EpisodeOneReq) SetFieldsIncluded(v []string) {
+	m.FieldsIncluded = v
+}
+
 func (m *EpisodeOneRes) SetFound(v bool) {
 	m.Found = v
 }
@@ -402,6 +406,10 @@ func (m *EpisodeListReq) SetExtraFilters(v []*orm.PropertyFilter) {
 
 func (m *EpisodeListReq) SetPageRequest(v *orm.PageRequest) {
 	m.PageRequest = v
+}
+
+func (m *EpisodeListReq) SetFieldsIncluded(v []string) {
+	m.FieldsIncluded = v
 }
 
 func (m *EpisodeListRes) SetPageInfo(v *orm.PageInfo) {
@@ -504,8 +512,8 @@ func (m *EpisodeCreateRes) SetMessage(v string) {
 	m.Message = v
 }
 
-func (m *EpisodeCreateRes) SetInsertedID(v *string) {
-	m.InsertedID = v
+func (m *EpisodeCreateRes) SetInsertedId(v *string) {
+	m.InsertedId = v
 }
 
 func (m *EpisodeCreateRes) SetInsertedCount(v int64) {
@@ -616,8 +624,8 @@ func (m *EpisodeUpsertRes) SetMessage(v string) {
 	m.Message = v
 }
 
-func (m *EpisodeUpsertRes) SetUpsertedID(v *string) {
-	m.UpsertedID = v
+func (m *EpisodeUpsertRes) SetUpsertedId(v *string) {
+	m.UpsertedId = v
 }
 
 func (m *EpisodeUpsertRes) SetMatchedCount(v int64) {

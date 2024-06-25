@@ -3,7 +3,7 @@ module github.com/wesleywu/ri-service-provider
 go 1.22
 
 require (
-	github.com/castbox/go-guru v0.2.8
+	github.com/castbox/go-guru v0.2.10
 	github.com/go-kratos/kratos/v2 v2.7.3
 	github.com/google/wire v0.6.0
 	github.com/prometheus/client_golang v1.19.1

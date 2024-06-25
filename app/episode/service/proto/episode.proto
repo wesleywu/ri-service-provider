@@ -20,10 +20,10 @@ import "goguru/orm/query.proto";
 import "app/episode/service/enum/episode_enum.proto";
 
 message QuestionAnswer {
-  optional google.protobuf.Duration start_time = 1 [(tagger.tags) = "bson:\"start_time,omitempty\" json:\"startTime,omitempty\""];
-  optional google.protobuf.Duration end_time   = 2 [(tagger.tags) = "bson:\"end_time,omitempty\" json:\"endTime,omitempty\""];
-  optional string                   question   = 3 [(tagger.tags) = "bson:\"question,omitempty\" json:\"question,omitempty\""];
-  optional string                   answer     = 4 [(tagger.tags) = "bson:\"answer,omitempty\" json:\"answer,omitempty\""];
+  optional google.protobuf.Duration start_time             = 1 [(tagger.tags) = "bson:\"start_time,omitempty\" json:\"startTime,omitempty\""];
+  optional google.protobuf.Duration end_time               = 2 [(tagger.tags) = "bson:\"end_time,omitempty\" json:\"endTime,omitempty\""];
+  optional string                   question               = 3 [(tagger.tags) = "bson:\"question,omitempty\" json:\"question,omitempty\""];
+  optional string                   answer                 = 4 [(tagger.tags) = "bson:\"answer,omitempty\" json:\"answer,omitempty\""];
 }
 
 message Episode {
@@ -52,199 +52,200 @@ message Episode {
       }
     ]
   };
-  optional string                      id            = 1    [(tagger.tags) = "bson:\"_id,omitempty\" json:\"id,omitempty\""];
-  optional string                      name          = 2    [(tagger.tags) = "bson:\"name,omitempty\" json:\"name,omitempty\""];
-  optional ContentType                 content_type  = 3    [(tagger.tags) = "bson:\"content_type,omitempty\" json:\"contentType,omitempty\""];
-  optional FilterType                  filter_type   = 4    [(tagger.tags) = "bson:\"filter_type,omitempty\" json:\"filterType,omitempty\""];
-  optional int32                       count         = 5    [(tagger.tags) = "bson:\"count,omitempty\" json:\"count,omitempty\""];
-  optional bool                        is_online     = 6    [(tagger.tags) = "bson:\"is_online,omitempty\" json:\"isOnline,omitempty\""];
-  repeated string                      keywords      = 7    [(tagger.tags) = "bson:\"keywords,omitempty\" json:\"keywords,omitempty\""];
-  map<string, string>                  outlines      = 8    [(tagger.tags) = "bson:\"outlines,omitempty\" json:\"outlines,omitempty\""];
-  repeated QuestionAnswer              qas           = 9    [(tagger.tags) = "bson:\"qas,omitempty\" json:\"qas,omitempty\""];
-  optional google.protobuf.Timestamp   created_at    = 101  [(tagger.tags) = "bson:\"created_at,omitempty\" json:\"createdAt,omitempty\""];
-  optional google.protobuf.Timestamp   updated_at    = 102  [(tagger.tags) = "bson:\"updated_at,omitempty\" json:\"updatedAt,omitempty\""];
+  optional string                      id                  = 1    [(tagger.tags) = "bson:\"_id,omitempty\" json:\"id,omitempty\""];
+  optional string                      name                = 2    [(tagger.tags) = "bson:\"name,omitempty\" json:\"name,omitempty\""];
+  optional ContentType                 content_type        = 3    [(tagger.tags) = "bson:\"content_type,omitempty\" json:\"contentType,omitempty\""];
+  optional FilterType                  filter_type         = 4    [(tagger.tags) = "bson:\"filter_type,omitempty\" json:\"filterType,omitempty\""];
+  optional int32                       count               = 5    [(tagger.tags) = "bson:\"count,omitempty\" json:\"count,omitempty\""];
+  optional bool                        is_online           = 6    [(tagger.tags) = "bson:\"is_online,omitempty\" json:\"isOnline,omitempty\""];
+  repeated string                      keywords            = 7    [(tagger.tags) = "bson:\"keywords,omitempty\" json:\"keywords,omitempty\""];
+  map<string, string>                  outlines            = 8    [(tagger.tags) = "bson:\"outlines,omitempty\" json:\"outlines,omitempty\""];
+  repeated QuestionAnswer              qas                 = 9    [(tagger.tags) = "bson:\"qas,omitempty\" json:\"qas,omitempty\""];
+  optional google.protobuf.Timestamp   created_at          = 101  [(tagger.tags) = "bson:\"created_at,omitempty\" json:\"createdAt,omitempty\""];
+  optional google.protobuf.Timestamp   updated_at          = 102  [(tagger.tags) = "bson:\"updated_at,omitempty\" json:\"updatedAt,omitempty\""];
 }
 
 service EpisodeRepo {
-  rpc Count (proto.EpisodeCountReq)             returns (proto.EpisodeCountRes);
-  rpc One (proto.EpisodeOneReq)                 returns (proto.EpisodeOneRes);
-  rpc List (proto.EpisodeListReq)               returns (proto.EpisodeListRes);
-  rpc Get (proto.EpisodeGetReq)                 returns (proto.EpisodeGetRes);
-  rpc Create (proto.EpisodeCreateReq)           returns (proto.EpisodeCreateRes);
-  rpc Update (proto.EpisodeUpdateReq)           returns (proto.EpisodeUpdateRes);
-  rpc Upsert (proto.EpisodeUpsertReq)           returns (proto.EpisodeUpsertRes);
-  rpc Delete (proto.EpisodeDeleteReq)           returns (proto.EpisodeDeleteRes);
-  rpc DeleteMulti (proto.EpisodeDeleteMultiReq) returns (proto.EpisodeDeleteMultiRes);
+  rpc Count (proto.EpisodeCountReq)                        returns (proto.EpisodeCountRes);
+  rpc One (proto.EpisodeOneReq)                            returns (proto.EpisodeOneRes);
+  rpc List (proto.EpisodeListReq)                          returns (proto.EpisodeListRes);
+  rpc Get (proto.EpisodeGetReq)                            returns (proto.EpisodeGetRes);
+  rpc Create (proto.EpisodeCreateReq)                      returns (proto.EpisodeCreateRes);
+  rpc Update (proto.EpisodeUpdateReq)                      returns (proto.EpisodeUpdateRes);
+  rpc Upsert (proto.EpisodeUpsertReq)                      returns (proto.EpisodeUpsertRes);
+  rpc Delete (proto.EpisodeDeleteReq)                      returns (proto.EpisodeDeleteRes);
+  rpc DeleteMulti (proto.EpisodeDeleteMultiReq)            returns (proto.EpisodeDeleteMultiRes);
 }
 
 message EpisodeCountReq {
   message Test {
     string name = 1;
   }
-  google.protobuf.Any                  id            = 1    [(tagger.tags) = "json:\"id,omitempty\""];
-  google.protobuf.Any                  name          = 2    [(tagger.tags) = "json:\"name,omitempty\""];
-  google.protobuf.Any                  content_type  = 3    [(tagger.tags) = "json:\"contentType,omitempty\""];
-  google.protobuf.Any                  filter_type   = 4    [(tagger.tags) = "json:\"filterType,omitempty\""];
-  google.protobuf.Any                  count         = 5    [(tagger.tags) = "json:\"count,omitempty\""];
-  google.protobuf.Any                  is_online     = 6    [(tagger.tags) = "json:\"isOnline,omitempty\""];
-  google.protobuf.Any                  keywords      = 7    [(tagger.tags) = "json:\"keywords,omitempty\""];
-  google.protobuf.Any                  outlines      = 8    [(tagger.tags) = "json:\"outlines,omitempty\""];
-  google.protobuf.Any                  qas           = 9    [(tagger.tags) = "json:\"qas,omitempty\""];
-  google.protobuf.Any                  created_at    = 101  [(tagger.tags) = "json:\"createdAt,omitempty\""];
-  google.protobuf.Any                  updated_at    = 102  [(tagger.tags) = "json:\"updatedAt,omitempty\""];
-  repeated goguru.orm.PropertyFilter   extra_filters = 1001 [(tagger.tags) = "json:\"extraFilters,omitempty\""];
+  google.protobuf.Any                  id                  = 1    [(tagger.tags) = "json:\"id,omitempty\""];
+  google.protobuf.Any                  name                = 2    [(tagger.tags) = "json:\"name,omitempty\""];
+  google.protobuf.Any                  content_type        = 3    [(tagger.tags) = "json:\"contentType,omitempty\""];
+  google.protobuf.Any                  filter_type         = 4    [(tagger.tags) = "json:\"filterType,omitempty\""];
+  google.protobuf.Any                  count               = 5    [(tagger.tags) = "json:\"count,omitempty\""];
+  google.protobuf.Any                  is_online           = 6    [(tagger.tags) = "json:\"isOnline,omitempty\""];
+  google.protobuf.Any                  keywords            = 7    [(tagger.tags) = "json:\"keywords,omitempty\""];
+  google.protobuf.Any                  outlines            = 8    [(tagger.tags) = "json:\"outlines,omitempty\""];
+  google.protobuf.Any                  qas                 = 9    [(tagger.tags) = "json:\"qas,omitempty\""];
+  google.protobuf.Any                  created_at          = 101  [(tagger.tags) = "json:\"createdAt,omitempty\""];
+  google.protobuf.Any                  updated_at          = 102  [(tagger.tags) = "json:\"updatedAt,omitempty\""];
+  repeated goguru.orm.PropertyFilter   extra_filters       = 1001 [(tagger.tags) = "json:\"extraFilters,omitempty\""];
 }
 
 message EpisodeCountRes {
-  int64                                totalElements = 1    [(tagger.tags) = "json:\"total\""];
+  int64                                totalElements       = 1    [(tagger.tags) = "json:\"total\""];
 }
 
 message EpisodeOneReq {
-  google.protobuf.Any                  id            = 1    [(tagger.tags) = "json:\"id,omitempty\""];
-  google.protobuf.Any                  name          = 2    [(tagger.tags) = "json:\"name,omitempty\""];
-  google.protobuf.Any                  content_type  = 3    [(tagger.tags) = "json:\"contentType,omitempty\""];
-  google.protobuf.Any                  filter_type   = 4    [(tagger.tags) = "json:\"filterType,omitempty\""];
-  google.protobuf.Any                  count         = 5    [(tagger.tags) = "json:\"count,omitempty\""];
-  google.protobuf.Any                  is_online     = 6    [(tagger.tags) = "json:\"isOnline,omitempty\""];
-  google.protobuf.Any                  keywords      = 7    [(tagger.tags) = "json:\"keywords,omitempty\""];
-  google.protobuf.Any                  outlines      = 8    [(tagger.tags) = "json:\"outlines,omitempty\""];
-  google.protobuf.Any                  qas           = 9    [(tagger.tags) = "json:\"qas,omitempty\""];
-  google.protobuf.Any                  created_at    = 101  [(tagger.tags) = "json:\"createdAt,omitempty\""];
-  google.protobuf.Any                  updated_at    = 102  [(tagger.tags) = "json:\"updatedAt,omitempty\""];
-  repeated goguru.orm.PropertyFilter   extra_filters = 1001 [(tagger.tags) = "json:\"extraFilters,omitempty\""];
-  goguru.orm.PageRequest               page_request  = 1002 [(tagger.tags) = "json:\"pageRequest,omitempty\""];
-}
+  google.protobuf.Any                  id                  = 1    [(tagger.tags) = "json:\"id,omitempty\""];
+  google.protobuf.Any                  name                = 2    [(tagger.tags) = "json:\"name,omitempty\""];
+  google.protobuf.Any                  content_type        = 3    [(tagger.tags) = "json:\"contentType,omitempty\""];
+  google.protobuf.Any                  filter_type         = 4    [(tagger.tags) = "json:\"filterType,omitempty\""];
+  google.protobuf.Any                  count               = 5    [(tagger.tags) = "json:\"count,omitempty\""];
+  google.protobuf.Any                  is_online           = 6    [(tagger.tags) = "json:\"isOnline,omitempty\""];
+  google.protobuf.Any                  keywords            = 7    [(tagger.tags) = "json:\"keywords,omitempty\""];
+  google.protobuf.Any                  outlines            = 8    [(tagger.tags) = "json:\"outlines,omitempty\""];
+  google.protobuf.Any                  qas                 = 9    [(tagger.tags) = "json:\"qas,omitempty\""];
+  google.protobuf.Any                  created_at          = 101  [(tagger.tags) = "json:\"createdAt,omitempty\""];
+  google.protobuf.Any                  updated_at          = 102  [(tagger.tags) = "json:\"updatedAt,omitempty\""];
+  repeated goguru.orm.PropertyFilter   extra_filters       = 1001 [(tagger.tags) = "json:\"extraFilters,omitempty\""];
+  goguru.orm.PageRequest               page_request        = 1002 [(tagger.tags) = "json:\"pageRequest,omitempty\""];
+  repeated string                      fields_included     = 1003 [(tagger.tags) = "json:\"fieldsIncluded,omitempty\""];}
 
 message EpisodeOneRes {
-  bool                                 found         = 1;
-  optional Episode             item          = 2;
+  bool                                 found               = 1;
+  optional Episode                     item                = 2;
 }
 
 message EpisodeListReq {
-  google.protobuf.Any                  id            = 1    [(tagger.tags) = "json:\"id,omitempty\""];
-  google.protobuf.Any                  name          = 2    [(tagger.tags) = "json:\"name,omitempty\""];
-  google.protobuf.Any                  content_type  = 3    [(tagger.tags) = "json:\"contentType,omitempty\""];
-  google.protobuf.Any                  filter_type   = 4    [(tagger.tags) = "json:\"filterType,omitempty\""];
-  google.protobuf.Any                  count         = 5    [(tagger.tags) = "json:\"count,omitempty\""];
-  google.protobuf.Any                  is_online     = 6    [(tagger.tags) = "json:\"isOnline,omitempty\""];
-  google.protobuf.Any                  keywords      = 7    [(tagger.tags) = "json:\"keywords,omitempty\""];
-  google.protobuf.Any                  outlines      = 8    [(tagger.tags) = "json:\"outlines,omitempty\""];
-  google.protobuf.Any                  qas           = 9    [(tagger.tags) = "json:\"qas,omitempty\""];
-  google.protobuf.Any                  created_at    = 101  [(tagger.tags) = "json:\"createdAt,omitempty\""];
-  google.protobuf.Any                  updated_at    = 102  [(tagger.tags) = "json:\"updatedAt,omitempty\""];
-  repeated goguru.orm.PropertyFilter   extra_filters = 1001 [(tagger.tags) = "json:\"extraFilters,omitempty\""];
-  goguru.orm.PageRequest               page_request  = 1002 [(tagger.tags) = "json:\"pageRequest,omitempty\""];
+  google.protobuf.Any                  id                  = 1    [(tagger.tags) = "json:\"id,omitempty\""];
+  google.protobuf.Any                  name                = 2    [(tagger.tags) = "json:\"name,omitempty\""];
+  google.protobuf.Any                  content_type        = 3    [(tagger.tags) = "json:\"contentType,omitempty\""];
+  google.protobuf.Any                  filter_type         = 4    [(tagger.tags) = "json:\"filterType,omitempty\""];
+  google.protobuf.Any                  count               = 5    [(tagger.tags) = "json:\"count,omitempty\""];
+  google.protobuf.Any                  is_online           = 6    [(tagger.tags) = "json:\"isOnline,omitempty\""];
+  google.protobuf.Any                  keywords            = 7    [(tagger.tags) = "json:\"keywords,omitempty\""];
+  google.protobuf.Any                  outlines            = 8    [(tagger.tags) = "json:\"outlines,omitempty\""];
+  google.protobuf.Any                  qas                 = 9    [(tagger.tags) = "json:\"qas,omitempty\""];
+  google.protobuf.Any                  created_at          = 101  [(tagger.tags) = "json:\"createdAt,omitempty\""];
+  google.protobuf.Any                  updated_at          = 102  [(tagger.tags) = "json:\"updatedAt,omitempty\""];
+  repeated goguru.orm.PropertyFilter   extra_filters       = 1001 [(tagger.tags) = "json:\"extraFilters,omitempty\""];
+  goguru.orm.PageRequest               page_request        = 1002 [(tagger.tags) = "json:\"pageRequest,omitempty\""];
+  repeated string                      fields_included     = 1003 [(tagger.tags) = "json:\"fieldsIncluded,omitempty\""];
 }
 
 message EpisodeListRes {
-  goguru.orm.PageInfo                  pageInfo      = 1    [(tagger.tags) = "json:\"pageInfo\""];
-  repeated Episode             items         = 2    [(tagger.tags) = "json:\"items\""];
+  goguru.orm.PageInfo                  pageInfo            = 1    [(tagger.tags) = "json:\"pageInfo\""];
+  repeated Episode                     items               = 2    [(tagger.tags) = "json:\"items\""];
 }
 
 message EpisodeGetReq {
-  string                               id            = 1    [(tagger.tags) = "bson:\"-\" json:\"id\""];
+  string                               id                  = 1    [(tagger.tags) = "bson:\"-\" json:\"id\""];
 }
 
 message EpisodeGetRes {
-  optional string                      id            = 1    [(tagger.tags) = "bson:\"_id,omitempty\" json:\"id,omitempty\""];
-  optional string                      name          = 2    [(tagger.tags) = "bson:\"name,omitempty\" json:\"name,omitempty\""];
-  optional ContentType                 content_type  = 3    [(tagger.tags) = "bson:\"content_type,omitempty\" json:\"contentType,omitempty\""];
-  optional FilterType                  filter_type   = 4    [(tagger.tags) = "bson:\"filter_type,omitempty\" json:\"filterType,omitempty\""];
-  optional int32                       count         = 5    [(tagger.tags) = "bson:\"count,omitempty\" json:\"count,omitempty\""];
-  optional bool                        is_online     = 6    [(tagger.tags) = "bson:\"is_online,omitempty\" json:\"isOnline,omitempty\""];
-  repeated string                      keywords      = 7    [(tagger.tags) = "bson:\"keywords,omitempty\" json:\"keywords,omitempty\""];
-  map<string, string>                  outlines      = 8    [(tagger.tags) = "bson:\"outlines,omitempty\" json:\"outlines,omitempty\""];
-  repeated QuestionAnswer              qas           = 9    [(tagger.tags) = "bson:\"qas,omitempty\" json:\"qas,omitempty\""];
-  optional google.protobuf.Timestamp   created_at    = 101  [(tagger.tags) = "bson:\"created_at,omitempty\" json:\"createdAt,omitempty\""];
-  optional google.protobuf.Timestamp   updated_at    = 102  [(tagger.tags) = "bson:\"updated_at,omitempty\" json:\"updatedAt,omitempty\""];
+  optional string                      id                  = 1    [(tagger.tags) = "bson:\"_id,omitempty\" json:\"id,omitempty\""];
+  optional string                      name                = 2    [(tagger.tags) = "bson:\"name,omitempty\" json:\"name,omitempty\""];
+  optional ContentType                 content_type        = 3    [(tagger.tags) = "bson:\"content_type,omitempty\" json:\"contentType,omitempty\""];
+  optional FilterType                  filter_type         = 4    [(tagger.tags) = "bson:\"filter_type,omitempty\" json:\"filterType,omitempty\""];
+  optional int32                       count               = 5    [(tagger.tags) = "bson:\"count,omitempty\" json:\"count,omitempty\""];
+  optional bool                        is_online           = 6    [(tagger.tags) = "bson:\"is_online,omitempty\" json:\"isOnline,omitempty\""];
+  repeated string                      keywords            = 7    [(tagger.tags) = "bson:\"keywords,omitempty\" json:\"keywords,omitempty\""];
+  map<string, string>                  outlines            = 8    [(tagger.tags) = "bson:\"outlines,omitempty\" json:\"outlines,omitempty\""];
+  repeated QuestionAnswer              qas                 = 9    [(tagger.tags) = "bson:\"qas,omitempty\" json:\"qas,omitempty\""];
+  optional google.protobuf.Timestamp   created_at          = 101  [(tagger.tags) = "bson:\"created_at,omitempty\" json:\"createdAt,omitempty\""];
+  optional google.protobuf.Timestamp   updated_at          = 102  [(tagger.tags) = "bson:\"updated_at,omitempty\" json:\"updatedAt,omitempty\""];
 }
 
 message EpisodeCreateReq {
-  optional string                      name          = 2    [(tagger.tags) = "bson:\"name,omitempty\" json:\"name,omitempty\""];
-  optional ContentType                 content_type  = 3    [(tagger.tags) = "bson:\"content_type,omitempty\" json:\"contentType,omitempty\""];
-  optional FilterType                  filter_type   = 4    [(tagger.tags) = "bson:\"filter_type,omitempty\" json:\"filterType,omitempty\""];
-  optional int32                       count         = 5    [(tagger.tags) = "bson:\"count,omitempty\" json:\"count,omitempty\""];
-  optional bool                        is_online     = 6    [(tagger.tags) = "bson:\"is_online,omitempty\" json:\"isOnline,omitempty\""];
-  repeated string                      keywords      = 7    [(tagger.tags) = "bson:\"keywords,omitempty\" json:\"keywords,omitempty\""];
-  map<string, string>                  outlines      = 8    [(tagger.tags) = "bson:\"outlines,omitempty\" json:\"outlines,omitempty\""];
-  repeated QuestionAnswer              qas           = 9    [(tagger.tags) = "bson:\"qas,omitempty\" json:\"qas,omitempty\""];
-  optional google.protobuf.Timestamp   created_at    = 101  [(tagger.tags) = "bson:\"created_at,omitempty\" json:\"createdAt,omitempty\""];
-  optional google.protobuf.Timestamp   updated_at    = 102  [(tagger.tags) = "bson:\"updated_at,omitempty\" json:\"updatedAt,omitempty\""];
+  optional string                      name                = 2    [(tagger.tags) = "bson:\"name,omitempty\" json:\"name,omitempty\""];
+  optional ContentType                 content_type        = 3    [(tagger.tags) = "bson:\"content_type,omitempty\" json:\"contentType,omitempty\""];
+  optional FilterType                  filter_type         = 4    [(tagger.tags) = "bson:\"filter_type,omitempty\" json:\"filterType,omitempty\""];
+  optional int32                       count               = 5    [(tagger.tags) = "bson:\"count,omitempty\" json:\"count,omitempty\""];
+  optional bool                        is_online           = 6    [(tagger.tags) = "bson:\"is_online,omitempty\" json:\"isOnline,omitempty\""];
+  repeated string                      keywords            = 7    [(tagger.tags) = "bson:\"keywords,omitempty\" json:\"keywords,omitempty\""];
+  map<string, string>                  outlines            = 8    [(tagger.tags) = "bson:\"outlines,omitempty\" json:\"outlines,omitempty\""];
+  repeated QuestionAnswer              qas                 = 9    [(tagger.tags) = "bson:\"qas,omitempty\" json:\"qas,omitempty\""];
+  optional google.protobuf.Timestamp   created_at          = 101  [(tagger.tags) = "bson:\"created_at,omitempty\" json:\"createdAt,omitempty\""];
+  optional google.protobuf.Timestamp   updated_at          = 102  [(tagger.tags) = "bson:\"updated_at,omitempty\" json:\"updatedAt,omitempty\""];
 }
 
 message EpisodeCreateRes {
-  string                               message       = 1    [(tagger.tags) = "json:\"message\""];
-  optional string                      insertedID    = 2    [(tagger.tags) = "json:\"insertedID\""];
-  int64                                insertedCount = 3    [(tagger.tags) = "json:\"insertedCount\""];
+  string                               message             = 1    [(tagger.tags) = "json:\"message\""];
+  optional string                      inserted_id         = 2    [(tagger.tags) = "json:\"insertedId\""];
+  int64                                inserted_count      = 3    [(tagger.tags) = "json:\"insertedCount\""];
 }
 
 message EpisodeUpdateReq {
-  string                               id            = 1    [(tagger.tags) = "bson:\"-\" json:\"id\""];
-  optional string                      name          = 2    [(tagger.tags) = "bson:\"name,omitempty\" json:\"name,omitempty\""];
-  optional ContentType                 content_type  = 3    [(tagger.tags) = "bson:\"content_type,omitempty\" json:\"contentType,omitempty\""];
-  optional FilterType                  filter_type   = 4    [(tagger.tags) = "bson:\"filter_type,omitempty\" json:\"filterType,omitempty\""];
-  optional int32                       count         = 5    [(tagger.tags) = "bson:\"count,omitempty\" json:\"count,omitempty\""];
-  optional bool                        is_online     = 6    [(tagger.tags) = "bson:\"is_online,omitempty\" json:\"isOnline,omitempty\""];
-  repeated string                      keywords      = 7    [(tagger.tags) = "bson:\"keywords,omitempty\" json:\"keywords,omitempty\""];
-  map<string, string>                  outlines      = 8    [(tagger.tags) = "bson:\"outlines,omitempty\" json:\"outlines,omitempty\""];
-  repeated QuestionAnswer              qas           = 9    [(tagger.tags) = "bson:\"qas,omitempty\" json:\"qas,omitempty\""];
-  optional google.protobuf.Timestamp   created_at    = 101  [(tagger.tags) = "bson:\"created_at,omitempty\" json:\"createdAt,omitempty\""];
-  optional google.protobuf.Timestamp   updated_at    = 102  [(tagger.tags) = "bson:\"updated_at,omitempty\" json:\"updatedAt,omitempty\""];
+  string                               id                  = 1    [(tagger.tags) = "bson:\"-\" json:\"id\""];
+  optional string                      name                = 2    [(tagger.tags) = "bson:\"name,omitempty\" json:\"name,omitempty\""];
+  optional ContentType                 content_type        = 3    [(tagger.tags) = "bson:\"content_type,omitempty\" json:\"contentType,omitempty\""];
+  optional FilterType                  filter_type         = 4    [(tagger.tags) = "bson:\"filter_type,omitempty\" json:\"filterType,omitempty\""];
+  optional int32                       count               = 5    [(tagger.tags) = "bson:\"count,omitempty\" json:\"count,omitempty\""];
+  optional bool                        is_online           = 6    [(tagger.tags) = "bson:\"is_online,omitempty\" json:\"isOnline,omitempty\""];
+  repeated string                      keywords            = 7    [(tagger.tags) = "bson:\"keywords,omitempty\" json:\"keywords,omitempty\""];
+  map<string, string>                  outlines            = 8    [(tagger.tags) = "bson:\"outlines,omitempty\" json:\"outlines,omitempty\""];
+  repeated QuestionAnswer              qas                 = 9    [(tagger.tags) = "bson:\"qas,omitempty\" json:\"qas,omitempty\""];
+  optional google.protobuf.Timestamp   created_at          = 101  [(tagger.tags) = "bson:\"created_at,omitempty\" json:\"createdAt,omitempty\""];
+  optional google.protobuf.Timestamp   updated_at          = 102  [(tagger.tags) = "bson:\"updated_at,omitempty\" json:\"updatedAt,omitempty\""];
 }
 
 message EpisodeUpdateRes {
-  string                               message       = 1    [(tagger.tags) = "json:\"message\""];
-  int64                                matchedCount  = 2    [(tagger.tags) = "json:\"matchedCount\""]; // The number of documents matched by the upsert operation
-  int64                                modifiedCount = 3    [(tagger.tags) = "json:\"modifiedCount\""]; // The number of documents modified by the operation.
+  string                               message             = 1    [(tagger.tags) = "json:\"message\""];
+  int64                                matched_count       = 2    [(tagger.tags) = "json:\"matchedCount\""]; // The number of documents matched by the upsert operation
+  int64                                modified_count      = 3    [(tagger.tags) = "json:\"modifiedCount\""]; // The number of documents modified by the operation.
 }
 
 message EpisodeUpsertReq {
-  string                               id            = 1    [(tagger.tags) = "bson:\"-\" json:\"id\""];
-  optional string                      name          = 2    [(tagger.tags) = "bson:\"name,omitempty\" json:\"name,omitempty\""];
-  optional ContentType                 content_type  = 3    [(tagger.tags) = "bson:\"content_type,omitempty\" json:\"contentType,omitempty\""];
-  optional FilterType                  filter_type   = 4    [(tagger.tags) = "bson:\"filter_type,omitempty\" json:\"filterType,omitempty\""];
-  optional int32                       count         = 5    [(tagger.tags) = "bson:\"count,omitempty\" json:\"count,omitempty\""];
-  optional bool                        is_online     = 6    [(tagger.tags) = "bson:\"is_online,omitempty\" json:\"isOnline,omitempty\""];
-  repeated string                      keywords      = 7    [(tagger.tags) = "bson:\"keywords,omitempty\" json:\"keywords,omitempty\""];
-  map<string, string>                  outlines      = 8    [(tagger.tags) = "bson:\"outlines,omitempty\" json:\"outlines,omitempty\""];
-  repeated QuestionAnswer              qas           = 9    [(tagger.tags) = "bson:\"qas,omitempty\" json:\"qas,omitempty\""];
-  optional google.protobuf.Timestamp   created_at    = 101  [(tagger.tags) = "bson:\"created_at,omitempty\" json:\"createdAt,omitempty\""];
-  optional google.protobuf.Timestamp   updated_at    = 102  [(tagger.tags) = "bson:\"updated_at,omitempty\" json:\"updatedAt,omitempty\""];
+  string                               id                  = 1    [(tagger.tags) = "bson:\"-\" json:\"id\""];
+  optional string                      name                = 2    [(tagger.tags) = "bson:\"name,omitempty\" json:\"name,omitempty\""];
+  optional ContentType                 content_type        = 3    [(tagger.tags) = "bson:\"content_type,omitempty\" json:\"contentType,omitempty\""];
+  optional FilterType                  filter_type         = 4    [(tagger.tags) = "bson:\"filter_type,omitempty\" json:\"filterType,omitempty\""];
+  optional int32                       count               = 5    [(tagger.tags) = "bson:\"count,omitempty\" json:\"count,omitempty\""];
+  optional bool                        is_online           = 6    [(tagger.tags) = "bson:\"is_online,omitempty\" json:\"isOnline,omitempty\""];
+  repeated string                      keywords            = 7    [(tagger.tags) = "bson:\"keywords,omitempty\" json:\"keywords,omitempty\""];
+  map<string, string>                  outlines            = 8    [(tagger.tags) = "bson:\"outlines,omitempty\" json:\"outlines,omitempty\""];
+  repeated QuestionAnswer              qas                 = 9    [(tagger.tags) = "bson:\"qas,omitempty\" json:\"qas,omitempty\""];
+  optional google.protobuf.Timestamp   created_at          = 101  [(tagger.tags) = "bson:\"created_at,omitempty\" json:\"createdAt,omitempty\""];
+  optional google.protobuf.Timestamp   updated_at          = 102  [(tagger.tags) = "bson:\"updated_at,omitempty\" json:\"updatedAt,omitempty\""];
 }
 
 message EpisodeUpsertRes {
-  string                               message       = 1    [(tagger.tags) = "json:\"message\""];
-  optional string                      upsertedID    = 2    [(tagger.tags) = "json:\"upsertedID\""];
-  int64                                matchedCount  = 3    [(tagger.tags) = "json:\"matchedCount\""]; // The number of documents matched by the upsert operation
-  int64                                modifiedCount = 4    [(tagger.tags) = "json:\"modifiedCount\""]; // The number of documents modified by the operation.
-  int64                                upsertedCount = 5    [(tagger.tags) = "json:\"upsertedCount\""]; // The number of documents upserted by the operation.
+  string                               message             = 1    [(tagger.tags) = "json:\"message\""];
+  optional string                      upserted_id         = 2    [(tagger.tags) = "json:\"upsertedId\""];
+  int64                                matched_count       = 3    [(tagger.tags) = "json:\"matchedCount\""]; // The number of documents matched by the upsert operation
+  int64                                modified_count      = 4    [(tagger.tags) = "json:\"modifiedCount\""]; // The number of documents modified by the operation.
+  int64                                upserted_count      = 5    [(tagger.tags) = "json:\"upsertedCount\""]; // The number of documents upserted by the operation.
 }
 
 message EpisodeDeleteReq {
-  string                               id            = 1    [(tagger.tags) = "bson:\"-\" json:\"id\""];
+  string                               id                  = 1    [(tagger.tags) = "bson:\"-\" json:\"id\""];
 }
 
 message EpisodeDeleteRes {
-  string                               message       = 1    [(tagger.tags) = "json:\"message\""];
-  int64                                deletedCount  = 2    [(tagger.tags) = "json:\"deletedCount\""];
+  string                               message             = 1    [(tagger.tags) = "json:\"message\""];
+  int64                                deleted_count       = 2    [(tagger.tags) = "json:\"deletedCount\""];
 }
 
 message EpisodeDeleteMultiReq {
-  google.protobuf.Any                  id            = 1    [(tagger.tags) = "json:\"id,omitempty\""];
-  google.protobuf.Any                  name          = 2    [(tagger.tags) = "json:\"name,omitempty\""];
-  google.protobuf.Any                  content_type  = 3    [(tagger.tags) = "json:\"contentType,omitempty\""];
-  google.protobuf.Any                  filter_type   = 4    [(tagger.tags) = "json:\"filterType,omitempty\""];
-  google.protobuf.Any                  count         = 5    [(tagger.tags) = "json:\"count,omitempty\""];
-  google.protobuf.Any                  is_online     = 6    [(tagger.tags) = "json:\"isOnline,omitempty\""];
-  google.protobuf.Any                  keywords      = 7    [(tagger.tags) = "json:\"keywords,omitempty\""];
-  google.protobuf.Any                  outlines      = 8    [(tagger.tags) = "json:\"outlines,omitempty\""];
-  google.protobuf.Any                  qas           = 9    [(tagger.tags) = "json:\"qas,omitempty\""];
-  google.protobuf.Any                  created_at    = 101  [(tagger.tags) = "json:\"createdAt,omitempty\""];
-  google.protobuf.Any                  updated_at    = 102  [(tagger.tags) = "json:\"updatedAt,omitempty\""];
-  repeated goguru.orm.PropertyFilter   extra_filters = 1001 [(tagger.tags) = "json:\"extraFilters,omitempty\""];
+  google.protobuf.Any                  id                  = 1    [(tagger.tags) = "json:\"id,omitempty\""];
+  google.protobuf.Any                  name                = 2    [(tagger.tags) = "json:\"name,omitempty\""];
+  google.protobuf.Any                  content_type        = 3    [(tagger.tags) = "json:\"contentType,omitempty\""];
+  google.protobuf.Any                  filter_type         = 4    [(tagger.tags) = "json:\"filterType,omitempty\""];
+  google.protobuf.Any                  count               = 5    [(tagger.tags) = "json:\"count,omitempty\""];
+  google.protobuf.Any                  is_online           = 6    [(tagger.tags) = "json:\"isOnline,omitempty\""];
+  google.protobuf.Any                  keywords            = 7    [(tagger.tags) = "json:\"keywords,omitempty\""];
+  google.protobuf.Any                  outlines            = 8    [(tagger.tags) = "json:\"outlines,omitempty\""];
+  google.protobuf.Any                  qas                 = 9    [(tagger.tags) = "json:\"qas,omitempty\""];
+  google.protobuf.Any                  created_at          = 101  [(tagger.tags) = "json:\"createdAt,omitempty\""];
+  google.protobuf.Any                  updated_at          = 102  [(tagger.tags) = "json:\"updatedAt,omitempty\""];
+  repeated goguru.orm.PropertyFilter   extra_filters       = 1001 [(tagger.tags) = "json:\"extraFilters,omitempty\""];
 }
 
 message EpisodeDeleteMultiRes {
-  string                               message       = 1    [(tagger.tags) = "json:\"message\""];
-  int64                                deletedCount  = 2    [(tagger.tags) = "json:\"deletedCount\""];
+  string                               message             = 1    [(tagger.tags) = "json:\"message\""];
+  int64                                deleted_count       = 2    [(tagger.tags) = "json:\"deletedCount\""];
 }
