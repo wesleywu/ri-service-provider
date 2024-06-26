@@ -176,22 +176,6 @@ func (r *EpisodeRepo) DeleteMulti(ctx context.Context, req *EpisodeDeleteMultiRe
 	return l.DeleteMulti(ctx, req)
 }
 
-func (m *QuestionAnswer) SetStartTime(v *durationpb.Duration) {
-	m.StartTime = v
-}
-
-func (m *QuestionAnswer) SetEndTime(v *durationpb.Duration) {
-	m.EndTime = v
-}
-
-func (m *QuestionAnswer) SetQuestion(v *string) {
-	m.Question = v
-}
-
-func (m *QuestionAnswer) SetAnswer(v *string) {
-	m.Answer = v
-}
-
 func (m *Episode) SetId(v *string) {
 	m.Id = v
 }
@@ -234,6 +218,22 @@ func (m *Episode) SetCreatedAt(v *timestamppb.Timestamp) {
 
 func (m *Episode) SetUpdatedAt(v *timestamppb.Timestamp) {
 	m.UpdatedAt = v
+}
+
+func (m *QuestionAnswer) SetStartTime(v *durationpb.Duration) {
+	m.StartTime = v
+}
+
+func (m *QuestionAnswer) SetEndTime(v *durationpb.Duration) {
+	m.EndTime = v
+}
+
+func (m *QuestionAnswer) SetQuestion(v *string) {
+	m.Question = v
+}
+
+func (m *QuestionAnswer) SetAnswer(v *string) {
+	m.Answer = v
 }
 
 func (m *EpisodeCountReq_Test) SetName(v string) {

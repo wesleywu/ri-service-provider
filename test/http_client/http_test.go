@@ -65,8 +65,8 @@ func TestEpisodeRepo_All(t *testing.T) {
 		listRes        *proto.EpisodeListRes
 		deleteRes      *proto.EpisodeDeleteRes
 		deleteMultiRes *proto.EpisodeDeleteMultiRes
-		insertedID1    string
-		insertedID2    = "qiihWlTCtVz72T9znB9"
+		insertedId1    string
+		insertedId2    = "qiihWlTCtVz72T9znB9"
 		err            error
 	)
 	tracer := tp.Tracer("ri-service-provider-test")
@@ -74,7 +74,7 @@ func TestEpisodeRepo_All(t *testing.T) {
 	defer span.End()
 
 	// test Delete 删除1条可能之前存在的记录
-	url = baseUrl + "/" + insertedID2
+	url = baseUrl + "/" + insertedId2
 	httpRes, err = client.DeleteWithHeaders(url, commonHeaders, "", 0)
 	require.NoError(t, err)
 	require.NotNil(t, httpRes)
@@ -93,7 +93,7 @@ func TestEpisodeRepo_All(t *testing.T) {
 			"filterType": "%s",
 			"count": 1234,
 			"isOnline": false
-		}`, enum.ContentType_name[int32(enum.ContentType_comedy)], enum.FilterType_name[int32(enum.FilterType_manual)])
+		}`, enum.ContentType_name[int32(enum.ContentType_COMEDY)], enum.FilterType_name[int32(enum.FilterType_MANUAL)])
 	httpRes, err = client.PostWithHeaders(url, commonHeaders, data, 0)
 	assert.NoError(t, err)
 	assert.NotNil(t, httpRes)
@@ -102,19 +102,19 @@ func TestEpisodeRepo_All(t *testing.T) {
 	err = jsonCodec.Unmarshal(httpRes.Body, &createRes)
 	//err = jsonCodec.Unmarshal(httpRes.Body, &createRes)
 	assert.NoError(t, err)
-	assert.NotNil(t, createRes.InsertedID)
+	assert.NotNil(t, createRes.InsertedId)
 	assert.Equal(t, int64(1), createRes.InsertedCount)
-	insertedID1 = *createRes.InsertedID
+	insertedId1 = *createRes.InsertedId
 
 	// test Upsert 会插入第二条记录
-	url = baseUrl + "/" + insertedID2
+	url = baseUrl + "/" + insertedId2
 	data = fmt.Sprintf(`{
 			"name": "测试视频集02",
 			"contentType": "%s",
 			"filterType": "%s",
 			"count": 2345,
 			"isOnline": true
-		}`, enum.ContentType_name[int32(enum.ContentType_sports)], enum.FilterType_name[int32(enum.FilterType_ruled)])
+		}`, enum.ContentType_name[int32(enum.ContentType_SPORTS)], enum.FilterType_name[int32(enum.FilterType_RULED)])
 	httpRes, err = client.PutWithHeaders(url, commonHeaders, data, 0)
 	assert.NoError(t, err)
 	assert.NotNil(t, httpRes)
@@ -122,8 +122,8 @@ func TestEpisodeRepo_All(t *testing.T) {
 	upsertRes = (*proto.EpisodeUpsertRes)(nil)
 	err = jsonCodec.Unmarshal(httpRes.Body, &upsertRes)
 	assert.NoError(t, err)
-	assert.NotNil(t, upsertRes.UpsertedID)
-	assert.Equal(t, insertedID2, *upsertRes.UpsertedID)
+	assert.NotNil(t, upsertRes.UpsertedId)
+	assert.Equal(t, insertedId2, *upsertRes.UpsertedId)
 	assert.Equal(t, int64(1), upsertRes.UpsertedCount)
 
 	// test One 第1次，命中1条记录
@@ -135,7 +135,7 @@ func TestEpisodeRepo_All(t *testing.T) {
 				},
 				"contentType": {
 					"@type":"goguru.types.StringSlice",
-					"value":["sports", "comedy"]
+					"value":["SPORTS", "COMEDY"]
 				},
 				"isOnline": {
 					"@type":"goguru.types.BoolSlice",
@@ -168,7 +168,7 @@ func TestEpisodeRepo_All(t *testing.T) {
 				},
 				"contentType": {
 					"@type":"google.protobuf.StringValue",
-					"value":"sports"
+					"value":"SPORTS"
 				},
 				"isOnline": {
 					"@type":"goguru.types.BoolSlice",
@@ -197,7 +197,7 @@ func TestEpisodeRepo_All(t *testing.T) {
 	data = fmt.Sprintf(`{
 				"contentType": {
 					"@type":"goguru.types.StringSlice",
-					"value":["sports", "comedy"]
+					"value":["SPORTS", "COMEDY"]
 				},
 				"isOnline": {
 					"@type":"goguru.types.BoolSlice",
@@ -273,7 +273,7 @@ func TestEpisodeRepo_All(t *testing.T) {
 	data = fmt.Sprintf(`{
 				"contentType": {
 					"@type":"goguru.types.StringSlice",
-					"value":["sports", "comedy"]
+					"value":["SPORTS", "COMEDY"]
 				},
 				"isOnline": {
 					"@type":"goguru.types.BoolSlice",
@@ -311,7 +311,7 @@ func TestEpisodeRepo_All(t *testing.T) {
 	assert.Equal(t, true, listRes.PageInfo.Last)
 
 	// test Get 返回第一条记录
-	url = baseUrl + "/" + insertedID1
+	url = baseUrl + "/" + insertedId1
 	httpRes, err = client.GetWithHeaders(url, commonHeaders, 0)
 	assert.NoError(t, err)
 	assert.NotNil(t, httpRes)
@@ -322,7 +322,7 @@ func TestEpisodeRepo_All(t *testing.T) {
 	assert.Equal(t, "测试视频集01", *getRes.Name)
 
 	// test Update 修改第一条记录
-	url = baseUrl + "/" + insertedID1
+	url = baseUrl + "/" + insertedId1
 	data = fmt.Sprintf(`{
 			"name": "测试视频集03",
 			"count": 3456,
@@ -337,7 +337,7 @@ func TestEpisodeRepo_All(t *testing.T) {
 	assert.Equal(t, int64(1), updateRes.ModifiedCount)
 
 	// test Get 再次验证第一条记录
-	url = baseUrl + "/" + insertedID1
+	url = baseUrl + "/" + insertedId1
 	httpRes, err = client.GetWithHeaders(url, commonHeaders, 0)
 	assert.NoError(t, err)
 	assert.NotNil(t, httpRes)
@@ -352,7 +352,7 @@ func TestEpisodeRepo_All(t *testing.T) {
 	assert.Equal(t, false, *getRes.IsOnline)
 
 	// test Upsert 修改第一条记录
-	url = baseUrl + "/" + insertedID1
+	url = baseUrl + "/" + insertedId1
 	data = fmt.Sprintf(`{
 			"name": "测试视频集04",
 			"count": 4567,
@@ -367,7 +367,7 @@ func TestEpisodeRepo_All(t *testing.T) {
 	assert.Equal(t, int64(1), updateRes.ModifiedCount)
 
 	// test Get 再次验证第一条记录
-	url = baseUrl + "/" + insertedID1
+	url = baseUrl + "/" + insertedId1
 	httpRes, err = client.GetWithHeaders(url, commonHeaders, 0)
 	assert.NoError(t, err)
 	assert.NotNil(t, httpRes)
@@ -388,7 +388,7 @@ func TestEpisodeRepo_All(t *testing.T) {
 					"@type":"goguru.types.StringSlice",
 					"value": ["%s","%s"]
 				}
-			}`, insertedID1, insertedID2)
+			}`, insertedId1, insertedId2)
 	httpRes, err = client.PostWithHeaders(url, commonHeaders, data, 0)
 	require.NoError(t, err)
 	require.NotNil(t, httpRes)
@@ -399,7 +399,7 @@ func TestEpisodeRepo_All(t *testing.T) {
 	assert.Equal(t, int64(2), deleteMultiRes.DeletedCount)
 
 	// test Delete 删除0条记录，因为之前的 deleteMulti 已经删除过了
-	url = baseUrl + "/" + insertedID1
+	url = baseUrl + "/" + insertedId1
 	httpRes, err = client.DeleteWithHeaders(url, commonHeaders, "", 0)
 	require.NoError(t, err)
 	require.NotNil(t, httpRes)

@@ -19,13 +19,6 @@ import "goguru/orm/repo.proto";
 import "goguru/orm/query.proto";
 import "app/episode/service/enum/episode_enum.proto";
 
-message QuestionAnswer {
-  optional google.protobuf.Duration start_time             = 1 [(tagger.tags) = "bson:\"start_time,omitempty\" json:\"startTime,omitempty\""];
-  optional google.protobuf.Duration end_time               = 2 [(tagger.tags) = "bson:\"end_time,omitempty\" json:\"endTime,omitempty\""];
-  optional string                   question               = 3 [(tagger.tags) = "bson:\"question,omitempty\" json:\"question,omitempty\""];
-  optional string                   answer                 = 4 [(tagger.tags) = "bson:\"answer,omitempty\" json:\"answer,omitempty\""];
-}
-
 message Episode {
   option (goguru.orm.repository) = {
     collection_name:    "episode",
@@ -63,6 +56,13 @@ message Episode {
   repeated QuestionAnswer              qas                 = 9    [(tagger.tags) = "bson:\"qas,omitempty\" json:\"qas,omitempty\""];
   optional google.protobuf.Timestamp   created_at          = 101  [(tagger.tags) = "bson:\"created_at,omitempty\" json:\"createdAt,omitempty\""];
   optional google.protobuf.Timestamp   updated_at          = 102  [(tagger.tags) = "bson:\"updated_at,omitempty\" json:\"updatedAt,omitempty\""];
+}
+
+message QuestionAnswer {
+  optional google.protobuf.Duration    start_time          = 1    [(tagger.tags) = "bson:\"start_time,omitempty\" json:\"startTime,omitempty\""];
+  optional google.protobuf.Duration    end_time            = 2    [(tagger.tags) = "bson:\"end_time,omitempty\" json:\"endTime,omitempty\""];
+  optional string                      question            = 3    [(tagger.tags) = "bson:\"question,omitempty\" json:\"question,omitempty\""];
+  optional string                      answer              = 4    [(tagger.tags) = "bson:\"answer,omitempty\" json:\"answer,omitempty\""];
 }
 
 service EpisodeRepo {
