@@ -84,8 +84,8 @@ func TestEpisodeRepo_All(t *testing.T) {
 	// test Create 会插入一条记录
 	createReq = &p.EpisodeCreateReq{
 		Name:        types.Wrap("测试视频集01"),
-		ContentType: types.Wrap(enum.ContentType_sports),
-		FilterType:  types.Wrap(enum.FilterType_manual),
+		ContentType: types.Wrap(enum.ContentType_SPORTS),
+		FilterType:  types.Wrap(enum.FilterType_MANUAL),
 		Count:       types.WrapInt32(1234),
 		IsOnline:    types.Wrap(false),
 	}
@@ -100,8 +100,8 @@ func TestEpisodeRepo_All(t *testing.T) {
 	upsertReq = &p.EpisodeUpsertReq{
 		Id:          insertedId2,
 		Name:        types.Wrap("测试视频集02"),
-		ContentType: types.Wrap(enum.ContentType_comedy),
-		FilterType:  types.Wrap(enum.FilterType_ruled),
+		ContentType: types.Wrap(enum.ContentType_COMEDY),
+		FilterType:  types.Wrap(enum.FilterType_RULED),
 		Count:       types.WrapInt32(2345),
 		IsOnline:    types.Wrap(true),
 	}
@@ -114,7 +114,7 @@ func TestEpisodeRepo_All(t *testing.T) {
 	// test One 第1次，命中1条记录
 	oneReq = &p.EpisodeOneReq{
 		Name:        types.AnyString("测试视频集01"),
-		ContentType: types.AnyStringSlice([]string{"comedy", "sports"}),
+		ContentType: types.AnyStringSlice([]string{"COMEDY", "SPORTS"}),
 		IsOnline:    types.AnyBoolSlice([]bool{true, false}),
 		CreatedAt:   types.AnyCondition(orm.NewCondition(types.AnyTimestamp(dateStarted), orm.WithOperator(orm.OperatorType_GTE))),
 	}
@@ -126,7 +126,7 @@ func TestEpisodeRepo_All(t *testing.T) {
 	// test One 第2次，无命中记录
 	oneReq = &p.EpisodeOneReq{
 		Name:        types.AnyString("测试视频集01"),
-		ContentType: types.AnyString("comedy"),
+		ContentType: types.AnyString("COMEDY"),
 		IsOnline:    types.AnyBoolSlice([]bool{true, false}),
 		CreatedAt:   types.AnyCondition(orm.NewCondition(types.AnyTimestamp(dateStarted), orm.WithOperator(orm.OperatorType_GTE))),
 	}
@@ -145,7 +145,7 @@ func TestEpisodeRepo_All(t *testing.T) {
 
 	// test Count 第1次，共2条满足条件的记录
 	countReq = &p.EpisodeCountReq{
-		ContentType: types.AnyStringSlice([]string{"comedy", "sports"}),
+		ContentType: types.AnyStringSlice([]string{"COMEDY", "SPORTS"}),
 		IsOnline:    types.AnyBoolSlice([]bool{true, false}),
 		CreatedAt:   types.AnyCondition(orm.NewCondition(types.AnyTimestamp(dateStarted), orm.WithOperator(orm.OperatorType_GTE))),
 	}
@@ -174,7 +174,7 @@ func TestEpisodeRepo_All(t *testing.T) {
 
 	// test List 第1次，返回第2页，每页1条记录，当页有1条记录，为满足条件的第2条记录，其 Name 为 "TemplateName456"
 	listReq = &p.EpisodeListReq{
-		ContentType: types.AnyStringSlice([]string{"comedy", "sports"}),
+		ContentType: types.AnyStringSlice([]string{"COMEDY", "SPORTS"}),
 		IsOnline:    types.AnyBoolSlice([]bool{true, false}),
 		CreatedAt:   types.AnyCondition(orm.NewCondition(types.AnyTimestamp(dateStarted), orm.WithOperator(orm.OperatorType_GTE))),
 		PageRequest: &orm.PageRequest{

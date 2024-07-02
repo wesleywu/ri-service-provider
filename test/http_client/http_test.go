@@ -94,7 +94,7 @@ func TestEpisodeRepo_All(t *testing.T) {
 			"filterType": "%s",
 			"count": 1234,
 			"isOnline": false
-		}`, enum.ContentType_name[int32(enum.ContentType_comedy)], enum.FilterType_name[int32(enum.FilterType_manual)])
+		}`, enum.ContentType_name[int32(enum.ContentType_COMEDY)], enum.FilterType_name[int32(enum.FilterType_MANUAL)])
 	httpRes, err = client.PostWithHeaders(url, commonHeaders, data, 0)
 	assert.NoError(t, err)
 	assert.NotNil(t, httpRes)
@@ -115,7 +115,7 @@ func TestEpisodeRepo_All(t *testing.T) {
 			"filterType": "%s",
 			"count": 2345,
 			"isOnline": true
-		}`, enum.ContentType_name[int32(enum.ContentType_sports)], enum.FilterType_name[int32(enum.FilterType_ruled)])
+		}`, enum.ContentType_name[int32(enum.ContentType_SPORTS)], enum.FilterType_name[int32(enum.FilterType_RULED)])
 	httpRes, err = client.PutWithHeaders(url, commonHeaders, data, 0)
 	assert.NoError(t, err)
 	assert.NotNil(t, httpRes)
@@ -136,7 +136,7 @@ func TestEpisodeRepo_All(t *testing.T) {
 				},
 				"contentType": {
 					"@type":"goguru.types.StringSlice",
-					"value":["sports", "comedy"]
+					"value":["SPORTS", "COMEDY"]
 				},
 				"isOnline": {
 					"@type":"goguru.types.BoolSlice",
@@ -169,7 +169,7 @@ func TestEpisodeRepo_All(t *testing.T) {
 				},
 				"contentType": {
 					"@type":"google.protobuf.StringValue",
-					"value":"sports"
+					"value":"SPORTS"
 				},
 				"isOnline": {
 					"@type":"goguru.types.BoolSlice",
@@ -198,7 +198,7 @@ func TestEpisodeRepo_All(t *testing.T) {
 	data = fmt.Sprintf(`{
 				"contentType": {
 					"@type":"goguru.types.StringSlice",
-					"value":["sports", "comedy"]
+					"value":["SPORTS", "COMEDY"]
 				},
 				"isOnline": {
 					"@type":"goguru.types.BoolSlice",
@@ -274,7 +274,7 @@ func TestEpisodeRepo_All(t *testing.T) {
 	data = fmt.Sprintf(`{
 				"contentType": {
 					"@type":"goguru.types.StringSlice",
-					"value":["sports", "comedy"]
+					"value":["SPORTS", "COMEDY"]
 				},
 				"isOnline": {
 					"@type":"goguru.types.BoolSlice",
