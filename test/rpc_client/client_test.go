@@ -136,7 +136,7 @@ func TestEpisodeRepo_All(t *testing.T) {
 
 	// test One 第3次，命中1条记录
 	oneReq = &p.EpisodeOneReq{
-		Id: types.AnyObjectID(insertedId1),
+		Id: types.AnyString(insertedId1),
 	}
 	oneRes, err = client.One(ctx, oneReq)
 	assert.NoError(t, err)

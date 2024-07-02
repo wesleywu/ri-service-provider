@@ -8,13 +8,7 @@ option java_package = "repo.episode.v1";
 option java_outer_classname = "EpisodeV1";
 
 import "google/api/annotations.proto";
-import "google/protobuf/timestamp.proto";
-import "google/protobuf/any.proto";
-import "tagger/tagger.proto";
 import "goguru/cache/annotations.proto";
-import "goguru/orm/condition.proto";
-import "goguru/orm/query.proto";
-import "goguru/types/objectid.proto";
 import "app/episode/service/proto/episode.proto";
 
 service Episode {
