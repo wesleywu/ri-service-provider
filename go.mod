@@ -3,14 +3,13 @@ module github.com/wesleywu/ri-service-provider
 go 1.22
 
 require (
-	github.com/castbox/go-guru v0.2.10
+	github.com/castbox/go-guru v0.2.14
 	github.com/go-kratos/kratos/v2 v2.7.3
 	github.com/google/wire v0.6.0
 	github.com/prometheus/client_golang v1.19.1
 	github.com/rs/zerolog v1.33.0
 	github.com/srikrsna/protoc-gen-gotag v1.0.1
 	github.com/stretchr/testify v1.9.0
-	github.com/wesleywu/gcontainer v0.9.9
 	go.mongodb.org/mongo-driver v1.15.0
 	go.opentelemetry.io/otel v1.27.0
 	google.golang.org/genproto/googleapis/api v0.0.0-20240528184218-531527333157
@@ -54,6 +53,7 @@ require (
 	github.com/redis/go-redis/v9 v9.5.3 // indirect
 	github.com/rs/cors v1.11.0 // indirect
 	github.com/sqids/sqids-go v0.4.1 // indirect
+	github.com/wesleywu/gcontainer v0.9.9 // indirect
 	github.com/xdg-go/pbkdf2 v1.0.0 // indirect
 	github.com/xdg-go/scram v1.1.2 // indirect
 	github.com/xdg-go/stringprep v1.0.4 // indirect

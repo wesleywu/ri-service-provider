@@ -65,16 +65,17 @@ func TestEpisodeRepo_All(t *testing.T) {
 		listRes        *proto.EpisodeListRes
 		deleteRes      *proto.EpisodeDeleteRes
 		deleteMultiRes *proto.EpisodeDeleteMultiRes
-		insertedID1    string
-		insertedID2    = "qiihWlTCtVz72T9znB9"
-		err            error
+		insertedId1    string
+		insertedId2    = "66838c65a300d6360cc0ed3b"
+		//insertedId2 = "qiihWlTCtVz72T9znB9"
+		err error
 	)
 	tracer := tp.Tracer("ri-service-provider-test")
 	_, span := tracer.Start(ctx, "http_client_test.TestEpisodeRepo_All")
 	defer span.End()
 
 	// test Delete 删除1条可能之前存在的记录
-	url = baseUrl + "/" + insertedID2
+	url = baseUrl + "/" + insertedId2
 	httpRes, err = client.DeleteWithHeaders(url, commonHeaders, "", 0)
 	require.NoError(t, err)
 	require.NotNil(t, httpRes)
@@ -102,12 +103,12 @@ func TestEpisodeRepo_All(t *testing.T) {
 	err = jsonCodec.Unmarshal(httpRes.Body, &createRes)
 	//err = jsonCodec.Unmarshal(httpRes.Body, &createRes)
 	assert.NoError(t, err)
-	assert.NotNil(t, createRes.InsertedID)
+	assert.NotNil(t, createRes.InsertedId)
 	assert.Equal(t, int64(1), createRes.InsertedCount)
-	insertedID1 = *createRes.InsertedID
+	insertedId1 = *createRes.InsertedId
 
 	// test Upsert 会插入第二条记录
-	url = baseUrl + "/" + insertedID2
+	url = baseUrl + "/" + insertedId2
 	data = fmt.Sprintf(`{
 			"name": "测试视频集02",
 			"contentType": "%s",
@@ -122,8 +123,8 @@ func TestEpisodeRepo_All(t *testing.T) {
 	upsertRes = (*proto.EpisodeUpsertRes)(nil)
 	err = jsonCodec.Unmarshal(httpRes.Body, &upsertRes)
 	assert.NoError(t, err)
-	assert.NotNil(t, upsertRes.UpsertedID)
-	assert.Equal(t, insertedID2, *upsertRes.UpsertedID)
+	assert.NotNil(t, upsertRes.UpsertedId)
+	assert.Equal(t, insertedId2, *upsertRes.UpsertedId)
 	assert.Equal(t, int64(1), upsertRes.UpsertedCount)
 
 	// test One 第1次，命中1条记录
@@ -311,7 +312,7 @@ func TestEpisodeRepo_All(t *testing.T) {
 	assert.Equal(t, true, listRes.PageInfo.Last)
 
 	// test Get 返回第一条记录
-	url = baseUrl + "/" + insertedID1
+	url = baseUrl + "/" + insertedId1
 	httpRes, err = client.GetWithHeaders(url, commonHeaders, 0)
 	assert.NoError(t, err)
 	assert.NotNil(t, httpRes)
@@ -322,7 +323,7 @@ func TestEpisodeRepo_All(t *testing.T) {
 	assert.Equal(t, "测试视频集01", *getRes.Name)
 
 	// test Update 修改第一条记录
-	url = baseUrl + "/" + insertedID1
+	url = baseUrl + "/" + insertedId1
 	data = fmt.Sprintf(`{
 			"name": "测试视频集03",
 			"count": 3456,
@@ -337,7 +338,7 @@ func TestEpisodeRepo_All(t *testing.T) {
 	assert.Equal(t, int64(1), updateRes.ModifiedCount)
 
 	// test Get 再次验证第一条记录
-	url = baseUrl + "/" + insertedID1
+	url = baseUrl + "/" + insertedId1
 	httpRes, err = client.GetWithHeaders(url, commonHeaders, 0)
 	assert.NoError(t, err)
 	assert.NotNil(t, httpRes)
@@ -352,7 +353,7 @@ func TestEpisodeRepo_All(t *testing.T) {
 	assert.Equal(t, false, *getRes.IsOnline)
 
 	// test Upsert 修改第一条记录
-	url = baseUrl + "/" + insertedID1
+	url = baseUrl + "/" + insertedId1
 	data = fmt.Sprintf(`{
 			"name": "测试视频集04",
 			"count": 4567,
@@ -367,7 +368,7 @@ func TestEpisodeRepo_All(t *testing.T) {
 	assert.Equal(t, int64(1), updateRes.ModifiedCount)
 
 	// test Get 再次验证第一条记录
-	url = baseUrl + "/" + insertedID1
+	url = baseUrl + "/" + insertedId1
 	httpRes, err = client.GetWithHeaders(url, commonHeaders, 0)
 	assert.NoError(t, err)
 	assert.NotNil(t, httpRes)
@@ -388,7 +389,7 @@ func TestEpisodeRepo_All(t *testing.T) {
 					"@type":"goguru.types.StringSlice",
 					"value": ["%s","%s"]
 				}
-			}`, insertedID1, insertedID2)
+			}`, insertedId1, insertedId2)
 	httpRes, err = client.PostWithHeaders(url, commonHeaders, data, 0)
 	require.NoError(t, err)
 	require.NotNil(t, httpRes)
@@ -399,7 +400,7 @@ func TestEpisodeRepo_All(t *testing.T) {
 	assert.Equal(t, int64(2), deleteMultiRes.DeletedCount)
 
 	// test Delete 删除0条记录，因为之前的 deleteMulti 已经删除过了
-	url = baseUrl + "/" + insertedID1
+	url = baseUrl + "/" + insertedId1
 	httpRes, err = client.DeleteWithHeaders(url, commonHeaders, "", 0)
 	require.NoError(t, err)
 	require.NotNil(t, httpRes)

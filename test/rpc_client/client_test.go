@@ -62,9 +62,10 @@ func TestEpisodeRepo_All(t *testing.T) {
 		listRes        *p.EpisodeListRes
 		deleteRes      *p.EpisodeDeleteRes
 		deleteMultiRes *p.EpisodeDeleteMultiRes
-		insertedID1    string
-		insertedID2    = "qiihWlTCtVz72T9znB9"
-		err            error
+		insertedId1    string
+		insertedId2    = "66838c65a300d6360cc0ed3b"
+		//insertedId2 = "qiihWlTCtVz72T9znB9"
+		err error
 	)
 	// 创建链路追踪
 	tp := otel.GetTracerProvider()
@@ -73,7 +74,7 @@ func TestEpisodeRepo_All(t *testing.T) {
 	defer span.End()
 	// test Delete 删除1条可能之前存在的记录
 	deleteReq = &p.EpisodeDeleteReq{
-		Id: insertedID2,
+		Id: insertedId2,
 	}
 	deleteRes, err = client.Delete(ctx, deleteReq)
 	assert.NoError(t, err)
@@ -91,13 +92,13 @@ func TestEpisodeRepo_All(t *testing.T) {
 	createRes, err = client.Create(ctx, createReq)
 	assert.NoError(t, err)
 	assert.NotNil(t, createRes)
-	assert.NotNil(t, createRes.InsertedID)
+	assert.NotNil(t, createRes.InsertedId)
 	assert.Equal(t, int64(1), createRes.InsertedCount)
-	insertedID1 = *createRes.InsertedID
+	insertedId1 = *createRes.InsertedId
 
 	// test Upsert 会插入第二条记录
 	upsertReq = &p.EpisodeUpsertReq{
-		Id:          insertedID2,
+		Id:          insertedId2,
 		Name:        types.Wrap("测试视频集02"),
 		ContentType: types.Wrap(enum.ContentType_comedy),
 		FilterType:  types.Wrap(enum.FilterType_ruled),
@@ -106,8 +107,8 @@ func TestEpisodeRepo_All(t *testing.T) {
 	}
 	upsertRes, err = client.Upsert(ctx, upsertReq)
 	assert.NoError(t, err)
-	assert.NotNil(t, upsertRes.UpsertedID)
-	assert.Equal(t, insertedID2, *upsertRes.UpsertedID)
+	assert.NotNil(t, upsertRes.UpsertedId)
+	assert.Equal(t, insertedId2, *upsertRes.UpsertedId)
 	assert.Equal(t, int64(1), upsertRes.UpsertedCount)
 
 	// test One 第1次，命中1条记录
@@ -135,7 +136,7 @@ func TestEpisodeRepo_All(t *testing.T) {
 
 	// test One 第3次，命中1条记录
 	oneReq = &p.EpisodeOneReq{
-		Id: types.AnyObjectID(insertedID1),
+		Id: types.AnyObjectID(insertedId1),
 	}
 	oneRes, err = client.One(ctx, oneReq)
 	assert.NoError(t, err)
@@ -198,7 +199,7 @@ func TestEpisodeRepo_All(t *testing.T) {
 
 	// test Get 返回第一条记录
 	getReq = &p.EpisodeGetReq{
-		Id: insertedID1,
+		Id: insertedId1,
 	}
 	getRes, err = client.Get(ctx, getReq)
 	assert.NoError(t, err)
@@ -207,7 +208,7 @@ func TestEpisodeRepo_All(t *testing.T) {
 
 	// test Update 修改第一条记录
 	updateReq = &p.EpisodeUpdateReq{
-		Id:       insertedID1,
+		Id:       insertedId1,
 		Name:     types.Wrap("测试视频集03"),
 		Count:    types.WrapInt32(3456),
 		IsOnline: types.Wrap(false),
@@ -218,7 +219,7 @@ func TestEpisodeRepo_All(t *testing.T) {
 
 	// test Get 再次验证第一条记录
 	getReq = &p.EpisodeGetReq{
-		Id: insertedID1,
+		Id: insertedId1,
 	}
 	getRes, err = client.Get(ctx, getReq)
 	assert.NoError(t, err)
@@ -231,7 +232,7 @@ func TestEpisodeRepo_All(t *testing.T) {
 
 	// test Upsert 修改第一条记录
 	upsertReq = &p.EpisodeUpsertReq{
-		Id:       insertedID1,
+		Id:       insertedId1,
 		Name:     types.Wrap("测试视频集04"),
 		Count:    types.WrapInt32(4567),
 		IsOnline: types.Wrap(true),
@@ -242,7 +243,7 @@ func TestEpisodeRepo_All(t *testing.T) {
 
 	// test Get 再次验证第一条记录
 	getReq = &p.EpisodeGetReq{
-		Id: insertedID1,
+		Id: insertedId1,
 	}
 	getRes, err = client.Get(ctx, getReq)
 	assert.NoError(t, err)
@@ -255,7 +256,7 @@ func TestEpisodeRepo_All(t *testing.T) {
 
 	// test DeleteMulti 删除2条记录
 	deleteMultiReq = &p.EpisodeDeleteMultiReq{
-		Id: types.AnyStringSlice([]string{insertedID1, insertedID2}),
+		Id: types.AnyStringSlice([]string{insertedId1, insertedId2}),
 	}
 	deleteMultiRes, err = client.DeleteMulti(ctx, deleteMultiReq)
 	assert.NoError(t, err)
@@ -263,7 +264,7 @@ func TestEpisodeRepo_All(t *testing.T) {
 
 	// test Delete 删除0条记录，因为之前的 deleteMulti 已经删除过了
 	deleteReq = &p.EpisodeDeleteReq{
-		Id: insertedID1,
+		Id: insertedId1,
 	}
 	deleteRes, err = client.Delete(ctx, deleteReq)
 	assert.NoError(t, err)

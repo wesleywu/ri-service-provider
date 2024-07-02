@@ -14,8 +14,8 @@ import "google/protobuf/any.proto";
 import "google/protobuf/duration.proto";
 import "tagger/tagger.proto";
 import "goguru/cache/annotations.proto";
+import "goguru/orm/annotations.proto";
 import "goguru/orm/condition.proto";
-import "goguru/orm/repo.proto";
 import "goguru/orm/query.proto";
 import "app/episode/service/enum/episode_enum.proto";
 
@@ -27,10 +27,10 @@ message QuestionAnswer {
 }
 
 message Episode {
-  option (goguru.orm.repository) = {
+  option (goguru.orm.collection) = {
     collection_name:    "episode",
-    object_id_fields:   ["_id"],
-    use_id_obfuscating: true,
+    use_id_obfuscating: false,
+    use_bson_timestamp: false,
     indices: [
       {
         fields: [
@@ -52,17 +52,50 @@ message Episode {
       }
     ]
   };
-  optional string                      id                  = 1    [(tagger.tags) = "bson:\"_id,omitempty\" json:\"id,omitempty\""];
-  optional string                      name                = 2    [(tagger.tags) = "bson:\"name,omitempty\" json:\"name,omitempty\""];
-  optional ContentType                 content_type        = 3    [(tagger.tags) = "bson:\"content_type,omitempty\" json:\"contentType,omitempty\""];
-  optional FilterType                  filter_type         = 4    [(tagger.tags) = "bson:\"filter_type,omitempty\" json:\"filterType,omitempty\""];
-  optional int32                       count               = 5    [(tagger.tags) = "bson:\"count,omitempty\" json:\"count,omitempty\""];
-  optional bool                        is_online           = 6    [(tagger.tags) = "bson:\"is_online,omitempty\" json:\"isOnline,omitempty\""];
-  repeated string                      keywords            = 7    [(tagger.tags) = "bson:\"keywords,omitempty\" json:\"keywords,omitempty\""];
-  map<string, string>                  outlines            = 8    [(tagger.tags) = "bson:\"outlines,omitempty\" json:\"outlines,omitempty\""];
-  repeated QuestionAnswer              qas                 = 9    [(tagger.tags) = "bson:\"qas,omitempty\" json:\"qas,omitempty\""];
-  optional google.protobuf.Timestamp   created_at          = 101  [(tagger.tags) = "bson:\"created_at,omitempty\" json:\"createdAt,omitempty\""];
-  optional google.protobuf.Timestamp   updated_at          = 102  [(tagger.tags) = "bson:\"updated_at,omitempty\" json:\"updatedAt,omitempty\""];
+  string                      id                  = 1    [
+    (tagger.tags) = "json:\"id,omitempty\"",
+    (goguru.orm.field) = {field_name:"_id", is_object_id:true, description:"编号", required:true}
+  ];
+  optional string                      name                = 2    [
+    (tagger.tags) = "json:\"name,omitempty\"",
+    (goguru.orm.field) = {description:"单集名称", required:true}
+  ];
+  optional ContentType                 content_type        = 3    [
+    (tagger.tags) = "json:\"contentType,omitempty\"",
+    (goguru.orm.field) = {description:"内容类型", required:true}
+  ];
+  optional FilterType                  filter_type         = 4    [
+    (tagger.tags) = "json:\"filterType,omitempty\"",
+    (goguru.orm.field) = {description:"审核方式", required:true}
+  ];
+  optional int32                       count               = 5    [
+    (tagger.tags) = "json:\"count,omitempty\"",
+    (goguru.orm.field) = {description:"收听数", required:true}
+  ];
+  optional bool                        is_online           = 6    [
+    (tagger.tags) = "json:\"isOnline,omitempty\"",
+    (goguru.orm.field) = {description:"是否上线", required:true}
+  ];
+  repeated string                      keywords            = 7    [
+    (tagger.tags) = "json:\"keywords,omitempty\"",
+    (goguru.orm.field) = {description:"内容关键词"}
+  ];
+  map<string, string>                  outlines            = 8    [
+    (tagger.tags) = "json:\"outlines,omitempty\"",
+    (goguru.orm.field) = {description:"内容大纲"}
+  ];
+  repeated QuestionAnswer              qas                 = 9    [
+    (tagger.tags) = "json:\"qas,omitempty\"",
+    (goguru.orm.field) = {description:"QA问答"}
+  ];
+  optional google.protobuf.Timestamp   created_at          = 101  [
+    (tagger.tags) = "json:\"createdAt,omitempty\"",
+    (goguru.orm.field) = {description:"创建时间"}
+  ];
+  optional google.protobuf.Timestamp   updated_at          = 102  [
+    (tagger.tags) = "json:\"updatedAt,omitempty\"",
+    (goguru.orm.field) = {description:"更新时间"}
+  ];
 }
 
 service EpisodeRepo {
@@ -143,32 +176,34 @@ message EpisodeListRes {
 }
 
 message EpisodeGetReq {
-  string                               id                  = 1    [(tagger.tags) = "bson:\"-\" json:\"id\""];
+  string                               id                  = 1    [(tagger.tags) = "json:\"id\""];
 }
 
 message EpisodeGetRes {
-  optional string                      id                  = 1    [(tagger.tags) = "bson:\"_id,omitempty\" json:\"id,omitempty\""];
-  optional string                      name                = 2    [(tagger.tags) = "bson:\"name,omitempty\" json:\"name,omitempty\""];
-  optional ContentType                 content_type        = 3    [(tagger.tags) = "bson:\"content_type,omitempty\" json:\"contentType,omitempty\""];
-  optional FilterType                  filter_type         = 4    [(tagger.tags) = "bson:\"filter_type,omitempty\" json:\"filterType,omitempty\""];
-  optional int32                       count               = 5    [(tagger.tags) = "bson:\"count,omitempty\" json:\"count,omitempty\""];
-  optional bool                        is_online           = 6    [(tagger.tags) = "bson:\"is_online,omitempty\" json:\"isOnline,omitempty\""];
-  repeated string                      keywords            = 7    [(tagger.tags) = "bson:\"keywords,omitempty\" json:\"keywords,omitempty\""];
-  map<string, string>                  outlines            = 8    [(tagger.tags) = "bson:\"outlines,omitempty\" json:\"outlines,omitempty\""];
-  repeated QuestionAnswer              qas                 = 9    [(tagger.tags) = "bson:\"qas,omitempty\" json:\"qas,omitempty\""];
+  option (goguru.orm.output_unmarshal_bson) = true;
+  string                               id                  = 1    [(tagger.tags) = "json:\"id,omitempty\""];
+  optional string                      name                = 2    [(tagger.tags) = "json:\"name,omitempty\""];
+  optional ContentType                 content_type        = 3    [(tagger.tags) = "json:\"contentType,omitempty\""];
+  optional FilterType                  filter_type         = 4    [(tagger.tags) = "json:\"filterType,omitempty\""];
+  optional int32                       count               = 5    [(tagger.tags) = "json:\"count,omitempty\""];
+  optional bool                        is_online           = 6    [(tagger.tags) = "json:\"isOnline,omitempty\""];
+  repeated string                      keywords            = 7    [(tagger.tags) = "json:\"keywords,omitempty\""];
+  map<string, string>                  outlines            = 8    [(tagger.tags) = "json:\"outlines,omitempty\""];
+  repeated QuestionAnswer              qas                 = 9    [(tagger.tags) = "json:\"qas,omitempty\""];
   optional google.protobuf.Timestamp   created_at          = 101  [(tagger.tags) = "bson:\"created_at,omitempty\" json:\"createdAt,omitempty\""];
   optional google.protobuf.Timestamp   updated_at          = 102  [(tagger.tags) = "bson:\"updated_at,omitempty\" json:\"updatedAt,omitempty\""];
 }
 
 message EpisodeCreateReq {
-  optional string                      name                = 2    [(tagger.tags) = "bson:\"name,omitempty\" json:\"name,omitempty\""];
-  optional ContentType                 content_type        = 3    [(tagger.tags) = "bson:\"content_type,omitempty\" json:\"contentType,omitempty\""];
-  optional FilterType                  filter_type         = 4    [(tagger.tags) = "bson:\"filter_type,omitempty\" json:\"filterType,omitempty\""];
-  optional int32                       count               = 5    [(tagger.tags) = "bson:\"count,omitempty\" json:\"count,omitempty\""];
-  optional bool                        is_online           = 6    [(tagger.tags) = "bson:\"is_online,omitempty\" json:\"isOnline,omitempty\""];
-  repeated string                      keywords            = 7    [(tagger.tags) = "bson:\"keywords,omitempty\" json:\"keywords,omitempty\""];
-  map<string, string>                  outlines            = 8    [(tagger.tags) = "bson:\"outlines,omitempty\" json:\"outlines,omitempty\""];
-  repeated QuestionAnswer              qas                 = 9    [(tagger.tags) = "bson:\"qas,omitempty\" json:\"qas,omitempty\""];
+  option (goguru.orm.input_marshal_bson) = true;
+  optional string                      name                = 2    [(tagger.tags) = "json:\"name,omitempty\""];
+  optional ContentType                 content_type        = 3    [(tagger.tags) = "json:\"contentType,omitempty\""];
+  optional FilterType                  filter_type         = 4    [(tagger.tags) = "json:\"filterType,omitempty\""];
+  optional int32                       count               = 5    [(tagger.tags) = "json:\"count,omitempty\""];
+  optional bool                        is_online           = 6    [(tagger.tags) = "json:\"isOnline,omitempty\""];
+  repeated string                      keywords            = 7    [(tagger.tags) = "json:\"keywords,omitempty\""];
+  map<string, string>                  outlines            = 8    [(tagger.tags) = "json:\"outlines,omitempty\""];
+  repeated QuestionAnswer              qas                 = 9    [(tagger.tags) = "json:\"qas,omitempty\""];
   optional google.protobuf.Timestamp   created_at          = 101  [(tagger.tags) = "bson:\"created_at,omitempty\" json:\"createdAt,omitempty\""];
   optional google.protobuf.Timestamp   updated_at          = 102  [(tagger.tags) = "bson:\"updated_at,omitempty\" json:\"updatedAt,omitempty\""];
 }
@@ -180,15 +215,16 @@ message EpisodeCreateRes {
 }
 
 message EpisodeUpdateReq {
-  string                               id                  = 1    [(tagger.tags) = "bson:\"-\" json:\"id\""];
-  optional string                      name                = 2    [(tagger.tags) = "bson:\"name,omitempty\" json:\"name,omitempty\""];
-  optional ContentType                 content_type        = 3    [(tagger.tags) = "bson:\"content_type,omitempty\" json:\"contentType,omitempty\""];
-  optional FilterType                  filter_type         = 4    [(tagger.tags) = "bson:\"filter_type,omitempty\" json:\"filterType,omitempty\""];
-  optional int32                       count               = 5    [(tagger.tags) = "bson:\"count,omitempty\" json:\"count,omitempty\""];
-  optional bool                        is_online           = 6    [(tagger.tags) = "bson:\"is_online,omitempty\" json:\"isOnline,omitempty\""];
-  repeated string                      keywords            = 7    [(tagger.tags) = "bson:\"keywords,omitempty\" json:\"keywords,omitempty\""];
-  map<string, string>                  outlines            = 8    [(tagger.tags) = "bson:\"outlines,omitempty\" json:\"outlines,omitempty\""];
-  repeated QuestionAnswer              qas                 = 9    [(tagger.tags) = "bson:\"qas,omitempty\" json:\"qas,omitempty\""];
+  option (goguru.orm.input_marshal_bson) = true;
+  string                               id                  = 1    [(tagger.tags) = "json:\"id\""];
+  optional string                      name                = 2    [(tagger.tags) = "json:\"name,omitempty\""];
+  optional ContentType                 content_type        = 3    [(tagger.tags) = "json:\"contentType,omitempty\""];
+  optional FilterType                  filter_type         = 4    [(tagger.tags) = "json:\"filterType,omitempty\""];
+  optional int32                       count               = 5    [(tagger.tags) = "json:\"count,omitempty\""];
+  optional bool                        is_online           = 6    [(tagger.tags) = "json:\"isOnline,omitempty\""];
+  repeated string                      keywords            = 7    [(tagger.tags) = "json:\"keywords,omitempty\""];
+  map<string, string>                  outlines            = 8    [(tagger.tags) = "json:\"outlines,omitempty\""];
+  repeated QuestionAnswer              qas                 = 9    [(tagger.tags) = "json:\"qas,omitempty\""];
   optional google.protobuf.Timestamp   created_at          = 101  [(tagger.tags) = "bson:\"created_at,omitempty\" json:\"createdAt,omitempty\""];
   optional google.protobuf.Timestamp   updated_at          = 102  [(tagger.tags) = "bson:\"updated_at,omitempty\" json:\"updatedAt,omitempty\""];
 }
@@ -200,15 +236,16 @@ message EpisodeUpdateRes {
 }
 
 message EpisodeUpsertReq {
-  string                               id                  = 1    [(tagger.tags) = "bson:\"-\" json:\"id\""];
-  optional string                      name                = 2    [(tagger.tags) = "bson:\"name,omitempty\" json:\"name,omitempty\""];
-  optional ContentType                 content_type        = 3    [(tagger.tags) = "bson:\"content_type,omitempty\" json:\"contentType,omitempty\""];
-  optional FilterType                  filter_type         = 4    [(tagger.tags) = "bson:\"filter_type,omitempty\" json:\"filterType,omitempty\""];
-  optional int32                       count               = 5    [(tagger.tags) = "bson:\"count,omitempty\" json:\"count,omitempty\""];
-  optional bool                        is_online           = 6    [(tagger.tags) = "bson:\"is_online,omitempty\" json:\"isOnline,omitempty\""];
-  repeated string                      keywords            = 7    [(tagger.tags) = "bson:\"keywords,omitempty\" json:\"keywords,omitempty\""];
-  map<string, string>                  outlines            = 8    [(tagger.tags) = "bson:\"outlines,omitempty\" json:\"outlines,omitempty\""];
-  repeated QuestionAnswer              qas                 = 9    [(tagger.tags) = "bson:\"qas,omitempty\" json:\"qas,omitempty\""];
+  option (goguru.orm.input_marshal_bson) = true;
+  string                               id                  = 1    [(tagger.tags) = "json:\"id\""];
+  optional string                      name                = 2    [(tagger.tags) = "json:\"name,omitempty\""];
+  optional ContentType                 content_type        = 3    [(tagger.tags) = "json:\"contentType,omitempty\""];
+  optional FilterType                  filter_type         = 4    [(tagger.tags) = "json:\"filterType,omitempty\""];
+  optional int32                       count               = 5    [(tagger.tags) = "json:\"count,omitempty\""];
+  optional bool                        is_online           = 6    [(tagger.tags) = "json:\"isOnline,omitempty\""];
+  repeated string                      keywords            = 7    [(tagger.tags) = "json:\"keywords,omitempty\""];
+  map<string, string>                  outlines            = 8    [(tagger.tags) = "json:\"outlines,omitempty\""];
+  repeated QuestionAnswer              qas                 = 9    [(tagger.tags) = "json:\"qas,omitempty\""];
   optional google.protobuf.Timestamp   created_at          = 101  [(tagger.tags) = "bson:\"created_at,omitempty\" json:\"createdAt,omitempty\""];
   optional google.protobuf.Timestamp   updated_at          = 102  [(tagger.tags) = "bson:\"updated_at,omitempty\" json:\"updatedAt,omitempty\""];
 }
@@ -222,7 +259,7 @@ message EpisodeUpsertRes {
 }
 
 message EpisodeDeleteReq {
-  string                               id                  = 1    [(tagger.tags) = "bson:\"-\" json:\"id\""];
+  string                               id                  = 1    [(tagger.tags) = "json:\"id\""];
 }
 
 message EpisodeDeleteRes {
