@@ -7,7 +7,6 @@ package proto
 
 import (
 	context "context"
-	time "time"
 
 	orm "github.com/castbox/go-guru/pkg/goguru/orm"
 	mongodb "github.com/castbox/go-guru/pkg/infra/mongodb"
@@ -106,11 +105,11 @@ func (m *EpisodeMeta) CollectionName() string {
 }
 
 func (m *EpisodeMeta) UseIdObfuscating() bool {
-	return false
+	return true
 }
 
 func (m *EpisodeMeta) UseBsonTimestamp() bool {
-	return false
+	return true
 }
 
 func (m *EpisodeMeta) FieldMap() map[string]*field.Meta {
@@ -118,17 +117,17 @@ func (m *EpisodeMeta) FieldMap() map[string]*field.Meta {
 }
 
 type EpisodeBson struct {
-	Id          *primitive.ObjectID `bson:"_id,omitempty"`
-	Name        *string             `bson:"name,omitempty"`
-	ContentType *enum.ContentType   `bson:"content_type,omitempty"`
-	FilterType  *enum.FilterType    `bson:"filter_type,omitempty"`
-	Count       *int32              `bson:"count,omitempty"`
-	IsOnline    *bool               `bson:"is_online,omitempty"`
-	Keywords    []string            `bson:"keywords,omitempty"`
-	Outlines    map[string]string   `bson:"outlines,omitempty"`
-	Qas         []*QuestionAnswer   `bson:"qas,omitempty"`
-	CreatedAt   *time.Time          `bson:"created_at,omitempty"`
-	UpdatedAt   *time.Time          `bson:"updated_at,omitempty"`
+	Id          *primitive.ObjectID  `bson:"_id,omitempty"`
+	Name        *string              `bson:"name,omitempty"`
+	ContentType *enum.ContentType    `bson:"content_type,omitempty"`
+	FilterType  *enum.FilterType     `bson:"filter_type,omitempty"`
+	Count       *int32               `bson:"count,omitempty"`
+	IsOnline    *bool                `bson:"is_online,omitempty"`
+	Keywords    []string             `bson:"keywords,omitempty"`
+	Outlines    map[string]string    `bson:"outlines,omitempty"`
+	Qas         []*QuestionAnswer    `bson:"qas,omitempty"`
+	CreatedAt   *primitive.Timestamp `bson:"created_at,omitempty"`
+	UpdatedAt   *primitive.Timestamp `bson:"updated_at,omitempty"`
 }
 
 func (m *Episode) UnmarshalBSON(bytes []byte) (err error) {
@@ -137,7 +136,7 @@ func (m *Episode) UnmarshalBSON(bytes []byte) (err error) {
 	if err != nil {
 		return err
 	}
-	m.Id = *codecs.FromBsonObjectIdPtr(b.Id, false)
+	m.Id = *codecs.FromBsonObjectIdPtr(b.Id, true)
 	m.Name = b.Name
 	m.ContentType = b.ContentType
 	m.FilterType = b.FilterType
@@ -146,8 +145,8 @@ func (m *Episode) UnmarshalBSON(bytes []byte) (err error) {
 	m.Keywords = b.Keywords
 	m.Outlines = b.Outlines
 	m.Qas = b.Qas
-	m.CreatedAt = codecs.FromTimePtr(b.CreatedAt)
-	m.UpdatedAt = codecs.FromTimePtr(b.UpdatedAt)
+	m.CreatedAt = codecs.FromBsonTimestampPtr(b.CreatedAt)
+	m.UpdatedAt = codecs.FromBsonTimestampPtr(b.UpdatedAt)
 	return nil
 }
 
@@ -157,7 +156,7 @@ func (m *EpisodeGetRes) UnmarshalBSON(bytes []byte) (err error) {
 	if err != nil {
 		return err
 	}
-	m.Id = *codecs.FromBsonObjectIdPtr(b.Id, false)
+	m.Id = *codecs.FromBsonObjectIdPtr(b.Id, true)
 	m.Name = b.Name
 	m.ContentType = b.ContentType
 	m.FilterType = b.FilterType
@@ -166,8 +165,8 @@ func (m *EpisodeGetRes) UnmarshalBSON(bytes []byte) (err error) {
 	m.Keywords = b.Keywords
 	m.Outlines = b.Outlines
 	m.Qas = b.Qas
-	m.CreatedAt = codecs.FromTimePtr(b.CreatedAt)
-	m.UpdatedAt = codecs.FromTimePtr(b.UpdatedAt)
+	m.CreatedAt = codecs.FromBsonTimestampPtr(b.CreatedAt)
+	m.UpdatedAt = codecs.FromBsonTimestampPtr(b.UpdatedAt)
 	return nil
 }
 
@@ -181,8 +180,8 @@ func (m *EpisodeCreateReq) MarshalBSON() (_ []byte, err error) {
 	b.Keywords = m.Keywords
 	b.Outlines = m.Outlines
 	b.Qas = m.Qas
-	b.CreatedAt = codecs.ToTimePtr(m.CreatedAt)
-	b.UpdatedAt = codecs.ToTimePtr(m.UpdatedAt)
+	b.CreatedAt = codecs.ToBsonTimestampPtr(m.CreatedAt)
+	b.UpdatedAt = codecs.ToBsonTimestampPtr(m.UpdatedAt)
 	return bson.Marshal(b)
 }
 
@@ -196,8 +195,8 @@ func (m *EpisodeUpdateReq) MarshalBSON() (_ []byte, err error) {
 	b.Keywords = m.Keywords
 	b.Outlines = m.Outlines
 	b.Qas = m.Qas
-	b.CreatedAt = codecs.ToTimePtr(m.CreatedAt)
-	b.UpdatedAt = codecs.ToTimePtr(m.UpdatedAt)
+	b.CreatedAt = codecs.ToBsonTimestampPtr(m.CreatedAt)
+	b.UpdatedAt = codecs.ToBsonTimestampPtr(m.UpdatedAt)
 	return bson.Marshal(b)
 }
 
@@ -211,8 +210,8 @@ func (m *EpisodeUpsertReq) MarshalBSON() (_ []byte, err error) {
 	b.Keywords = m.Keywords
 	b.Outlines = m.Outlines
 	b.Qas = m.Qas
-	b.CreatedAt = codecs.ToTimePtr(m.CreatedAt)
-	b.UpdatedAt = codecs.ToTimePtr(m.UpdatedAt)
+	b.CreatedAt = codecs.ToBsonTimestampPtr(m.CreatedAt)
+	b.UpdatedAt = codecs.ToBsonTimestampPtr(m.UpdatedAt)
 	return bson.Marshal(b)
 }
 

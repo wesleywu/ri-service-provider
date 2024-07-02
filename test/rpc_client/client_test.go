@@ -63,9 +63,9 @@ func TestEpisodeRepo_All(t *testing.T) {
 		deleteRes      *p.EpisodeDeleteRes
 		deleteMultiRes *p.EpisodeDeleteMultiRes
 		insertedId1    string
-		insertedId2    = "66838c65a300d6360cc0ed3b"
-		//insertedId2 = "qiihWlTCtVz72T9znB9"
-		err error
+		//insertedId2    = "66838c65a300d6360cc0ed3b"
+		insertedId2 = "qiihWlTCtVz72T9znB9"
+		err         error
 	)
 	// 创建链路追踪
 	tp := otel.GetTracerProvider()

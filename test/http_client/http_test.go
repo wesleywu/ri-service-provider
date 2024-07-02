@@ -66,9 +66,9 @@ func TestEpisodeRepo_All(t *testing.T) {
 		deleteRes      *proto.EpisodeDeleteRes
 		deleteMultiRes *proto.EpisodeDeleteMultiRes
 		insertedId1    string
-		insertedId2    = "66838c65a300d6360cc0ed3b"
-		//insertedId2 = "qiihWlTCtVz72T9znB9"
-		err error
+		//insertedId2    = "66838c65a300d6360cc0ed3b"
+		insertedId2 = "qiihWlTCtVz72T9znB9"
+		err         error
 	)
 	tracer := tp.Tracer("ri-service-provider-test")
 	_, span := tracer.Start(ctx, "http_client_test.TestEpisodeRepo_All")

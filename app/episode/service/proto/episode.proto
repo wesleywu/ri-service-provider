@@ -22,8 +22,8 @@ import "app/episode/service/enum/episode_enum.proto";
 message Episode {
   option (goguru.orm.collection) = {
     collection_name:    "episode",
-    use_id_obfuscating: false,
-    use_bson_timestamp: false,
+    use_id_obfuscating: true,
+    use_bson_timestamp: true,
     indices: [
       {
         fields: [
