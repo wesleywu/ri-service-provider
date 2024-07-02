@@ -381,10 +381,6 @@ func (m *QuestionAnswer) SetAnswer(v *string) {
 	m.Answer = v
 }
 
-func (m *EpisodeCountReq_Test) SetName(v string) {
-	m.Name = v
-}
-
 func (m *EpisodeCountReq) SetId(v *anypb.Any) {
 	m.Id = v
 }

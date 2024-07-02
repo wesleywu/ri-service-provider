@@ -111,9 +111,6 @@ service EpisodeRepo {
 }
 
 message EpisodeCountReq {
-  message Test {
-    string name = 1;
-  }
   google.protobuf.Any                  id                  = 1    [(tagger.tags) = "json:\"id,omitempty\""];
   google.protobuf.Any                  name                = 2    [(tagger.tags) = "json:\"name,omitempty\""];
   google.protobuf.Any                  content_type        = 3    [(tagger.tags) = "json:\"contentType,omitempty\""];
